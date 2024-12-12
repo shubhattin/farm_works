@@ -3,26 +3,33 @@ import { httpBatchLink } from '@trpc/client';
 import { createTRPCClient } from 'trpc-sveltekit';
 import transformer from './transformer';
 import { createTRPCSvelte } from 'trpc-svelte-query';
+import { ensure_auth_access_status } from '~/tools/auth_tools';
 
-let jwt_token: string;
+let access_token: string;
+let token_renew_started = false;
 
-export const setJwtToken = (token: string) => {
+export const setAccessToken = (token: string) => {
   // to set the jwt_token while we make trpc request
-  jwt_token = token;
+  access_token = token;
+};
+export const setTokenRenewStarted = (val: boolean) => {
+  token_renew_started = val;
 };
 
 const client_options = {
   links: [
     httpBatchLink({
       url: '/trpc',
-      headers() {
+      async headers() {
+        if (!token_renew_started) await ensure_auth_access_status();
         return {
-          Authorization: `Bearer ${jwt_token}`
+          Authorization: `Bearer ${access_token}`
         };
       }
     })
   ],
   transformer
 };
-export const client_raw = createTRPCClient<Router>(client_options);
-export const client = createTRPCSvelte<Router>(client_options);
+
+export const client = createTRPCClient<Router>(client_options);
+export const client_q = createTRPCSvelte<Router>(client_options);

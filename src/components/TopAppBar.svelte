@@ -16,9 +16,7 @@
 
 <AppBar>
   {#snippet lead()}
-    {#if start}
-      {@render start()}
-    {/if}
+    {@render start?.()}
     {#if headline}
       {@render headline()}
     {:else if route_id in PAGE_TITLES}

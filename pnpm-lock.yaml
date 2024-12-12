@@ -47,6 +47,9 @@ importers:
       lucide-svelte:
         specifier: ^0.395.0
         version: 0.395.0(svelte@5.10.1)
+      ms:
+        specifier: ^2.1.3
+        version: 2.1.3
       sass:
         specifier: ^1.82.0
         version: 1.82.0
@@ -78,6 +81,12 @@ importers:
       '@tailwindcss/forms':
         specifier: ^0.5.9
         version: 0.5.9(tailwindcss@3.4.16)
+      '@tanstack/svelte-query-devtools':
+        specifier: ^5.62.7
+        version: 5.62.7(@tanstack/svelte-query@5.62.7(svelte@5.10.1))(svelte@5.10.1)
+      '@types/ms':
+        specifier: ^0.7.34
+        version: 0.7.34
       autoprefixer:
         specifier: ^10.4.20
         version: 10.4.20(postcss@8.4.49)
@@ -1198,6 +1207,15 @@ packages:
   '@tanstack/query-core@5.62.7':
     resolution: {integrity: sha512-fgpfmwatsrUal6V+8EC2cxZIQVl9xvL7qYa03gsdsCy985UTUlS4N+/3hCzwR0PclYDqisca2AqR1BVgJGpUDA==}
 
+  '@tanstack/query-devtools@5.61.4':
+    resolution: {integrity: sha512-21Tw+u8E3IJJj4A/Bct4H0uBaDTEu7zBrR79FeSyY+mS2gx5/m316oDtJiKkILc819VSTYt+sFzODoJNcpPqZQ==}
+
+  '@tanstack/svelte-query-devtools@5.62.7':
+    resolution: {integrity: sha512-g63yvKn/ZPoMJ703FUfxg4YcFQkj1iIqn6Zpl+qv5Wg47bgFNpJ8nKZesWyO1lsWGrrEECgEiMos8WT/9xebpg==}
+    peerDependencies:
+      '@tanstack/svelte-query': ^5.62.7
+      svelte: ^3.54.0 || ^4.0.0 || ^5.0.0-next.0
+
   '@tanstack/svelte-query@5.62.7':
     resolution: {integrity: sha512-WTu70TtgX90r8OVlvQbRhDAnj12mvQRQ5Sp+2Dgsvdq1b3uDWwjV9ufhyhAM/2YkY03Gtlfs2GL1fyMhSx9tbQ==}
     peerDependencies:
@@ -1216,6 +1234,9 @@ packages:
 
   '@types/estree@1.0.6':
     resolution: {integrity: sha512-AYnb1nQyY49te+VRAVgmzfcgjYS91mY5P0TKUDCLEM+gNnA+3T6rWITXRLYCpahpqSQbN5cE+gHpnPyXjHWxcw==}
+
+  '@types/ms@0.7.34':
+    resolution: {integrity: sha512-nG96G3Wp6acyAgJqGasjODb+acrI7KltPiRxzHPXnP3NgI28bpQDRv53olbqGXbfcgF5aiiHmO3xpwEpS5Ld9g==}
 
   '@types/node@22.10.1':
     resolution: {integrity: sha512-qKgsUwfHZV2WCWLAnVP1JqnpE6Im6h3Y0+fYgMTasNQ7V++CBX5OT1as0g0f+OyubbFqhf6XVNIsmN4IIhEgGQ==}
@@ -3363,6 +3384,15 @@ snapshots:
 
   '@tanstack/query-core@5.62.7': {}
 
+  '@tanstack/query-devtools@5.61.4': {}
+
+  '@tanstack/svelte-query-devtools@5.62.7(@tanstack/svelte-query@5.62.7(svelte@5.10.1))(svelte@5.10.1)':
+    dependencies:
+      '@tanstack/query-devtools': 5.61.4
+      '@tanstack/svelte-query': 5.62.7(svelte@5.10.1)
+      esm-env: 1.2.1
+      svelte: 5.10.1
+
   '@tanstack/svelte-query@5.62.7(svelte@5.10.1)':
     dependencies:
       '@tanstack/query-core': 5.62.7
@@ -3377,6 +3407,8 @@ snapshots:
   '@types/cookie@0.6.0': {}
 
   '@types/estree@1.0.6': {}
+
+  '@types/ms@0.7.34': {}
 
   '@types/node@22.10.1':
     dependencies:
