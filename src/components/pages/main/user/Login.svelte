@@ -5,6 +5,7 @@
   import { cl_join } from '~/tools/cl_join';
   import { get_id_token_info, storeAuthInfo } from '~/tools/auth_tools';
   import { slide } from 'svelte/transition';
+  import { onMount } from 'svelte';
 
   let id = $state(0); // 1st user(admin)
   let password = $state('');
@@ -12,6 +13,12 @@
   let user_input_element = $state<HTMLInputElement>();
 
   let wrong_pass_status = $state(false);
+
+  onMount(() => {
+    if (import.meta.env.DEV) {
+      id = 1;
+    }
+  });
 
   const pass_verify = client_q.auth.verify_pass.mutation({
     onSuccess(data) {
