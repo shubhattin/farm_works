@@ -1,0 +1,10 @@
+node_modules
+build
+.vercel
+.svelte-kit
+
+# Ignore files for PNPM, NPM and YARN
+pnpm-lock.yaml
+
+src/db/migrations
+src/db/scripts/out/
