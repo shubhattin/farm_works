@@ -150,20 +150,8 @@ const update_password_route = protectedProcedure
     return { success: true };
   });
 
-const get_admin_users_route = publicProcedure.query(async () => {
-  const users_list = await db.query.users.findMany({
-    where: ({ user_type }, { eq }) => eq(user_type, 'admin'),
-    columns: {
-      id: true,
-      name: true
-    }
-  });
-  return users_list;
-});
-
 export const auth_router = t.router({
   verify_pass: verify_pass_route,
   renew_access_token: renew_access_token,
-  update_password: update_password_route,
-  get_admin_users: get_admin_users_route
+  update_password: update_password_route
 });

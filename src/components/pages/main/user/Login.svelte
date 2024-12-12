@@ -5,7 +5,9 @@
   import { cl_join } from '~/tools/cl_join';
   import { get_id_token_info, storeAuthInfo } from '~/tools/auth_tools';
   import { slide } from 'svelte/transition';
-  import { onMount } from 'svelte';
+  import { page } from '$app/stores';
+  import { ID_TOKEN_INFO_SCHEMA } from '~/tools/auth_tools';
+  import { z } from 'zod';
 
   let id = $state(0); // 1st user(admin)
   let password = $state('');
@@ -13,12 +15,6 @@
   let user_input_element = $state<HTMLInputElement>();
 
   let wrong_pass_status = $state(false);
-
-  onMount(() => {
-    if (import.meta.env.DEV) {
-      id = 1;
-    }
-  });
 
   const pass_verify = client_q.auth.verify_pass.mutation({
     onSuccess(data) {
@@ -41,7 +37,7 @@
     }
   });
 
-  const users_list = client_q.auth.get_admin_users.query();
+  const users_list = $page.data.admin_users_list as z.infer<typeof ID_TOKEN_INFO_SCHEMA>[];
 
   const check_pass_func = async (e: Event) => {
     e.preventDefault();
@@ -56,11 +52,9 @@
       {#if id === 0}
         <option value={0}>-- उपयोक्ता चुनें --</option>
       {/if}
-      {#if $users_list.isSuccess}
-        {#each $users_list.data as user}
-          <option value={user.id}>{user.name}</option>
-        {/each}
-      {/if}
+      {#each users_list as user}
+        <option value={user.id}>{user.name}</option>
+      {/each}
     </select>
     <input
       class={cl_join('input rounded-md px-2 py-1', wrong_pass_status && 'preset-tonal-error')}
