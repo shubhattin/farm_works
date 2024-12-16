@@ -7,16 +7,10 @@ const main = async () => {
 
   console.log(`Fetching Data from ${dbMode} Database...`);
 
-  // const rent_data = await db.query.rent_data.findMany();
-  // const others = await db.query.others.findMany();
-  // const users = await db.query.users.findMany();
-  // const verification_requests = await db.query.verification_requests.findMany();
+  const users = await db.query.users.findMany();
 
   const json_data = {
-    // users,
-    // others,
-    // rent_data,
-    // verification_requests
+    users
   };
 
   await make_dir('./out');

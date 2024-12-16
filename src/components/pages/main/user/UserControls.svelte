@@ -30,7 +30,7 @@
       <div class="text-center text-base font-bold">
         <Icon class="-mt-1 text-2xl" src={AiOutlineUser} />
         {$user_info!.name}
-        <span class="text-xs text-gray-500 dark:text-gray-400">{$user_info!.id}</span>
+        <span class="ml-1 text-xs text-gray-500 dark:text-gray-400">#{$user_info!.id}</span>
       </div>
       <div class="select-none space-y-2 p-1">
         <Modal
