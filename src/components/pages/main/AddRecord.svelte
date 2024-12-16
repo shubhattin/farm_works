@@ -3,7 +3,7 @@
   import { VscAdd } from 'svelte-icons-pack/vsc';
   import { client_q } from '~/api/client';
   import Icon from '~/tools/Icon.svelte';
-  import { RiFinanceMoneyRupeeCircleFill } from 'svelte-icons-pack/ri';
+  import { FaSolidMoneyCheck } from 'svelte-icons-pack/fa';
 
   let customers_list = client_q.customer.get_customers_list.query();
 
@@ -127,10 +127,12 @@
     {#if total}
       <div class="text-bold space-x-2">
         <span>
-          <Icon src={RiFinanceMoneyRupeeCircleFill} class="-mt-1 text-xl" />
+          <Icon src={FaSolidMoneyCheck} class="-mt-1 text-xl" />
           सकल
         </span>
-        <span>₹ {total}</span>
+        <span>
+          ₹ {total}
+        </span>
       </div>
     {/if}
     <button
@@ -177,7 +179,7 @@
   </label>
   {#if jotAI === 'rota_meter' || jotAI === 'cultivator' || jotAI === 'tAva'}
     <label class="block">
-      <span class="label-text font-bold">चासा की संख्या</span>
+      <span class="label-text font-bold">चास की संख्या</span>
       <input type="number" class="input rounded-lg" bind:value={jotAI_chAsa} required />
     </label>
   {/if}
