@@ -3,6 +3,7 @@
   import { VscAdd } from 'svelte-icons-pack/vsc';
   import { client_q } from '~/api/client';
   import Icon from '~/tools/Icon.svelte';
+  import { RiFinanceMoneyRupeeCircleFill } from 'svelte-icons-pack/ri';
 
   let customers_list = client_q.customer.get_customers_list.query();
 
@@ -67,6 +68,21 @@
   let trolley_number: number | null = $state(null);
 
   let rate: number | null = $state(null);
+  let kheta: number | null = $state(null);
+
+  let total: number | null = $derived.by(() => {
+    if (!rate) return null;
+    if (category === 'kaTAi' && kheta) {
+      return rate * kheta;
+    } else if (category === 'jotAI' && kheta) {
+      if (jotAI_chAsa && (jotAI === 'rota_meter' || jotAI === 'cultivator' || jotAI === 'tAva'))
+        return rate * jotAI_chAsa * kheta;
+      else return rate * kheta;
+    } else if (category === 'trolley' && trolley_number) {
+      return rate * trolley_number;
+    }
+    return null;
+  });
 </script>
 
 <form class="space-y-3" onsubmit={handle_submit}>
@@ -97,17 +113,34 @@
   {:else if category === 'trolley'}
     {@render trolley_types()}
   {/if}
-  <label class="block">
-    <span class="label-text font-bold">दर (रेट)</span>
-    <input type="number" class="input rounded-lg" bind:value={rate} required />
-  </label>
-  <button
-    type="submit"
-    class="btn gap-1 rounded-md bg-primary-500 px-2 py-1 pb-0 font-bold text-white dark:bg-primary-600"
-  >
-    <Icon src={VscAdd} class="text-xl" />
-    जोड़ें
-  </button>
+  {#if category === 'jotAI' || category === 'kaTAi'}
+    <label class="block">
+      <span class="label-text font-bold">खेत (बिस्सा में)</span>
+      <input type="number" class="input rounded-lg" bind:value={kheta} required />
+    </label>
+  {/if}
+  {#if category}
+    <label class="block">
+      <span class="label-text font-bold">दर (₹ में)</span>
+      <input type="number" class="input rounded-lg" bind:value={rate} required />
+    </label>
+    {#if total}
+      <div class="text-bold space-x-2">
+        <span>
+          <Icon src={RiFinanceMoneyRupeeCircleFill} class="-mt-1 text-xl" />
+          सकल
+        </span>
+        <span>₹ {total}</span>
+      </div>
+    {/if}
+    <button
+      type="submit"
+      class="btn gap-1 rounded-md bg-primary-500 px-2 py-1 pb-0 font-bold text-white dark:bg-primary-600"
+    >
+      <Icon src={VscAdd} class="text-xl" />
+      जोड़ें
+    </button>
+  {/if}
 </form>
 
 {#snippet kaTAI_types()}
@@ -132,7 +165,6 @@
     </label>
   {/if}
 {/snippet}
-
 {#snippet jotAI_types()}
   <label class="block">
     <span class="label-text font-bold">जोताई का प्रकार चुनें</span>
