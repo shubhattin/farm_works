@@ -1,15 +1,9 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-  import { load_parivartak_lang_data, lekhika_typing_tool } from '~/tools/converter';
+  import { lekhika_typing_tool } from '~/tools/converter';
   import { Switch } from '@skeletonlabs/skeleton-svelte';
   import { client_q } from '~/api/client';
   import Icon from '~/tools/Icon.svelte';
   import { VscAdd } from 'svelte-icons-pack/vsc';
-
-  onMount(async () => {
-    // loading for allowing hindi typing
-    await load_parivartak_lang_data('Hindi', './src', true);
-  });
 
   let hindi_typing_tool_enabled = $state(true);
 

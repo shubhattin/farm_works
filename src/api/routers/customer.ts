@@ -22,6 +22,17 @@ const register_customer_route = protectedAdminProcedure
     };
   });
 
+const get_customers_list_route = protectedAdminProcedure.query(async ({ ctx }) => {
+  const customers = await db.query.customers.findMany({
+    columns: {
+      id: true,
+      name: true
+    }
+  });
+  return customers;
+});
+
 export const customer_router = t.router({
-  register_customer: register_customer_route
+  register_customer: register_customer_route,
+  get_customers_list: get_customers_list_route
 });

@@ -1,8 +1,8 @@
 import { dbClient_ext as db, queryClient } from './client';
 import { readFile } from 'fs/promises';
 import { dbMode, take_input } from '~/tools/kry_server';
-import { users } from '~/db/schema';
-import { UsersSchemaZod } from '~/db/schema_zod';
+import { customers, users } from '~/db/schema';
+import { UsersSchemaZod, CustomersSchemaZod } from '~/db/schema_zod';
 import { z } from 'zod';
 import { sql } from 'drizzle-orm';
 
@@ -24,7 +24,8 @@ const main = async () => {
 
   const data = z
     .object({
-      users: z.array(UsersSchemaZod)
+      users: z.array(UsersSchemaZod),
+      customers: z.array(CustomersSchemaZod)
     })
     .parse(JSON.parse((await readFile(`./out/${in_file_name}`)).toString()));
 
@@ -35,6 +36,15 @@ const main = async () => {
     // reset  SERIAL
     await db.execute(sql`SELECT setval('users_id_seq', (select MAX(id) from users))`);
     console.log('Successfully added values into table `users`');
+  } catch {}
+
+  // inserting customers
+  try {
+    await db.delete(customers);
+    await db.insert(customers).values(data.customers);
+    // reset  SERIAL
+    await db.execute(sql`SELECT setval('customers_id_seq', (select MAX(id) from customers))`);
+    console.log('Successfully added values into table `customers`');
   } catch {}
 };
 main().then(() => {

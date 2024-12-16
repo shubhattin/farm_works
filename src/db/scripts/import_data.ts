@@ -8,9 +8,11 @@ const main = async () => {
   console.log(`Fetching Data from ${dbMode} Database...`);
 
   const users = await db.query.users.findMany();
+  const customers = await db.query.customers.findMany();
 
   const json_data = {
-    users
+    users,
+    customers
   };
 
   await make_dir('./out');
