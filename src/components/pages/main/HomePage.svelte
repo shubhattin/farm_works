@@ -35,7 +35,7 @@
   <div class="flex justify-between">
     <button
       onclick={() => (add_new_record_opened = true)}
-      class="btn gap-1 bg-primary-500 px-3 text-white dark:bg-primary-600"
+      class="btn gap-1 bg-primary-500 px-3 py-2 pb-1 text-white dark:bg-primary-600"
     >
       <Icon src={VscAdd} class="text-2xl" />
       नव अंकन करें
