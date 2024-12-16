@@ -30,6 +30,7 @@ const main = async () => {
 
   // insertig users
   try {
+    await db.delete(users);
     await db.insert(users).values(data.users);
     // reset  SERIAL
     await db.execute(sql`SELECT setval('users_id_seq', (select MAX(id) from users))`);
