@@ -9,16 +9,20 @@ import { users } from '~/db/schema';
 import { eq } from 'drizzle-orm';
 import { delay } from '~/tools/delay';
 
-export const user_info_schema = UsersSchemaZod.pick({
+export const id_token_schema = UsersSchemaZod.pick({
   id: true,
   name: true
 });
-type user_info_type = z.infer<typeof user_info_schema>;
+export const accees_token_schema = UsersSchemaZod.pick({
+  id: true,
+  user_type: true
+});
+const jwt_info_schema = accees_token_schema.merge(id_token_schema);
 
 const ID_TOKREN_EXPIRE = '30d';
 const ACCESS_TOKEN_EXPIRE = '4h';
 
-const get_id_and_aceess_token = async (user_info: user_info_type) => {
+const get_id_and_aceess_token = async (user_info: z.infer<typeof jwt_info_schema>) => {
   // ID Token will be used for authentication, i.e. to verify the user's identity.
   // in our case will also act as refresh tokens
   const id_token = await new SignJWT({ user: user_info, type: 'login' })
@@ -30,7 +34,8 @@ const get_id_and_aceess_token = async (user_info: user_info_type) => {
   // Access Token will be used for authorization, i.e. to access the user's resources.
   const access_token = await new SignJWT({
     user: {
-      id: user_info.id
+      id: user_info.id,
+      user_type: user_info.user_type
     },
     type: 'api'
   })
@@ -78,7 +83,8 @@ const verify_pass_route = publicProcedure
     if (!verified) return { verified, err_code: 'wrong_password' };
     const { id_token, access_token } = await get_id_and_aceess_token({
       name: user_info.name,
-      id: user_info.id
+      id: user_info.id,
+      user_type: user_info.user_type
     });
     return {
       verified,
@@ -88,7 +94,7 @@ const verify_pass_route = publicProcedure
   });
 
 const id_token_payload_schema = z.object({
-  user: user_info_schema,
+  user: id_token_schema,
   type: z.literal('login')
 });
 
@@ -124,7 +130,13 @@ const renew_access_token = publicProcedure
       return {
         verified: false
       };
-    return { verified: true, ...(await get_id_and_aceess_token(user.user)) };
+    const user_type = (await db.query.users.findFirst({
+      where: ({ id }, { eq }) => eq(id, user.user.id),
+      columns: {
+        user_type: true
+      }
+    }))!.user_type;
+    return { verified: true, ...(await get_id_and_aceess_token({ ...user.user, user_type })) };
   });
 
 const update_password_route = protectedProcedure

@@ -4,7 +4,7 @@ import { JWT_SECRET } from '~/tools/jwt';
 import type { RequestEvent } from '@sveltejs/kit';
 import type { inferAsyncReturnType } from '@trpc/server';
 
-const jwt_payload_schema = UsersSchemaZod.pick({
+const access_token_payload_schema = UsersSchemaZod.pick({
   id: true,
   user_type: true
 });
@@ -18,9 +18,11 @@ export async function createContext(event: RequestEvent) {
       const jwt_data = await jwtVerify(jwt_token, JWT_SECRET, {
         algorithms: ['HS256']
       });
-      const payload = jwt_payload_schema.parse(jwt_data.payload);
+      const payload = access_token_payload_schema.parse(jwt_data.payload.user);
       return payload;
-    } catch {}
+    } catch (e) {
+      console.log(e);
+    }
     return null;
   }
 

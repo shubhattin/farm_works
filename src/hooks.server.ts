@@ -3,7 +3,7 @@ import { AUTH_ID_LOC } from '~/tools/auth_tools';
 import { jwtVerify } from 'jose';
 import { JWT_SECRET } from '~/tools/jwt.server';
 import { z } from 'zod';
-import { user_info_schema } from '~/api/routers/auth';
+import { id_token_schema } from '~/api/routers/auth';
 import { createTRPCHandle } from 'trpc-sveltekit';
 import { router } from '~/api/trpc_router';
 import { createContext } from '~/api/context';
@@ -18,7 +18,7 @@ export const handle: Handle = async ({ event, resolve }) => {
     // this is for verifying the user's identity and not the authorization
     const id_token = event.cookies.get(AUTH_ID_LOC);
     const id_token_payload_schema = z.object({
-      user: user_info_schema,
+      user: id_token_schema,
       type: z.literal('login')
     });
     if (id_token) {
