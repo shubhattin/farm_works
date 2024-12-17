@@ -4,6 +4,9 @@
   import { client_q } from '~/api/client';
   import Icon from '~/tools/Icon.svelte';
   import { FaSolidMoneyCheck } from 'svelte-icons-pack/fa';
+  import { get_utc_date } from '~/tools/date';
+  import { scale } from 'svelte/transition';
+  import { TrOutlineArrowBackUp } from 'svelte-icons-pack/tr';
 
   let { current_page_open = $bindable() }: { current_page_open: boolean } = $props();
 
@@ -34,7 +37,52 @@
   let date = $state(get_todays_date());
   const handle_submit = async (e: Event) => {
     e.preventDefault();
+    if (customer_id.length === 0 && customer_id[0].length !== 0) return;
+    const c_id = parseInt(customer_id[0]);
+    if (category === 'kaTAi' && rate && total && kheta && kaTAi) {
+      await $add_record_mut.mutateAsync({
+        customer_id: c_id,
+        type: 'kaTAI',
+        date: get_utc_date(date),
+        total: total,
+        rate: rate,
+        data: {
+          type: kaTAi,
+          kheta,
+          dhAna_type: kaTAI_dhAn
+        }
+      });
+    } else if (category === 'jotAI' && rate && total && kheta && jotAI) {
+      await $add_record_mut.mutateAsync({
+        customer_id: c_id,
+        type: 'jotAI',
+        date: get_utc_date(date),
+        total: total,
+        rate: rate,
+        data: {
+          type: jotAI,
+          kheta,
+          chAsa:
+            jotAI === 'cultivator' || jotAI === 'tAva' || jotAI === 'rota_meter'
+              ? jotAI_chAsa
+              : null
+        }
+      });
+    } else if (category === 'trolley' && rate && total && trolley_number) {
+      await $add_record_mut.mutateAsync({
+        customer_id: c_id,
+        type: 'trolley',
+        date: get_utc_date(date),
+        total: total,
+        rate: rate,
+        data: {
+          number: trolley_number
+        }
+      });
+    }
   };
+
+  const add_record_mut = client_q.records.add_record.mutation();
 
   const CATEOGORY_LIST = {
     kaTAi: 'काटाई',
@@ -87,65 +135,81 @@
   });
 </script>
 
-<form class="space-y-3" onsubmit={handle_submit}>
-  <Combobox
-    data={comboboxData}
-    bind:value={customer_id}
-    label="ग्राहक"
-    placeholder="ग्राहक का नाम प्रविष्ट करें"
-    base="block"
-  />
-  <label class="block">
-    <span class="label-text font-bold">दिनांक</span>
-    <input type="date" class="input rounded-lg" bind:value={date} required />
-  </label>
-  <label class="block">
-    <span class="label-text font-bold">श्रेणी</span>
-    <select class="select rounded-lg" bind:value={category} required>
-      <option value={null}>-- श्रेणी चयन करें --</option>
-      {#each Object.entries(CATEOGORY_LIST) as [key, val]}
-        <option value={key}>{val}</option>
-      {/each}
-    </select>
-  </label>
-  {#if category === 'kaTAi'}
-    {@render kaTAI_types()}
-  {:else if category === 'jotAI'}
-    {@render jotAI_types()}
-  {:else if category === 'trolley'}
-    {@render trolley_types()}
-  {/if}
-  {#if category === 'jotAI' || category === 'kaTAi'}
+{#if !$add_record_mut.isSuccess}
+  <form class="space-y-3" onsubmit={handle_submit}>
+    <Combobox
+      data={comboboxData}
+      bind:value={customer_id}
+      label="ग्राहक"
+      placeholder="ग्राहक का नाम प्रविष्ट करें"
+      base="block"
+    />
     <label class="block">
-      <span class="label-text font-bold">खेत (बिस्सा में)</span>
-      <input type="number" class="input rounded-lg" bind:value={kheta} required />
+      <span class="label-text font-bold">दिनांक</span>
+      <input type="date" class="input rounded-lg" bind:value={date} required />
     </label>
-  {/if}
-  {#if category}
     <label class="block">
-      <span class="label-text font-bold">दर (₹ में)</span>
-      <input type="number" class="input rounded-lg" bind:value={rate} required />
+      <span class="label-text font-bold">श्रेणी</span>
+      <select class="select rounded-lg" bind:value={category} required>
+        <option value={null}>-- श्रेणी चयन करें --</option>
+        {#each Object.entries(CATEOGORY_LIST) as [key, val]}
+          <option value={key}>{val}</option>
+        {/each}
+      </select>
     </label>
-    {#if total}
-      <div class="text-bold space-x-2">
-        <span>
-          <Icon src={FaSolidMoneyCheck} class="-mt-1 text-xl" />
-          सकल
-        </span>
-        <span>
-          ₹ {total}
-        </span>
-      </div>
+    {#if category === 'kaTAi'}
+      {@render kaTAI_types()}
+    {:else if category === 'jotAI'}
+      {@render jotAI_types()}
+    {:else if category === 'trolley'}
+      {@render trolley_types()}
     {/if}
-    <button
-      type="submit"
-      class="btn gap-1 rounded-md bg-primary-500 px-2 py-1 pb-0 font-bold text-white dark:bg-primary-600"
-    >
-      <Icon src={VscAdd} class="text-xl" />
-      जोड़ें
-    </button>
-  {/if}
-</form>
+    {#if category === 'jotAI' || category === 'kaTAi'}
+      <label class="block">
+        <span class="label-text font-bold">खेत (बिस्सा में)</span>
+        <input type="number" class="input rounded-lg" bind:value={kheta} required />
+      </label>
+    {/if}
+    {#if category}
+      <label class="block">
+        <span class="label-text font-bold">दर (₹ में)</span>
+        <input type="number" class="input rounded-lg" bind:value={rate} required />
+      </label>
+      {#if total}
+        <div class="text-bold space-x-2">
+          <span>
+            <Icon src={FaSolidMoneyCheck} class="-mt-1 text-xl" />
+            सकल
+          </span>
+          <span>
+            ₹ {total}
+          </span>
+        </div>
+      {/if}
+      <button
+        type="submit"
+        disabled={$add_record_mut.isPending}
+        class="btn gap-1 rounded-md bg-primary-500 px-2 py-1 pb-0 font-bold text-white dark:bg-primary-600"
+      >
+        <Icon src={VscAdd} class="text-xl" />
+        जोड़ें
+      </button>
+    {/if}
+  </form>
+{:else}
+  <div class="space-y-1" transition:scale>
+    <div class="font-bold text-success-400">सफलतापूर्वक प्रविष्टित किया गया है 🎉 ।</div>
+  </div>
+  <button
+    onclick={() => {
+      current_page_open = false;
+    }}
+    class="btn select-none gap-1 rounded-md bg-surface-500 px-2 py-1 pb-0 font-bold text-white outline-none"
+  >
+    <Icon src={TrOutlineArrowBackUp} class="-mt-1 text-xl " />
+    मुख्य पृष्ठ
+  </button>
+{/if}
 
 {#snippet kaTAI_types()}
   <label class="block">
