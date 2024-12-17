@@ -102,9 +102,9 @@ const add_record_route = protectedAdminProcedure.input(add_record_input_schema).
           date: date.toISOString(),
           rate,
           total,
-          kaTAI_records: kaTAI_record_id,
-          jotAI_records: jotAI_record_id,
-          trolley_records: trolley_record_id
+          kaTAI_record: kaTAI_record_id,
+          jotAI_record: jotAI_record_id,
+          trolley_record: trolley_record_id
         })
         .returning()
     )[0];

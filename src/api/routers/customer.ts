@@ -12,13 +12,11 @@ const register_customer_route = protectedAdminProcedure
     })
   )
   .mutation(async ({ input: { name, address, phone_number } }) => {
-    const uuid = crypto.randomUUID();
     const inserted = (
-      await db.insert(customers).values({ uuid, name, phone_number, address }).returning()
+      await db.insert(customers).values({ name, phone_number, address }).returning()
     )[0];
     return {
-      id: inserted.id,
-      uuid: inserted.uuid
+      id: inserted.id
     };
   });
 

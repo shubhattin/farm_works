@@ -15,7 +15,7 @@ export const customers = pgTable('customers', {
   name: varchar('name', { length: 50 }).notNull(),
   phone_number: varchar('phone_number', { length: 13 }),
   address: varchar('address', { length: 100 }),
-  uuid: uuid('uuid').notNull() // will be generated manually on insert
+  uuid: uuid('uuid').defaultRandom().notNull()
 });
 
 export const transactions = pgTable('transactions', {
@@ -29,9 +29,9 @@ export const transactions = pgTable('transactions', {
   date: date('date').notNull(),
   rate: integer('rate').notNull(),
   total: integer('total').notNull(),
-  kaTAI_records: integer('kaTAI_records').references(() => kaTAI_records.id),
-  jotAI_records: integer('jotAI_records').references(() => jotAI_records.id),
-  trolley_records: integer('trolley_records').references(() => trolley_records.id)
+  kaTAI_record: integer('kaTAI_record').references(() => kaTAI_records.id),
+  jotAI_record: integer('jotAI_record').references(() => jotAI_records.id),
+  trolley_record: integer('trolley_record').references(() => trolley_records.id)
   // ^ the individual record tables values cannot be deleted before the transaction is deleetd as linked as forigen key
 });
 
@@ -81,15 +81,15 @@ export const transactionRelations = relations(transactions, ({ one }) => ({
   added_by_user: one(users, { fields: [transactions.added_by_user_id], references: [users.id] }),
   customer: one(customers, { fields: [transactions.customer_id], references: [customers.id] }),
   kaTAI_records: one(kaTAI_records, {
-    fields: [transactions.kaTAI_records],
+    fields: [transactions.kaTAI_record],
     references: [kaTAI_records.id]
   }),
   jotAI_records: one(jotAI_records, {
-    fields: [transactions.jotAI_records],
+    fields: [transactions.jotAI_record],
     references: [jotAI_records.id]
   }),
   trolley_records: one(trolley_records, {
-    fields: [transactions.trolley_records],
+    fields: [transactions.trolley_record],
     references: [trolley_records.id]
   })
 }));
