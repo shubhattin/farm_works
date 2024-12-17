@@ -1,4 +1,5 @@
 import { pgTable, serial, varchar, char, pgEnum, uuid, integer, date } from 'drizzle-orm/pg-core';
+import { relations } from 'drizzle-orm';
 
 export const userTypeEnum = pgEnum('user_type', ['admin', 'non-admin']);
 
@@ -65,3 +66,40 @@ export const trolley_records = pgTable('trolley_records', {
   id: serial('id').primaryKey(),
   number: integer('number').notNull()
 });
+
+// relations
+
+export const userRelations = relations(users, ({ many }) => ({
+  transactions: many(transactions)
+}));
+
+export const customerRelations = relations(customers, ({ many }) => ({
+  transactions: many(transactions)
+}));
+
+export const transactionRelations = relations(transactions, ({ one }) => ({
+  added_by_user: one(users, { fields: [transactions.added_by_user_id], references: [users.id] }),
+  customer: one(customers, { fields: [transactions.customer_id], references: [customers.id] }),
+  kaTAI_records: one(kaTAI_records, {
+    fields: [transactions.kaTAI_records],
+    references: [kaTAI_records.id]
+  }),
+  jotAI_records: one(jotAI_records, {
+    fields: [transactions.jotAI_records],
+    references: [jotAI_records.id]
+  }),
+  trolley_records: one(trolley_records, {
+    fields: [transactions.trolley_records],
+    references: [trolley_records.id]
+  })
+}));
+
+export const kaTAIRelations = relations(kaTAI_records, ({ one }) => ({
+  transaction: one(transactions)
+}));
+export const jotAIRelations = relations(jotAI_records, ({ one }) => ({
+  transaction: one(transactions)
+}));
+export const trolleyRelations = relations(trolley_records, ({ one }) => ({
+  transaction: one(transactions)
+}));
