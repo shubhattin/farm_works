@@ -9,10 +9,18 @@ const main = async () => {
 
   const users = await db.query.users.findMany();
   const customers = await db.query.customers.findMany();
+  const transactions = await db.query.transactions.findMany();
+  const jotAI_records = await db.query.jotAI_records.findMany();
+  const kaTAI_records = await db.query.kaTAI_records.findMany();
+  const trolley_records = await db.query.trolley_records.findMany();
 
   const json_data = {
     users,
-    customers
+    customers,
+    transactions,
+    jotAI_records,
+    kaTAI_records,
+    trolley_records
   };
 
   await make_dir('./out');

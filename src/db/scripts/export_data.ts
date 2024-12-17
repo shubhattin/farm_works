@@ -1,8 +1,22 @@
 import { dbClient_ext as db, queryClient } from './client';
 import { readFile } from 'fs/promises';
 import { dbMode, take_input } from '~/tools/kry_server';
-import { customers, users } from '~/db/schema';
-import { UsersSchemaZod, CustomersSchemaZod } from '~/db/schema_zod';
+import {
+  customers,
+  users,
+  transactions,
+  jotAI_records,
+  kaTAI_records,
+  trolley_records
+} from '~/db/schema';
+import {
+  UsersSchemaZod,
+  CustomersSchemaZod,
+  TransactionsSchemaZod,
+  JotAIRecordsSchemaZod,
+  KaTAIRecordsSchemaZod,
+  TrolleyRecordsSchemaZod
+} from '~/db/schema_zod';
 import { z } from 'zod';
 import { sql } from 'drizzle-orm';
 
@@ -25,7 +39,11 @@ const main = async () => {
   const data = z
     .object({
       users: z.array(UsersSchemaZod),
-      customers: z.array(CustomersSchemaZod)
+      customers: z.array(CustomersSchemaZod),
+      transactions: z.array(TransactionsSchemaZod),
+      jotAI_records: z.array(JotAIRecordsSchemaZod),
+      kaTAI_records: z.array(KaTAIRecordsSchemaZod),
+      trolley_records: z.array(TrolleyRecordsSchemaZod)
     })
     .parse(JSON.parse((await readFile(`./out/${in_file_name}`)).toString()));
 
@@ -45,6 +63,48 @@ const main = async () => {
     // reset  SERIAL
     await db.execute(sql`SELECT setval('customers_id_seq', (select MAX(id) from customers))`);
     console.log('Successfully added values into table `customers`');
+  } catch {}
+
+  // inserting transactions
+  try {
+    await db.delete(transactions);
+    await db.insert(transactions).values(data.transactions);
+    // reset  SERIAL
+    await db.execute(sql`SELECT setval('transactions_id_seq', (select MAX(id) from transactions))`);
+    console.log('Successfully added values into table `transactions`');
+  } catch {}
+
+  // inserting jotAI_records
+  try {
+    await db.delete(jotAI_records);
+    await db.insert(jotAI_records).values(data.jotAI_records);
+    // reset  SERIAL
+    await db.execute(
+      sql`SELECT setval('jotAI_records_id_seq', (select MAX(id) from jotAI_records))`
+    );
+    console.log('Successfully added values into table `jotAI_records`');
+  } catch {}
+
+  // inserting kaTAI_records
+  try {
+    await db.delete(kaTAI_records);
+    await db.insert(kaTAI_records).values(data.kaTAI_records);
+    // reset  SERIAL
+    await db.execute(
+      sql`SELECT setval('kaTAI_records_id_seq', (select MAX(id) from kaTAI_records))`
+    );
+    console.log('Successfully added values into table `kaTAI_records`');
+  } catch {}
+
+  // inserting trolley_records
+  try {
+    await db.delete(trolley_records);
+    await db.insert(trolley_records).values(data.trolley_records);
+    // reset  SERIAL
+    await db.execute(
+      sql`SELECT setval('trolley_records_id_seq', (select MAX(id) from trolley_records))`
+    );
+    console.log('Successfully added values into table `trolley_records`');
   } catch {}
 };
 main().then(() => {

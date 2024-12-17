@@ -21,7 +21,7 @@ export async function createContext(event: RequestEvent) {
       const payload = access_token_payload_schema.parse(jwt_data.payload.user);
       return payload;
     } catch (e) {
-      console.log(e);
+      // console.log(e);
     }
     return null;
   }
