@@ -25,11 +25,11 @@
 </div>
 {#if add_new_customer_opened}
   <div transition:slide>
-    <AddCustomer />
+    <AddCustomer bind:current_page_open={add_new_customer_opened} />
   </div>
 {:else if add_new_record_opened}
   <div transition:slide>
-    <AddRecord />
+    <AddRecord bind:current_page_open={add_new_record_opened} />
   </div>
 {:else}
   <div class="flex justify-between">

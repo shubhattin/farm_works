@@ -30,6 +30,7 @@ export const transactions = pgTable('transactions', {
   trolley_records: integer('trolley_records').references(() => trolley_records.id)
 });
 
+// kaTAI records
 export const kaTAI_enum = pgEnum('kaTAI', ['dhAn', 'gehUM']);
 export const kaTAI_dhAn_enum = pgEnum('kaTAI_dhAn', ['sAdA', '4x4', 'girA']);
 export const kaTAI_records = pgTable('kaTAI_records', {
@@ -39,6 +40,7 @@ export const kaTAI_records = pgTable('kaTAI_records', {
   dhAna_type: kaTAI_dhAn_enum('dhAna_type') // only if type is dhAn
 });
 
+// jotAI records
 export const jotAI_enum = pgEnum('jotAI', [
   'rota_meter',
   'cultivator',
@@ -54,6 +56,7 @@ export const jotAI_records = pgTable('jotAI_records', {
   chAsa: integer('chAsa') // only when 1, 2 and 3
 });
 
+// trolley records
 export const trolley_records = pgTable('trolley_records', {
   id: serial('id').primaryKey(),
   number: integer('number').notNull()

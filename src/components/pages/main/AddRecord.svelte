@@ -5,6 +5,8 @@
   import Icon from '~/tools/Icon.svelte';
   import { FaSolidMoneyCheck } from 'svelte-icons-pack/fa';
 
+  let { current_page_open = $bindable() }: { current_page_open: boolean } = $props();
+
   let customers_list = client_q.customer.get_customers_list.query();
 
   let comboboxData: {

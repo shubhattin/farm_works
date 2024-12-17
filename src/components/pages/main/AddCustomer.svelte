@@ -4,6 +4,10 @@
   import { client_q } from '~/api/client';
   import Icon from '~/tools/Icon.svelte';
   import { VscAdd } from 'svelte-icons-pack/vsc';
+  import { scale } from 'svelte/transition';
+  import { TrOutlineArrowBackUp } from 'svelte-icons-pack/tr';
+
+  let { current_page_open = $bindable() }: { current_page_open: boolean } = $props();
 
   let hindi_typing_tool_enabled = $state(true);
 
@@ -96,7 +100,18 @@
   </form>
 {:else}
   {@const data = $register_customer_mut.data}
-  <div class="font-bold">
-    {name} (#{data.id}) को सफलतापूर्वक प्रविष्टित किया गया है 🎉 ।
+  <div class="space-y-1" transition:scale>
+    <div class="font-bold text-success-400">
+      {name} (#{data.id}) को सफलतापूर्वक प्रविष्टित किया गया है 🎉 ।
+    </div>
   </div>
+  <button
+    onclick={() => {
+      current_page_open = false;
+    }}
+    class="btn select-none gap-1 rounded-md bg-surface-500 px-2 py-1 pb-0 font-bold text-white outline-none"
+  >
+    <Icon src={TrOutlineArrowBackUp} class="-mt-1 text-xl " />
+    मुख्य पृष्ठ
+  </button>
 {/if}
