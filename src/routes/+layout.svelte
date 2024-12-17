@@ -6,7 +6,8 @@
   import { SvelteQueryDevtools } from '@tanstack/svelte-query-devtools';
   import TopAppBar from '~/components/TopAppBar.svelte';
   import type { LayoutData } from './$types';
-  import { type Snippet } from 'svelte';
+  import { onMount, type Snippet } from 'svelte';
+  import { pwa_event_triggerer, pwa_install_event_fired } from '~/state/main';
   import '@fontsource/roboto/latin.css';
   import '../app.pcss';
 
@@ -14,6 +15,14 @@
 
   $user_info = null;
   if (data.user_info) $user_info = data.user_info;
+
+  onMount(() => {
+    window.addEventListener('beforeinstallprompt', (event) => {
+      event.preventDefault();
+      $pwa_event_triggerer = event;
+      $pwa_install_event_fired = true;
+    });
+  });
 </script>
 
 <QueryClientProvider client={queryClient}>
