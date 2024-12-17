@@ -1,11 +1,11 @@
 <script lang="ts">
   import { lekhika_typing_tool } from '~/tools/converter';
-  import { Switch } from '@skeletonlabs/skeleton-svelte';
   import { client_q } from '~/api/client';
   import Icon from '~/tools/Icon.svelte';
   import { VscAdd } from 'svelte-icons-pack/vsc';
   import { scale } from 'svelte/transition';
   import { TrOutlineArrowBackUp } from 'svelte-icons-pack/tr';
+  import LipiLekhikaSwitch from '~/components/LipiLekhikaSwitch.svelte';
 
   let { current_page_open = $bindable() }: { current_page_open: boolean } = $props();
 
@@ -28,13 +28,7 @@
 </script>
 
 {#if !$register_customer_mut.isSuccess}
-  <div>
-    <Switch
-      name="hindi_typing_tool"
-      controlBase="select-none outline-none"
-      bind:checked={hindi_typing_tool_enabled}>हिन्दी लेखन</Switch
-    >
-  </div>
+  <LipiLekhikaSwitch bind:status_on={hindi_typing_tool_enabled} />
   <form onsubmit={handle_submit} class="mt-5 space-y-2">
     <label>
       <span class="label-text">नाम <span class="text-error-400">*</span></span>

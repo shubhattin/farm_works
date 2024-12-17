@@ -1,0 +1,141 @@
+<script lang="ts">
+  import { createQuery } from '@tanstack/svelte-query';
+  import { lipi_parivartak, load_parivartak_lang_data } from '~/tools/converter';
+  import { delay } from '~/tools/delay';
+  import { cl_join } from '~/tools/cl_join';
+  import { onDestroy } from 'svelte';
+  import { Modal } from '@skeletonlabs/skeleton-svelte';
+  import Icon from '~/tools/Icon.svelte';
+  import { BiHelpCircle } from 'svelte-icons-pack/bi';
+
+  interface Props {
+    modal_opened: boolean;
+  }
+
+  let modal_opened = $state(false);
+
+  let typing_assistance_lang = $state('Hindi');
+
+  const IMAGE_SCALING = 0.775;
+  const ONE_PX = 1;
+  const HEIGHT = 682 * IMAGE_SCALING;
+  const WIDTH = 658 * IMAGE_SCALING;
+
+  const EXTRA_INFO_LIST = ['q.', '.x', 'qq', '.A', '.i', '.I', '.u', '.U', '.ai', '.au'];
+
+  let usage_table = $derived(
+    createQuery({
+      queryKey: ['usage_table', typing_assistance_lang],
+      enabled: modal_opened,
+      queryFn: async () => {
+        await delay(700);
+        const script_data_load_promise = load_parivartak_lang_data(typing_assistance_lang);
+        const IMAGE_URLS = import.meta.glob('/src/tools/converter/resources/images/*.png', {
+          eager: true,
+          query: '?url'
+        });
+        const image_lang =
+          typing_assistance_lang === 'Devanagari' ? 'Sanskrit' : typing_assistance_lang;
+        const url = (IMAGE_URLS[`/src/tools/converter/resources/images/${image_lang}.png`] as any)
+          .default as string;
+        const get_image_dimensiona = async (url: string) => {
+          return new Promise<{ width: number; height: number }>((resolve, reject) => {
+            let img = new Image();
+            img.onload = function () {
+              resolve({
+                // @ts-ignore
+                width: this.width * ONE_PX * IMAGE_SCALING,
+                // @ts-ignore
+                height: this.height * ONE_PX * IMAGE_SCALING
+              });
+            };
+            img.src = url;
+          });
+        };
+        const { height, width } = await get_image_dimensiona(url);
+        await Promise.all([script_data_load_promise]);
+        return { url, height, width };
+      }
+    })
+  );
+  onDestroy(() => {
+    modal_opened = false;
+  });
+</script>
+
+<Modal
+  bind:open={modal_opened}
+  contentBase="card p-4 space-y-4 shadow-xl max-w-screen-sm mx-3 max-h-[97%] max-w-[97%] overflow-scroll"
+  backdropClasses="backdrop-blur-sm"
+  triggerBase="outline-none select-none"
+>
+  {#snippet trigger()}
+    <span
+      class="btn select-none rounded-md p-0 text-sm outline-none"
+      title={'Language Typing Assistance'}
+    >
+      <Icon src={BiHelpCircle} class="-mt-1 text-3xl text-sky-500 dark:text-sky-400" />
+    </span>
+  {/snippet}
+  {#snippet content()}
+    <div
+      class={cl_join(
+        'mt-4 max-w-full',
+        !$usage_table.isFetching ? 'min-h-[580px] min-w-[560px]' : 'h-[580px] w-[560px]'
+      )}
+      style="
+      min-height: {!$usage_table.isFetching ? `${HEIGHT}px` : 'auto'};
+      min-width: {!$usage_table.isFetching ? `${WIDTH}px` : 'auto'};
+      height: {$usage_table.isFetching ? `${HEIGHT}px` : 'auto'};
+      width: {$usage_table.isFetching ? `${WIDTH}px` : 'auto'};
+      "
+    >
+      {#if $usage_table.isFetching}
+        <div class="h-full w-full space-y-1">
+          <div class="placeholder h-full w-full animate-pulse rounded-lg"></div>
+          <div class="placeholder animate-pulse rounded-md"></div>
+        </div>
+      {:else if $usage_table.isSuccess}
+        {@const { url, height, width } = $usage_table.data}
+        <img
+          style:height={`${height}px`}
+          style:width={`${width}px`}
+          alt={`${typing_assistance_lang} Usage Table`}
+          src={url}
+          class="block"
+        />
+        {#if !['Romanized'].includes(typing_assistance_lang)}
+          {@render extra_info()}
+        {/if}
+        <div class="text-wrap text-sm text-stone-500 dark:text-stone-400">
+          <a
+            href="https://app-lipilekhika.pages.dev"
+            target="_blank"
+            class="text-blue-500 underline dark:text-blue-400">लिपि लेखिका</a
+          >
+          मे
+          <span class="font-semibold">लेखन सहायिका</span> का प्रयोग स्वयं को लेखन उपकरण से परिचित करने
+          के लिए करें ।
+        </div>
+      {/if}
+    </div>
+  {/snippet}
+</Modal>
+
+{#snippet extra_info()}
+  <div class="mb-2">
+    <div
+      class="grid grid-cols-4 gap-1 rounded-md border-2 border-gray-400 px-0 py-1 sm:grid-cols-6 dark:border-gray-600"
+    >
+      {#each EXTRA_INFO_LIST as char}
+        <div class="inline-block space-x-1 text-center text-base">
+          <span class="text-gray-500 dark:text-gray-400">{char}</span>
+          ➜
+          {#await lipi_parivartak(char, 'Normal', typing_assistance_lang) then text}
+            <span class="font-bold">{text}</span>
+          {/await}
+        </div>
+      {/each}
+    </div>
+  </div>
+{/snippet}

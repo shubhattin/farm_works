@@ -7,8 +7,11 @@
   import { get_utc_date } from '~/tools/date';
   import { scale } from 'svelte/transition';
   import { TrOutlineArrowBackUp } from 'svelte-icons-pack/tr';
+  import LipiLekhikaSwitch from '~/components/LipiLekhikaSwitch.svelte';
 
   let { current_page_open = $bindable() }: { current_page_open: boolean } = $props();
+
+  let hindi_typing_tool_enabled = $state(true);
 
   let customers_list = client_q.customer.get_customers_list.query();
 
@@ -136,6 +139,7 @@
 </script>
 
 {#if !$add_record_mut.isSuccess}
+  <LipiLekhikaSwitch bind:status_on={hindi_typing_tool_enabled} />
   <form class="space-y-3" onsubmit={handle_submit}>
     <Combobox
       data={comboboxData}
