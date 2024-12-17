@@ -109,7 +109,7 @@
     onclick={() => {
       current_page_open = false;
     }}
-    class="btn select-none gap-1 rounded-md bg-surface-500 px-2 py-1 pb-0 font-bold text-white outline-none"
+    class="btn -mt-1 select-none gap-1 rounded-md bg-surface-500 px-2 py-1 pb-0 font-bold text-white outline-none"
   >
     <Icon src={TrOutlineArrowBackUp} class="-mt-1 text-xl " />
     मुख्य पृष्ठ

@@ -44,9 +44,13 @@ const add_record_input_schema = z.discriminatedUnion('type', [
   trolley_add_record_input_schema
 ]);
 
-const add_record_route = protectedAdminProcedure
-  .input(add_record_input_schema)
-  .mutation(async ({ input: DATA }) => {
+const add_record_route = protectedAdminProcedure.input(add_record_input_schema).mutation(
+  async ({
+    input: DATA,
+    ctx: {
+      user: { id: user_id }
+    }
+  }) => {
     const { type, customer_id, total, rate, date } = DATA;
     let kaTAI_record_id = null;
     let jotAI_record_id = null;
@@ -93,6 +97,7 @@ const add_record_route = protectedAdminProcedure
       await db
         .insert(transactions)
         .values({
+          added_by_user_id: user_id,
           customer_id,
           date: date.toISOString(),
           rate,
@@ -104,7 +109,8 @@ const add_record_route = protectedAdminProcedure
         .returning()
     )[0];
     return { transaction_id, kaTAI_record_id, jotAI_record_id, trolley_record_id };
-  });
+  }
+);
 
 export const records_router = t.router({
   add_record: add_record_route

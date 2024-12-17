@@ -22,12 +22,16 @@ export const transactions = pgTable('transactions', {
   customer_id: integer('customer_id')
     .notNull()
     .references(() => customers.id, { onDelete: 'no action' }),
+  added_by_user_id: integer('added_by_user_id')
+    .notNull()
+    .references(() => users.id, { onDelete: 'no action' }),
   date: date('date').notNull(),
   rate: integer('rate').notNull(),
   total: integer('total').notNull(),
   kaTAI_records: integer('kaTAI_records').references(() => kaTAI_records.id),
   jotAI_records: integer('jotAI_records').references(() => jotAI_records.id),
   trolley_records: integer('trolley_records').references(() => trolley_records.id)
+  // ^ the individual record tables values cannot be deleted before the transaction is deleetd as linked as forigen key
 });
 
 // kaTAI records
