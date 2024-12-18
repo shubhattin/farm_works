@@ -8,6 +8,7 @@
   import { load_parivartak_lang_data } from '~/tools/converter';
   import { onMount } from 'svelte';
   import AddRecord from './AddRecord.svelte';
+  import { user_info } from '~/state/user.svelte';
 
   onMount(() => {
     setTimeout(() => {
@@ -23,11 +24,11 @@
 <div class="flex justify-end">
   <UserControls />
 </div>
-{#if add_new_customer_opened}
+{#if add_new_customer_opened && $user_info!.user_type === 'admin'}
   <div transition:slide>
     <AddCustomer bind:current_page_open={add_new_customer_opened} />
   </div>
-{:else if add_new_record_opened}
+{:else if add_new_record_opened && $user_info!.user_type === 'admin'}
   <div transition:slide>
     <AddRecord bind:current_page_open={add_new_record_opened} />
   </div>

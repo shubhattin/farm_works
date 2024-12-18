@@ -11,18 +11,18 @@ import { delay } from '~/tools/delay';
 
 export const id_token_schema = UsersSchemaZod.pick({
   id: true,
-  name: true
+  name: true,
+  user_type: true
 });
-export const accees_token_schema = UsersSchemaZod.pick({
+export const accees_token_schema = id_token_schema.pick({
   id: true,
   user_type: true
 });
-const jwt_info_schema = accees_token_schema.merge(id_token_schema);
 
 const ID_TOKREN_EXPIRE = '30d';
 const ACCESS_TOKEN_EXPIRE = '4h';
 
-const get_id_and_aceess_token = async (user_info: z.infer<typeof jwt_info_schema>) => {
+const get_id_and_aceess_token = async (user_info: z.infer<typeof id_token_schema>) => {
   // ID Token will be used for authentication, i.e. to verify the user's identity.
   // in our case will also act as refresh tokens
   const id_token = await new SignJWT({ user: user_info, type: 'login' })
@@ -130,13 +130,7 @@ const renew_access_token = publicProcedure
       return {
         verified: false
       };
-    const user_type = (await db.query.users.findFirst({
-      where: ({ id }, { eq }) => eq(id, user.user.id),
-      columns: {
-        user_type: true
-      }
-    }))!.user_type;
-    return { verified: true, ...(await get_id_and_aceess_token({ ...user.user, user_type })) };
+    return { verified: true, ...(await get_id_and_aceess_token(user.user)) };
   });
 
 const update_password_route = protectedProcedure

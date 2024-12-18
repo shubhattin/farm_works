@@ -5,17 +5,15 @@ import { client, setAccessToken, setTokenRenewStarted } from '~/api/client';
 
 export const ID_TOKEN_INFO_SCHEMA = z.object({
   id: z.number().int(),
-  name: z.string()
+  name: z.string(),
+  user_type: z.enum(['admin', 'non-admin'])
 });
 
 // not reading this directly from `schema_zod` as it would include drizzle-orm bundle on fromntend
 const ACCRSS_TOKEN_INFO_SCHEMA = ID_TOKEN_INFO_SCHEMA.pick({
-  id: true
-}).merge(
-  z.object({
-    user_type: z.union([z.literal('admin'), z.literal('non-admin')])
-  })
-);
+  id: true,
+  user_type: true
+});
 
 export const AUTH_ID_LOC = 'auth_id'; // id token
 export const ACCESS_ID_LOC = 'access_id';
