@@ -18,7 +18,7 @@ export const customers = pgTable('customers', {
   uuid: uuid('uuid').defaultRandom().notNull()
 });
 
-export const transactions = pgTable('transactions', {
+export const bills = pgTable('bills', {
   id: serial('id').primaryKey(),
   customer_id: integer('customer_id')
     .notNull()
@@ -70,36 +70,36 @@ export const trolley_records = pgTable('trolley_records', {
 // relations
 
 export const userRelations = relations(users, ({ many }) => ({
-  transactions: many(transactions)
+  transactions: many(bills)
 }));
 
 export const customerRelations = relations(customers, ({ many }) => ({
-  transactions: many(transactions)
+  transactions: many(bills)
 }));
 
-export const transactionRelations = relations(transactions, ({ one }) => ({
-  added_by_user: one(users, { fields: [transactions.added_by_user_id], references: [users.id] }),
-  customer: one(customers, { fields: [transactions.customer_id], references: [customers.id] }),
+export const transactionRelations = relations(bills, ({ one }) => ({
+  added_by_user: one(users, { fields: [bills.added_by_user_id], references: [users.id] }),
+  customer: one(customers, { fields: [bills.customer_id], references: [customers.id] }),
   kaTAI_records: one(kaTAI_records, {
-    fields: [transactions.kaTAI_record],
+    fields: [bills.kaTAI_record],
     references: [kaTAI_records.id]
   }),
   jotAI_records: one(jotAI_records, {
-    fields: [transactions.jotAI_record],
+    fields: [bills.jotAI_record],
     references: [jotAI_records.id]
   }),
   trolley_records: one(trolley_records, {
-    fields: [transactions.trolley_record],
+    fields: [bills.trolley_record],
     references: [trolley_records.id]
   })
 }));
 
 export const kaTAIRelations = relations(kaTAI_records, ({ one }) => ({
-  transaction: one(transactions)
+  transaction: one(bills)
 }));
 export const jotAIRelations = relations(jotAI_records, ({ one }) => ({
-  transaction: one(transactions)
+  transaction: one(bills)
 }));
 export const trolleyRelations = relations(trolley_records, ({ one }) => ({
-  transaction: one(transactions)
+  transaction: one(bills)
 }));

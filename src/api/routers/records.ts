@@ -6,7 +6,7 @@ import {
   JotAIRecordsSchemaZod,
   TrolleyRecordsSchemaZod
 } from '~/db/schema_zod';
-import { jotAI_records, kaTAI_records, transactions, trolley_records } from '~/db/schema';
+import { jotAI_records, kaTAI_records, bills, trolley_records } from '~/db/schema';
 
 const kaTAI_add_record_input_schema = z.object({
   customer_id: z.number().int(),
@@ -95,7 +95,7 @@ const add_record_route = protectedAdminProcedure.input(add_record_input_schema).
     }
     const { id: transaction_id } = (
       await db
-        .insert(transactions)
+        .insert(bills)
         .values({
           added_by_user_id: user_id,
           customer_id,
