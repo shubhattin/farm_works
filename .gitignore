@@ -9,7 +9,7 @@ node_modules
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 
-.vercel
+.netlify
 
 src/db/scripts/out/
 src/db/scripts/backup/

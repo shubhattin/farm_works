@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS "trolley_records" (
 CREATE TABLE IF NOT EXISTS "users" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"name" varchar(50) NOT NULL,
-	"password_hash" char(96) NOT NULL,
+	"password_hash" varchar(96) NOT NULL,
 	"user_type" "user_type" DEFAULT 'non-admin' NOT NULL
 );
 --> statement-breakpoint
