@@ -9,3 +9,4 @@ pnpm-lock.yaml
 src/db/migrations
 src/db/scripts/out/
 src/db/scripts/backup/
+src/tools/converter/resources/dattAMsh

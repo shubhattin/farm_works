@@ -149,13 +149,3 @@ async function confirm_environemnt() {
   if (['yes', 'y'].includes(confirmation)) return true;
   return false;
 }
-
-const reset_serial = async (table_name: string) => {
-  try {
-    await db.execute(
-      sql`SELECT setval('"${table_name}_id_seq"', (select MAX(id) from "${table_name}"))`
-    );
-  } catch (e) {
-    console.log(chalk.red('✗ Error while resetting SERIAL:'), chalk.yellow(e));
-  }
-};
