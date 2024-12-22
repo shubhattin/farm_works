@@ -15,7 +15,7 @@ export const customers = pgTable('customers', {
   name: varchar('name', { length: 50 }).notNull(),
   phone_number: varchar('phone_number', { length: 13 }),
   address: varchar('address', { length: 100 }),
-  uuid: uuid('uuid').defaultRandom().notNull()
+  uuid: uuid('uuid').defaultRandom().notNull().unique()
 });
 
 export const bills = pgTable('bills', {
