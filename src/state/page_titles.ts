@@ -1,3 +1,5 @@
+import { PUBLIC_APP_NAME } from '$env/static/public';
+
 export const PAGE_TITLES = {
-  '/(main)': ['श्री बालाजी कृषि उद्योग', 'font-bold mt-2']
+  '/(main)': [PUBLIC_APP_NAME ?? '', 'font-bold mt-2']
 };

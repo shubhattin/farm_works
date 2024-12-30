@@ -2,10 +2,11 @@
   import HomePage from '~/components/pages/main/HomePage.svelte';
   import Login from '~/components/pages/main/user/Login.svelte';
   import { user_info } from '~/state/user.svelte';
+  import { PUBLIC_APP_NAME } from '$env/static/public';
 </script>
 
 <svelte:head>
-  <title>श्री बालाजी कृषि उद्योग</title>
+  <title>{PUBLIC_APP_NAME ?? ''}</title>
 </svelte:head>
 {#if !$user_info}
   <Login />
