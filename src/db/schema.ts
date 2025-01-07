@@ -6,7 +6,8 @@ import {
   uuid,
   integer,
   date,
-  timestamp
+  timestamp,
+  index
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
@@ -19,40 +20,62 @@ export const users = pgTable('users', {
   user_type: userTypeEnum().default('non-admin').notNull()
 });
 
-export const customers = pgTable('customers', {
-  id: serial().primaryKey(),
-  name: varchar({ length: 50 }).notNull(),
-  phone_number: varchar({ length: 13 }),
-  address: varchar({ length: 100 }),
-  uuid: uuid().defaultRandom().notNull().unique()
-});
+export const customers = pgTable(
+  'customers',
+  {
+    id: serial().primaryKey(),
+    name: varchar({ length: 50 }).notNull(),
+    phone_number: varchar({ length: 13 }),
+    address: varchar({ length: 100 }),
+    uuid: uuid().defaultRandom().notNull().unique()
+  },
+  (table) => ({
+    nameIdx: index().on(table.name)
+    // only `LIKE 'NAME%` is optmizied and not `LIKE '%NAME%'`
+    // the latter is inefficient as it requires a full table scan
+  })
+);
 
-export const bills = pgTable('bills', {
-  id: serial().primaryKey(),
-  customer_id: integer()
-    .notNull()
-    .references(() => customers.id, { onDelete: 'cascade' }),
-  added_by_user_id: integer()
-    .notNull()
-    .references(() => users.id, { onDelete: 'cascade' }),
-  date: date().notNull(),
-  rate: integer().notNull(),
-  total: integer().notNull(),
-  timestamp: timestamp().notNull().defaultNow(),
-  kaTAI_record: integer().references(() => kaTAI_records.id),
-  jotAI_record: integer().references(() => jotAI_records.id),
-  trolley_record: integer().references(() => trolley_records.id)
-  // ^ the individual record tables values cannot be deleted before the transaction is deleetd as linked as forigen key
-});
+export const bills = pgTable(
+  'bills',
+  {
+    id: serial().primaryKey(),
+    customer_id: integer()
+      .notNull()
+      .references(() => customers.id, { onDelete: 'cascade' }),
+    added_by_user_id: integer()
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
+    date: date().notNull(),
+    rate: integer().notNull(),
+    total: integer().notNull(),
+    timestamp: timestamp().notNull().defaultNow(),
+    kaTAI_record: integer().references(() => kaTAI_records.id),
+    jotAI_record: integer().references(() => jotAI_records.id),
+    trolley_record: integer().references(() => trolley_records.id)
+    // ^ the individual record tables values cannot be deleted before the bill is deleetd as linked as forigen key
+  },
+  (table) => ({
+    customerIdx: index().on(table.customer_id),
+    timestampIdx: index().on(table.timestamp)
+  })
+);
 
-export const payments = pgTable('payments', {
-  id: serial().primaryKey(),
-  bill_id: integer()
-    .notNull()
-    .references(() => bills.id, { onDelete: 'cascade' }),
-  amount: integer().notNull(),
-  timestamp: timestamp().notNull().defaultNow()
-});
+export const payments = pgTable(
+  'payments',
+  {
+    id: serial().primaryKey(),
+    bill_id: integer()
+      .notNull()
+      .references(() => bills.id, { onDelete: 'cascade' }),
+    amount: integer().notNull(),
+    timestamp: timestamp().notNull().defaultNow()
+  },
+  (table) => ({
+    billIdx: index().on(table.bill_id),
+    timestampIdx: index().on(table.timestamp)
+  })
+);
 
 // kaTAI records
 export const kaTAI_enum = pgEnum('kaTAI', ['dhAn', 'gehUM']);
@@ -89,11 +112,11 @@ export const trolley_records = pgTable('trolley_records', {
 // relations
 
 export const userRelations = relations(users, ({ many }) => ({
-  transactions: many(bills)
+  bills: many(bills)
 }));
 
 export const customerRelations = relations(customers, ({ many }) => ({
-  transactions: many(bills)
+  bills: many(bills)
 }));
 
 export const billRelations = relations(bills, ({ one, many }) => ({
@@ -119,11 +142,11 @@ export const paymentRelations = relations(payments, ({ one }) => ({
 }));
 
 export const kaTAIRelations = relations(kaTAI_records, ({ one }) => ({
-  transaction: one(bills)
+  bill: one(bills)
 }));
 export const jotAIRelations = relations(jotAI_records, ({ one }) => ({
-  transaction: one(bills)
+  bill: one(bills)
 }));
 export const trolleyRelations = relations(trolley_records, ({ one }) => ({
-  transaction: one(bills)
+  bill: one(bills)
 }));
