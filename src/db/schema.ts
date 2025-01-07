@@ -22,10 +22,10 @@ export const bills = pgTable('bills', {
   id: serial('id').primaryKey(),
   customer_id: integer('customer_id')
     .notNull()
-    .references(() => customers.id, { onDelete: 'no action' }),
+    .references(() => customers.id, { onDelete: 'cascade' }),
   added_by_user_id: integer('added_by_user_id')
     .notNull()
-    .references(() => users.id, { onDelete: 'no action' }),
+    .references(() => users.id, { onDelete: 'cascade' }),
   date: date('date').notNull(),
   rate: integer('rate').notNull(),
   total: integer('total').notNull(),
@@ -33,6 +33,14 @@ export const bills = pgTable('bills', {
   jotAI_record: integer('jotAI_record').references(() => jotAI_records.id),
   trolley_record: integer('trolley_record').references(() => trolley_records.id)
   // ^ the individual record tables values cannot be deleted before the transaction is deleetd as linked as forigen key
+});
+
+export const payments = pgTable('payments', {
+  id: serial('id').primaryKey(),
+  bill_id: integer('bill_id')
+    .notNull()
+    .references(() => bills.id, { onDelete: 'cascade' }),
+  amount: integer('amount').notNull()
 });
 
 // kaTAI records
@@ -77,9 +85,10 @@ export const customerRelations = relations(customers, ({ many }) => ({
   transactions: many(bills)
 }));
 
-export const transactionRelations = relations(bills, ({ one }) => ({
+export const billRelations = relations(bills, ({ one, many }) => ({
   added_by_user: one(users, { fields: [bills.added_by_user_id], references: [users.id] }),
   customer: one(customers, { fields: [bills.customer_id], references: [customers.id] }),
+  payments: many(payments),
   kaTAI_records: one(kaTAI_records, {
     fields: [bills.kaTAI_record],
     references: [kaTAI_records.id]
@@ -92,6 +101,10 @@ export const transactionRelations = relations(bills, ({ one }) => ({
     fields: [bills.trolley_record],
     references: [trolley_records.id]
   })
+}));
+
+export const paymentRelations = relations(payments, ({ one }) => ({
+  bill: one(bills, { fields: [payments.bill_id], references: [bills.id] })
 }));
 
 export const kaTAIRelations = relations(kaTAI_records, ({ one }) => ({
