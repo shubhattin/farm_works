@@ -7,8 +7,8 @@ dotenv.config({ path: './.env.local' });
 export default {
   schema: './src/db/schema.ts',
   out: './src/db/migrations',
-  driver: 'pg',
+  dialect: 'postgresql',
   dbCredentials: {
-    connectionString: get_db_url(process.env)
+    url: get_db_url(process.env)
   }
 } satisfies Config;
