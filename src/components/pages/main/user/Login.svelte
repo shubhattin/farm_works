@@ -37,7 +37,7 @@
     }
   });
 
-  const users_list = $page.data.admin_users_list as z.infer<typeof ID_TOKEN_INFO_SCHEMA>[];
+  const users_list_q = client_q.users.get_admin_users_list.query();
 
   const check_pass_func = async (e: Event) => {
     e.preventDefault();
@@ -52,9 +52,11 @@
       {#if id === 0}
         <option value={0}>-- उपयोक्ता चुनें --</option>
       {/if}
-      {#each users_list as user}
-        <option value={user.id}>{user.name}</option>
-      {/each}
+      {#if !$users_list_q.isFetching && $users_list_q.isSuccess}
+        {#each $users_list_q.data as user}
+          <option value={user.id}>{user.name}</option>
+        {/each}
+      {/if}
     </select>
     <input
       class={cl_join('input rounded-md px-2 py-1', wrong_pass_status && 'preset-tonal-error')}

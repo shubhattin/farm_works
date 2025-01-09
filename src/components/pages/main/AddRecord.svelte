@@ -13,7 +13,7 @@
 
   let hindi_typing_tool_enabled = $state(true);
 
-  let customers_list = client_q.customer.get_customers_list.query();
+  let customers_list = client_q.customer.get_customers_list1.query();
 
   let comboboxData: {
     label: string;

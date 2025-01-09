@@ -7,7 +7,8 @@ import {
   integer,
   date,
   timestamp,
-  index
+  index,
+  boolean
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
@@ -46,6 +47,7 @@ export const bills = pgTable(
     added_by_user_id: integer()
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
+    payment_complete: boolean().notNull().default(false),
     date: date().notNull(),
     rate: integer().notNull(),
     total: integer().notNull(),
