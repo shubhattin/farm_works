@@ -31,7 +31,7 @@ export const customers = pgTable(
     uuid: uuid().defaultRandom().notNull().unique()
   },
   (table) => ({
-    nameIdx: index().on(table.name)
+    // nameIdx: index().on(table.name)
     // only `LIKE 'NAME%` is optmizied and not `LIKE '%NAME%'`
     // the latter is inefficient as it requires a full table scan
   })
