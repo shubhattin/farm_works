@@ -3,7 +3,7 @@
   import Icon from '~/tools/Icon.svelte';
   import AddCustomer from './AddCustomer.svelte';
   import { AiOutlineUserAdd } from 'svelte-icons-pack/ai';
-  import { slide } from 'svelte/transition';
+  import { scale, slide } from 'svelte/transition';
   import { load_parivartak_lang_data } from '~/tools/converter';
   import { onMount } from 'svelte';
   import { user_info } from '~/state/user.svelte';
@@ -25,12 +25,12 @@
   <UserControls />
 </div>
 {#if add_new_customer_opened && $user_info?.user_type === 'admin'}
-  <div transition:slide>
+  <div in:scale out:slide>
     <AddCustomer bind:current_page_open={add_new_customer_opened} />
   </div>
 {:else}
   <div class="flex justify-between">
-    <LipiLekhikaSwitch status_on={lipi_lekhika_search_switch} />
+    <LipiLekhikaSwitch bind:status_on={lipi_lekhika_search_switch} />
     <button
       onclick={() => (add_new_customer_opened = true)}
       class="gap-1 rounded-xl bg-secondary-600 px-2 py-1 pb-0 text-sm font-bold text-white dark:bg-secondary-700"

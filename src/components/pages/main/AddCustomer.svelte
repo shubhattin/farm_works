@@ -5,6 +5,7 @@
   import { VscAdd } from 'svelte-icons-pack/vsc';
   import { scale } from 'svelte/transition';
   import { TrOutlineArrowBackUp } from 'svelte-icons-pack/tr';
+  import { TiArrowBackOutline } from 'svelte-icons-pack/ti';
   import LipiLekhikaSwitch from '~/components/LipiLekhikaSwitch.svelte';
 
   let { current_page_open = $bindable() }: { current_page_open: boolean } = $props();
@@ -28,7 +29,15 @@
 </script>
 
 {#if !$register_customer_mut.isSuccess}
-  <LipiLekhikaSwitch bind:status_on={hindi_typing_tool_enabled} />
+  <div class="flex space-x-4">
+    <button
+      onclick={() => (current_page_open = false)}
+      class="btn rounded-md bg-surface-500 px-2 py-1 text-white outline-none"
+    >
+      <Icon src={TiArrowBackOutline} class="text-2xl" />
+    </button>
+    <LipiLekhikaSwitch class="inline-flex" bind:status_on={hindi_typing_tool_enabled} />
+  </div>
   <form onsubmit={handle_submit} class="mt-5 space-y-2">
     <label>
       <span class="label-text">नाम <span class="text-error-400">*</span></span>

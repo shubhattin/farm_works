@@ -3,32 +3,42 @@
   import Icon from '~/tools/Icon.svelte';
   import { OiSearch16 } from 'svelte-icons-pack/oi';
   import { lekhika_typing_tool } from '~/tools/converter';
+  import { LuRefreshCw } from 'svelte-icons-pack/lu';
 
   let { lipi_lekhika_enabled }: { lipi_lekhika_enabled: boolean } = $props();
 
   let search_term = $state('');
 
-  const customers_list = $derived(client_q.customer.get_customers_list.query({ search_term }));
+  const customers_list_q = $derived(client_q.customer.get_customers_list.query({ search_term }));
 </script>
 
 <div class="mt-4 space-y-3">
-  <label class="block space-x-4">
-    <Icon src={OiSearch16} class="text-2xl" />
-    <input
-      oninput={async (e) => {
-        if (lipi_lekhika_enabled)
-          // @ts-ignore
-          await lekhika_typing_tool(e.target, e.data, 'Hindi', true, (val) => {
-            search_term = val;
-          });
-        else search_term = (e.target as any).value;
-      }}
-      bind:value={search_term}
-      type="text"
-      class="input inline-block w-[80%] rounded-md"
-      placeholder="ग्राहकान्वेषण"
-    />
-  </label>
+  <div class="space-x-2 sm:space-x-3 md:space-x-4 lg:space-x-5">
+    <label class="space-x-2 sm:space-x-3 md:space-x-4 lg:space-x-5">
+      <Icon src={OiSearch16} class="text-2xl" />
+      <input
+        oninput={async (e) => {
+          if (lipi_lekhika_enabled)
+            // @ts-ignore
+            await lekhika_typing_tool(e.target, e.data, 'Hindi', true, (val) => {
+              search_term = val;
+            });
+          else search_term = (e.target as any).value;
+        }}
+        bind:value={search_term}
+        type="text"
+        class="input inline-block w-[70%] rounded-md"
+        placeholder="ग्राहक आन्वेषण"
+      />
+    </label>
+    <button
+      disabled={$customers_list_q.isFetched && $customers_list_q.isFetching}
+      onclick={() => $customers_list_q.refetch()}
+      class="btn select-none p-0 outline-none"
+    >
+      <Icon src={LuRefreshCw} class="text-2xl" />
+    </button>
+  </div>
   <div class="table-wrap">
     <table class="table cursor-default">
       <thead>
@@ -41,7 +51,7 @@
         </tr>
       </thead>
       <tbody class="hover:[&>tr]:preset-tonal-primary">
-        {#if $customers_list.isFetching || !$customers_list.isSuccess}
+        {#if $customers_list_q.isFetching || !$customers_list_q.isSuccess}
           {#each Array(20) as _, i}
             <tr>
               <td style="padding: 0; margin:0;">
@@ -61,17 +71,15 @@
               </td>
             </tr>
           {/each}
-        {:else if $customers_list.isSuccess}
-          {#each $customers_list.data as customer}
+        {:else if $customers_list_q.isSuccess}
+          {#each $customers_list_q.data as customer}
             <tr onclick={() => console.log(customer.customer_id)}>
               <td style="padding: 0; margin:0;padding-left: 0.35rem;">
                 <span class="text-gray-500 dark:text-zinc-400" style="font-size: 0.6rem;"
                   >{customer.customer_id}</span
                 >
               </td>
-              <td>
-                {customer.customer_name}
-              </td>
+              <td>{customer.customer_name}</td>
               <td>{customer.total_amount}</td>
               <td>{customer.total_paid}</td>
               <td>{customer.remainingAmount}</td>
