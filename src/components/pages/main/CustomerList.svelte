@@ -46,7 +46,6 @@
           <th></th>
           <th style="font-weight:700;">ग्राहक नाम</th>
           <th style="font-weight:700;">कुल राशि</th>
-          <th style="font-weight:700;">अंतिम राशि</th>
           <th style="font-weight:700;">शेष राशि</th>
         </tr>
       </thead>
@@ -66,14 +65,11 @@
               <td>
                 <span class="placeholder inline-block h-4 w-14 animate-pulse rounded-lg"></span>
               </td>
-              <td>
-                <span class="placeholder inline-block h-4 w-14 animate-pulse rounded-lg"></span>
-              </td>
             </tr>
           {/each}
         {:else if $customers_list_q.isSuccess}
           {#each $customers_list_q.data as customer}
-            <tr onclick={() => console.log(customer.customer_id)}>
+            <tr ondblclick={() => console.log(customer.customer_id)}>
               <td style="padding: 0; margin:0;padding-left: 0.35rem;">
                 <span class="text-gray-500 dark:text-zinc-400" style="font-size: 0.6rem;"
                   >{customer.customer_id}</span
@@ -81,8 +77,7 @@
               </td>
               <td>{customer.customer_name}</td>
               <td>{customer.total_amount}</td>
-              <td>{customer.total_paid}</td>
-              <td>{customer.remainingAmount}</td>
+              <td>{customer.remaining_amount}</td>
             </tr>
           {/each}
         {/if}

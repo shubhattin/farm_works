@@ -7,7 +7,7 @@
     $props();
 </script>
 
-<div class={cl_join('flex space-x-5', className)}>
+<div class={cl_join('flex space-x-2 sm:space-x-3 md:space-x-5', className)}>
   <Switch name="hindi_typing_tool" stateFocused="outline-none select-none" bind:checked={status_on}>
     <span class="text-sm">हिन्दी लेखन</span>
   </Switch>

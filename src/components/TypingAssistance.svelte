@@ -7,10 +7,7 @@
   import { Modal } from '@skeletonlabs/skeleton-svelte';
   import Icon from '~/tools/Icon.svelte';
   import { BiHelpCircle } from 'svelte-icons-pack/bi';
-
-  interface Props {
-    modal_opened: boolean;
-  }
+  import { AiOutlineClose } from 'svelte-icons-pack/ai';
 
   let modal_opened = $state(false);
 
@@ -65,7 +62,7 @@
 
 <Modal
   bind:open={modal_opened}
-  contentBase="card p-4 space-y-4 shadow-xl max-w-screen-sm mx-3 max-h-[97%] max-w-[97%] overflow-scroll"
+  contentBase="card p-2 bg-surface-200-800 space-y-4 shadow-xl max-w-screen-sm mx-3 mt-0 max-h-[97%] max-w-[97%] overflow-scroll"
   backdropClasses="backdrop-blur-sm"
   triggerBase="outline-none select-none"
 >
@@ -78,46 +75,55 @@
     </span>
   {/snippet}
   {#snippet content()}
-    <div
-      class={cl_join(
-        'mt-4 max-w-full',
-        !$usage_table.isFetching ? 'min-h-[580px] min-w-[560px]' : 'h-[580px] w-[560px]'
-      )}
-      style="
+    <div>
+      <div class="flex w-[97%] justify-end">
+        <button
+          aria-label="Close"
+          class="absolute cursor-pointer text-gray-500 outline-none hover:text-gray-700"
+          onclick={() => (modal_opened = false)}><Icon src={AiOutlineClose} /></button
+        >
+      </div>
+      <div
+        class={cl_join(
+          'mt-8 max-w-full',
+          !$usage_table.isFetching ? 'min-h-[580px] min-w-[560px]' : 'h-[580px] w-[560px]'
+        )}
+        style="
       min-height: {!$usage_table.isFetching ? `${HEIGHT}px` : 'auto'};
       min-width: {!$usage_table.isFetching ? `${WIDTH}px` : 'auto'};
       height: {$usage_table.isFetching ? `${HEIGHT}px` : 'auto'};
       width: {$usage_table.isFetching ? `${WIDTH}px` : 'auto'};
       "
-    >
-      {#if $usage_table.isFetching}
-        <div class="h-full w-full space-y-1">
-          <div class="placeholder h-full w-full animate-pulse rounded-lg"></div>
-          <div class="placeholder animate-pulse rounded-md"></div>
-        </div>
-      {:else if $usage_table.isSuccess}
-        {@const { url, height, width } = $usage_table.data}
-        <img
-          style:height={`${height}px`}
-          style:width={`${width}px`}
-          alt={`${typing_assistance_lang} Usage Table`}
-          src={url}
-          class="block"
-        />
-        {#if !['Romanized'].includes(typing_assistance_lang)}
-          {@render extra_info()}
+      >
+        {#if $usage_table.isFetching}
+          <div class="h-full w-full space-y-1">
+            <div class="placeholder h-full w-full animate-pulse rounded-lg"></div>
+            <div class="placeholder animate-pulse rounded-md"></div>
+          </div>
+        {:else if $usage_table.isSuccess}
+          {@const { url, height, width } = $usage_table.data}
+          <img
+            style:height={`${height}px`}
+            style:width={`${width}px`}
+            alt={`${typing_assistance_lang} Usage Table`}
+            src={url}
+            class="block"
+          />
+          {#if !['Romanized'].includes(typing_assistance_lang)}
+            {@render extra_info()}
+          {/if}
+          <div class="text-wrap text-sm text-stone-500 dark:text-stone-400">
+            <a
+              href="https://app-lipilekhika.pages.dev"
+              target="_blank"
+              class="text-blue-500 underline dark:text-blue-400">लिपि लेखिका</a
+            >
+            मे
+            <span class="font-semibold">लेखन सहायिका</span> का प्रयोग स्वयं को लेखन उपकरण से परिचित करने
+            के लिए करें ।
+          </div>
         {/if}
-        <div class="text-wrap text-sm text-stone-500 dark:text-stone-400">
-          <a
-            href="https://app-lipilekhika.pages.dev"
-            target="_blank"
-            class="text-blue-500 underline dark:text-blue-400">लिपि लेखिका</a
-          >
-          मे
-          <span class="font-semibold">लेखन सहायिका</span> का प्रयोग स्वयं को लेखन उपकरण से परिचित करने
-          के लिए करें ।
-        </div>
-      {/if}
+      </div>
     </div>
   {/snippet}
 </Modal>

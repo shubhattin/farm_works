@@ -2,7 +2,7 @@ import { t, protectedAdminProcedure, protectedProcedure } from '~/api/trpc_init'
 import { z } from 'zod';
 import { bills, customers, payments } from '~/db/schema';
 import { db } from '~/db/db';
-import { desc, eq, like, max, not, sql } from 'drizzle-orm';
+import { desc, eq, like, max, sql } from 'drizzle-orm';
 import { delay } from '~/tools/delay';
 
 const register_customer_route = protectedAdminProcedure
@@ -41,21 +41,21 @@ const get_customers_list_route = protectedProcedure
       .select({
         customer_id: customers.id,
         customer_name: customers.name,
-        last_bill_date: max(bills.timestamp),
+        // last_bill_date: max(bills.timestamp),
         total_amount: sql<number>`COALESCE(SUM(${bills.total}), 0)`,
-        total_paid: sql<number>`
-          COALESCE(
-            SUM(
-              (
-                SELECT COALESCE(SUM(${payments.amount}), 0)
-                FROM ${payments}
-                WHERE ${payments.bill_id} = ${bills.id}
-              )
-            ),
-            0
-          )
-        `,
-        remainingAmount: sql<number>`
+        // total_paid: sql<number>`
+        //   COALESCE(
+        //     SUM(
+        //       (
+        //         SELECT COALESCE(SUM(${payments.amount}), 0)
+        //         FROM ${payments}
+        //         WHERE ${payments.bill_id} = ${bills.id}
+        //       )
+        //     ),
+        //     0
+        //   )
+        // `,
+        remaining_amount: sql<number>`
           COALESCE(
             SUM(
               ${bills.total} - (
