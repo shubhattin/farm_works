@@ -21,9 +21,6 @@
   let lipi_lekhika_search_switch = $state(true);
 </script>
 
-<div class="flex justify-end">
-  <UserControls />
-</div>
 {#if add_new_customer_opened && $user_info?.user_type === 'admin'}
   <div in:scale out:slide>
     <AddCustomer bind:current_page_open={add_new_customer_opened} />

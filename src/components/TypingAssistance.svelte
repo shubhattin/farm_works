@@ -62,7 +62,7 @@
 
 <Modal
   bind:open={modal_opened}
-  contentBase="card p-2 bg-surface-200-800 space-y-4 shadow-xl max-w-screen-sm mx-3 mt-0 max-h-[97%] max-w-[97%] overflow-scroll"
+  contentBase="card p-2 dark:bg-slate-900 bg-slate-200  space-y-4 shadow-xl max-w-screen-sm mx-3 mt-0 max-h-[97%] max-w-[97%] overflow-scroll"
   backdropClasses="backdrop-blur-sm"
   triggerBase="outline-none select-none"
 >

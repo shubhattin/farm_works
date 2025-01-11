@@ -41,6 +41,7 @@ const get_customers_list_route = protectedProcedure
       .select({
         customer_id: customers.id,
         customer_name: customers.name,
+        customer_uuid: customers.uuid,
         // last_bill_date: max(bills.timestamp),
         total_amount: sql<number>`COALESCE(SUM(${bills.total}), 0)`,
         // total_paid: sql<number>`

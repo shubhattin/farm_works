@@ -4,6 +4,7 @@
   import { OiSearch16 } from 'svelte-icons-pack/oi';
   import { lekhika_typing_tool } from '~/tools/converter';
   import { LuRefreshCw } from 'svelte-icons-pack/lu';
+  import { goto } from '$app/navigation';
 
   let { lipi_lekhika_enabled }: { lipi_lekhika_enabled: boolean } = $props();
 
@@ -69,7 +70,9 @@
           {/each}
         {:else if $customers_list_q.isSuccess}
           {#each $customers_list_q.data as customer}
-            <tr ondblclick={() => console.log(customer.customer_id)}>
+            <tr
+              ondblclick={() => goto(`/vistrita/${customer.customer_id}.${customer.customer_uuid}`)}
+            >
               <td style="padding: 0; margin:0;padding-left: 0.35rem;">
                 <span class="text-gray-500 dark:text-zinc-400" style="font-size: 0.6rem;"
                   >{customer.customer_id}</span
