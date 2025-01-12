@@ -5,9 +5,6 @@
   import { cl_join } from '~/tools/cl_join';
   import { get_id_token_info, storeAuthInfo } from '~/tools/auth_tools';
   import { slide } from 'svelte/transition';
-  import { page } from '$app/stores';
-  import { ID_TOKEN_INFO_SCHEMA } from '~/tools/auth_tools';
-  import { z } from 'zod';
 
   let id = $state(0); // 1st user(admin)
   let password = $state('');

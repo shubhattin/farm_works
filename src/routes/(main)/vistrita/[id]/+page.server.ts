@@ -1,32 +1,32 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { db } from '~/db/db';
+import { get_customers_data_func } from '~/api/routers/customer';
+import { z } from 'zod';
 
 export const load: PageServerLoad = async ({ params }) => {
   const id_uuid = params.id.split('.');
   const INVALID_MSG_CODE = 'invalid_id_uuid';
   if (id_uuid.length !== 2)
-    throw error(404, {
+    error(404, {
       message: INVALID_MSG_CODE
     });
-  const [id, uuid] = id_uuid;
   try {
+    const [id, uuid] = z.tuple([z.coerce.number(), z.string().uuid()]).parse(id_uuid);
     const info = await db.query.customers.findFirst({
-      where: (tbl, { eq, and }) => and(eq(tbl.id, parseInt(id)), eq(tbl.uuid, uuid)),
+      where: (tbl, { eq, and }) => and(eq(tbl.id, id), eq(tbl.uuid, uuid)),
       columns: {
         id: true
       }
     });
-    if (!info)
-      throw error(404, {
-        message: INVALID_MSG_CODE
-      });
+    if (!info) throw new Error('Invalid Customer ID or UUID');
     return {
-      id: parseInt(id),
-      uuid
+      id: id,
+      uuid,
+      customer_data: await get_customers_data_func(id)
     };
   } catch (e) {
-    throw error(404, {
+    error(404, {
       message: INVALID_MSG_CODE
     });
   }

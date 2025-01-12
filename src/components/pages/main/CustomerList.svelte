@@ -5,6 +5,7 @@
   import { lekhika_typing_tool } from '~/tools/converter';
   import { LuRefreshCw } from 'svelte-icons-pack/lu';
   import { goto } from '$app/navigation';
+  import { cl_join } from '~/tools/cl_join';
 
   let { lipi_lekhika_enabled }: { lipi_lekhika_enabled: boolean } = $props();
 
@@ -35,7 +36,10 @@
     <button
       disabled={$customers_list_q.isFetched && $customers_list_q.isFetching}
       onclick={() => $customers_list_q.refetch()}
-      class="btn select-none p-0 outline-none"
+      class={cl_join(
+        'btn select-none p-0 outline-none',
+        $customers_list_q.isFetched && $customers_list_q.isFetching && 'animate-spin'
+      )}
     >
       <Icon src={LuRefreshCw} class="text-2xl" />
     </button>
