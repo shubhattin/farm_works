@@ -45,7 +45,7 @@
     </button>
   </div>
   <div class="table-wrap">
-    <table class="table cursor-default">
+    <table class="table cursor-default select-none">
       <thead>
         <tr>
           <th></th>

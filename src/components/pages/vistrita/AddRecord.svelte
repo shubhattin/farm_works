@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { Combobox } from '@skeletonlabs/skeleton-svelte';
   import { VscAdd } from 'svelte-icons-pack/vsc';
   import { client_q } from '~/api/client';
   import Icon from '~/tools/Icon.svelte';
@@ -7,25 +6,16 @@
   import { get_utc_date } from '~/tools/date';
   import { scale } from 'svelte/transition';
   import { TrOutlineArrowBackUp } from 'svelte-icons-pack/tr';
-  import LipiLekhikaSwitch from '~/components/LipiLekhikaSwitch.svelte';
+  import { CATEOGORY_LIST, kaTAi_list, kaTAI_dhAn_list, jotAI_list } from './type_names';
+  import { AiOutlineClose } from 'svelte-icons-pack/ai';
+  import { useQueryClient } from '@tanstack/svelte-query';
 
-  let { current_page_open = $bindable() }: { current_page_open: boolean } = $props();
+  let {
+    current_page_open = $bindable(),
+    customer_id
+  }: { current_page_open: boolean; customer_id: number } = $props();
 
-  let hindi_typing_tool_enabled = $state(true);
-
-  let customers_list = client_q.customer.get_customers_list1.query();
-
-  let comboboxData: {
-    label: string;
-    value: string;
-  }[] = $derived(
-    !$customers_list.isFetching && $customers_list.isSuccess
-      ? $customers_list.data.map(({ id, name }) => ({
-          label: `${name} (${id})`,
-          value: id.toString()
-        }))
-      : []
-  );
+  const query_client = useQueryClient();
 
   const todays_date = new Date();
   const current_month = todays_date.getMonth() + 1;
@@ -36,15 +26,12 @@
     return `${current_year}-${prefix_zeros(current_month)}-${prefix_zeros(todays_date.getDate())}`;
   };
 
-  let customer_id = $state(['']);
   let date = $state(get_todays_date());
   const handle_submit = async (e: Event) => {
     e.preventDefault();
-    if (customer_id.length === 0 && customer_id[0].length !== 0) return;
-    const c_id = parseInt(customer_id[0]);
     if (category === 'kaTAi' && rate && total && kheta && kaTAi) {
       await $add_record_mut.mutateAsync({
-        customer_id: c_id,
+        customer_id,
         type: 'kaTAI',
         date: get_utc_date(date),
         total: total,
@@ -57,7 +44,7 @@
       });
     } else if (category === 'jotAI' && rate && total && kheta && jotAI) {
       await $add_record_mut.mutateAsync({
-        customer_id: c_id,
+        customer_id,
         type: 'jotAI',
         date: get_utc_date(date),
         total: total,
@@ -73,7 +60,7 @@
       });
     } else if (category === 'trolley' && rate && total && trolley_number) {
       await $add_record_mut.mutateAsync({
-        customer_id: c_id,
+        customer_id,
         type: 'trolley',
         date: get_utc_date(date),
         total: total,
@@ -85,35 +72,30 @@
     }
   };
 
-  const add_record_mut = client_q.records.add_record.mutation();
+  const add_record_mut = client_q.records.add_record.mutation({
+    onSuccess() {
+      query_client.invalidateQueries({
+        queryKey: [
+          ['customer', 'get_customers_data'],
+          { input: { customer_id: customer_id }, type: 'query' }
+        ],
+        exact: true
+      });
+      query_client.invalidateQueries({
+        queryKey: [['customer', 'get_customers_list']],
+        exact: false
+      }); // wont refetch untill enabled (used)
+      current_page_open = false;
+      // we may also invalidate the main list cache
+    }
+  });
 
-  const CATEOGORY_LIST = {
-    kaTAi: 'काटाई',
-    jotAI: 'जोताई',
-    trolley: 'ट्रॉली'
-  };
   let category: keyof typeof CATEOGORY_LIST | null = $state(null);
 
-  const kaTAi_list = {
-    dhAn: 'धान',
-    gehUM: 'गेहूं'
-  };
   let kaTAi: keyof typeof kaTAi_list | null = $state(null);
-  const kaTAI_dhAn_list = {
-    sAdA: 'सादा',
-    '4x4': '4x4 (गीला)',
-    girA: 'गिरा'
-  };
+
   let kaTAI_dhAn: keyof typeof kaTAI_dhAn_list | null = $state(null);
 
-  const jotAI_list = {
-    rota_meter: 'रोटा मीटर',
-    cultivator: 'कल्टिवेटर',
-    tAva: 'तावा',
-    meDza: 'मेड़',
-    lohaDzI: 'लोहड़ी',
-    super_seeder: 'सुपर सीडर'
-  };
   let jotAI: keyof typeof jotAI_list | null = $state(null);
   let jotAI_chAsa: number | null = $state(null);
   // ^ chAsa only for 1 ,2  and 3
@@ -139,15 +121,15 @@
 </script>
 
 {#if !$add_record_mut.isSuccess}
-  <LipiLekhikaSwitch bind:status_on={hindi_typing_tool_enabled} />
+  <div class="mb-2 flex space-x-4">
+    <button
+      class="btn rounded-lg bg-error-500 px-1.5 py-1 outline-none"
+      onclick={() => (current_page_open = false)}
+    >
+      <Icon src={AiOutlineClose} class="text-2xl text-white" />
+    </button>
+  </div>
   <form class="space-y-3" onsubmit={handle_submit}>
-    <Combobox
-      data={comboboxData}
-      bind:value={customer_id}
-      label="ग्राहक"
-      placeholder="ग्राहक का नाम प्रविष्ट करें"
-      base="block"
-    />
     <label class="block">
       <span class="label-text font-bold">दिनांक</span>
       <input type="date" class="input rounded-lg" bind:value={date} required />

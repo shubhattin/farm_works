@@ -1,4 +1,4 @@
-import { t, protectedAdminProcedure, protectedProcedure } from '~/api/trpc_init';
+import { t, protectedAdminProcedure, protectedProcedure, publicProcedure } from '~/api/trpc_init';
 import { z } from 'zod';
 import { bills, customers, payments } from '~/db/schema';
 import { db } from '~/db/db';
@@ -22,16 +22,6 @@ const register_customer_route = protectedAdminProcedure
     };
   });
 
-const get_customers_list_route1 = protectedAdminProcedure.query(async () => {
-  const customers = await db.query.customers.findMany({
-    columns: {
-      id: true,
-      name: true
-    }
-  });
-  return customers;
-});
-
 const get_customers_list_route = protectedProcedure
   .input(z.object({ search_term: z.string().optional().default('') }))
   .query(async ({ input: { search_term } }) => {
@@ -42,23 +32,8 @@ const get_customers_list_route = protectedProcedure
         customer_id: customers.id,
         customer_name: customers.name,
         customer_uuid: customers.uuid,
-        // last_bill_date: max(bills.timestamp),
-        total_amount: sql<number>`COALESCE(SUM(CASE WHEN ${bills.payment_complete} = false THEN ${bills.total} ELSE 0 END), 0)`,
-        // total_paid: sql<number>`
-        //   COALESCE(
-        //     SUM(
-        //       CASE WHEN ${bills.payment_complete} = false THEN
-        //         (
-        //           SELECT COALESCE(SUM(${payments.amount}), 0)
-        //           FROM ${payments}
-        //           WHERE ${payments.bill_id} = ${bills.id}
-        //         )
-        //       ELSE 0 END
-        //     ),
-        //     0
-        //   )
-        // `,
-        remaining_amount: sql<number>`
+        total_amount: sql<number>`CAST(COALESCE(SUM(CASE WHEN ${bills.payment_complete} = false THEN ${bills.total} ELSE 0 END), 0) AS INTEGER)`,
+        remaining_amount: sql<number>`CAST(
           COALESCE(
             SUM(
               CASE WHEN ${bills.payment_complete} = false THEN
@@ -70,14 +45,16 @@ const get_customers_list_route = protectedProcedure
               ELSE 0 END
             ),
             0
-          )
+          ) AS INTEGER)
         `
       })
       .from(customers)
       .leftJoin(bills, eq(bills.customer_id, customers.id))
       .groupBy(customers.id, customers.name)
-      .orderBy(desc(max(bills.timestamp)))
+      .orderBy(desc(sql`COALESCE(MAX(${bills.timestamp}), '1970-01-01'::timestamp)`))
+      // ^ here the ones with no bills or Null timestamps are treated differently
       .limit(30);
+    // only doing aggregation on uncompleted bill paymenents
 
     const customers_list = await (search_term.match(/^\d+$/)
       ? baseQuery.where(eq(customers.id, parseInt(search_term)))
@@ -87,12 +64,10 @@ const get_customers_list_route = protectedProcedure
   });
 
 export const get_customers_data_func = async (customer_id: number) => {
-  const data_prom = db.query.customers.findMany({
+  const data_prom = db.query.customers.findFirst({
     where: ({ id }, { eq }) => eq(id, customer_id),
     columns: {
-      name: true,
-      id: true,
-      uuid: true
+      id: true
     },
     with: {
       bills: {
@@ -103,19 +78,92 @@ export const get_customers_data_func = async (customer_id: number) => {
           payment_complete: true,
           date: true
         },
-        orderBy: ({ timestamp }, { desc }) => desc(timestamp),
+        orderBy: ({ timestamp, id }, { desc }) => [desc(timestamp), desc(id)],
         with: {
           jotAI_records: true,
           kaTAI_records: true,
-          trolley_records: true,
-          payments: true
+          trolley_records: true
         }
       }
     }
   });
-  return (await data_prom)!;
+  const user_info_prom = db
+    .select({
+      customer_id: customers.id,
+      customer_name: customers.name,
+      // last_bill_date: max(bills.timestamp),
+      total_amount: sql<number>`COALESCE(SUM(CASE WHEN ${bills.payment_complete} = false THEN ${bills.total} ELSE 0 END), 0)`,
+      total_paid: sql<number>`
+      COALESCE(
+        SUM(
+          CASE WHEN ${bills.payment_complete} = false THEN
+            (
+              SELECT COALESCE(SUM(${payments.amount}), 0)
+              FROM ${payments}
+              WHERE ${payments.bill_id} = ${bills.id}
+            )
+          ELSE 0 END
+        ),
+        0
+      )
+    `,
+      remaining_amount: sql<number>`
+      COALESCE(
+        SUM(
+          CASE WHEN ${bills.payment_complete} = false THEN
+            ${bills.total} - (
+              SELECT COALESCE(SUM(${payments.amount}), 0)
+              FROM ${payments}
+              WHERE ${payments.bill_id} = ${bills.id}
+            )
+          ELSE 0 END
+        ),
+        0
+      )
+    `
+    })
+    .from(customers)
+    .leftJoin(bills, eq(bills.customer_id, customers.id))
+    .where(eq(customers.id, customer_id))
+    .groupBy(customers.id, customers.name)
+    .limit(1);
+  // only doing aggregation on uncompleted bill paymenents
+
+  const bills_remaning_amounts_prom = db
+    .select({
+      bill_id: bills.id,
+      remaining_amount: sql<number>`CAST(
+      ${bills.total} - (
+        SELECT COALESCE(SUM(${payments.amount}), 0)
+        FROM ${payments}
+        WHERE ${payments.bill_id} = ${bills.id}
+    ) AS INTEGER)`
+    })
+    .from(bills)
+    .where(eq(bills.customer_id, customer_id))
+    .groupBy(bills.id)
+    .orderBy(desc(bills.timestamp), desc(bills.id));
+  /*
+  Sorting both the fields by timestamp and id in descending order
+  This is to ensure that the entries(ids) in both of them are in same order
+  As timestamps (possibly) can be same
+  */
+
+  const [data, user_info, remaining_amounts] = await Promise.all([
+    data_prom,
+    user_info_prom,
+    bills_remaning_amounts_prom
+  ]);
+  // console.log(data!.bills, remaining_amounts);
+  return {
+    user_info: user_info[0],
+    bills: data!.bills.map((bill, i) => ({
+      ...bill,
+      remaining_amount: remaining_amounts[i].remaining_amount
+    }))
+  };
 };
-const get_customers_data_route = protectedProcedure
+const get_customers_data_route = publicProcedure
   .input(
     z.object({
       customer_id: z.number().int()
@@ -128,7 +176,6 @@ const get_customers_data_route = protectedProcedure
 
 export const customer_router = t.router({
   register_customer: register_customer_route,
-  get_customers_list1: get_customers_list_route1,
   get_customers_list: get_customers_list_route,
   get_customers_data: get_customers_data_route
 });

@@ -50,14 +50,14 @@
             <div class="text-lg font-bold">निर्प्रवेश करना चाहते हैं ?</div>
             <div class="space-x-2">
               <button
-                class="btn rounded-lg font-semibold preset-filled-surface-300-700"
+                class="btn rounded-lg bg-surface-600 font-bold text-white dark:bg-surface-500"
                 onclick={log_out}
               >
                 पुष्टि करें
               </button>
               <button
                 onclick={() => (logout_modal_status = false)}
-                class="btn rounded-lg font-semibold preset-outlined-surface-800-200"
+                class="btn rounded-lg preset-outlined-surface-800-200"
               >
                 निरस्त करें
               </button>

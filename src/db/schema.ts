@@ -48,7 +48,7 @@ export const bills = pgTable(
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
     payment_complete: boolean().notNull().default(false),
-    date: date().notNull(),
+    date: date({ mode: 'date' }).notNull(),
     rate: integer().notNull(),
     total: integer().notNull(),
     timestamp: timestamp().notNull().defaultNow(),

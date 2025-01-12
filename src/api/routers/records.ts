@@ -99,7 +99,7 @@ const add_record_route = protectedAdminProcedure.input(add_record_input_schema).
         .values({
           added_by_user_id: user_id,
           customer_id,
-          date: date.toISOString(),
+          date: date,
           rate,
           total,
           kaTAI_record: kaTAI_record_id,

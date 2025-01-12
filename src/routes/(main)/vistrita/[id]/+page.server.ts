@@ -26,6 +26,7 @@ export const load: PageServerLoad = async ({ params }) => {
       customer_data: await get_customers_data_func(id)
     };
   } catch (e) {
+    // console.log(e);
     error(404, {
       message: INVALID_MSG_CODE
     });
