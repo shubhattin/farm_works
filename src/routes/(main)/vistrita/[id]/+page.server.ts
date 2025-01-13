@@ -23,7 +23,7 @@ export const load: PageServerLoad = async ({ params }) => {
     return {
       id: id,
       uuid,
-      customer_data: await get_customers_data_func(id)
+      customer_data: await get_customers_data_func(id, uuid)
     };
   } catch (e) {
     // console.log(e);

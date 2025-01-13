@@ -1,26 +1,26 @@
 <script lang="ts">
   import { client_q, client } from '~/api/client';
   import { page } from '$app/state';
-  import { TiArrowBackOutline } from 'svelte-icons-pack/ti';
+  import { TiArrowBackOutline, TiTick } from 'svelte-icons-pack/ti';
   import Icon from '~/tools/Icon.svelte';
   import { user_info } from '~/state/user.svelte';
   import { LuRefreshCw } from 'svelte-icons-pack/lu';
   import { cl_join } from '~/tools/cl_join';
-  import { BsPlusLg } from 'svelte-icons-pack/bs';
+  import { BsDashCircleDotted, BsPlusLg } from 'svelte-icons-pack/bs';
   import AddRecord from './AddRecord.svelte';
   import { slide } from 'svelte/transition';
   import { CATEOGORY_LIST, kaTAI_dhAn_list, jotAI_list, kaTAi_list } from './type_names';
   import { Tabs } from '@skeletonlabs/skeleton-svelte';
   import { get_date_string } from '~/tools/date';
 
-  let { customer_id }: { customer_id: number } = $props();
+  let { customer_id, customer_uuid }: { customer_id: number; customer_uuid: string } = $props();
 
   type customer_data_type = Awaited<ReturnType<typeof client.customer.get_customers_data.query>>;
 
   let add_record_opened = $state(false);
 
   let customer_info_q = client_q.customer.get_customers_data.query(
-    { customer_id },
+    { customer_id, customer_uuid },
     {
       initialData: page.data.customer_data as customer_data_type
     }
@@ -84,7 +84,7 @@
       </div>
       <div class="space-x-1">
         <span>कुल बकाया राशि :</span>
-        <span>₹ {user_info.remaining_amount}</span>
+        <span class="text-rose-600 dark:text-rose-300">₹ {user_info.remaining_amount}</span>
       </div>
       <div>
         {@render render_bills()}
@@ -98,7 +98,7 @@
   {#if bills.length === 0}
     <div class="mt-6 text-sm text-warning-700-300">वर्तमान मे उपभोक्ता का कोई बिल नही है ।</div>
   {:else}
-    <Tabs bind:value={selected_category} fluid>
+    <Tabs bind:value={selected_category} fluid base="mt-6">
       {#snippet list()}
         {#each Object.entries(CATEOGORY_LIST) as [key, val]}
           <Tabs.Control labelClasses="rounded-md" value={key}>{val}</Tabs.Control>
@@ -158,22 +158,36 @@
                       {@const kaTAI_record = bill.kaTAI_records!}
                       <td>{kaTAi_list[kaTAI_record.type]}</td>
                       <td>{kaTAI_record.kheta}</td>
-                      <td
-                        >{kaTAI_record.dhAna_type
-                          ? kaTAI_dhAn_list[kaTAI_record.dhAna_type]
-                          : '--'}</td
-                      >
+                      <td>
+                        {#if kaTAI_record.dhAna_type}
+                          {kaTAI_dhAn_list[kaTAI_record.dhAna_type]}
+                        {:else}
+                          <Icon src={BsDashCircleDotted} />
+                        {/if}
+                      </td>
                     {:else if selected_category === 'jotAI'}
                       {@const jotAI_record = bill.jotAI_records!}
                       <td>{jotAI_list[jotAI_record.type]}</td>
                       <td>{jotAI_record.kheta}</td>
-                      <td>{jotAI_record.chAsa ?? '--'}</td>
+                      <td>
+                        {#if jotAI_record.chAsa}
+                          {jotAI_record.chAsa}
+                        {:else}
+                          <Icon src={BsDashCircleDotted} />
+                        {/if}
+                      </td>
                     {:else if selected_category === 'trolley'}
                       {@const trolley_record = bill.trolley_records!}
                       <td>{trolley_record.number}</td>
                     {/if}
                     <td>{bill.total}</td>
-                    <td>{bill.remaining_amount}</td>
+                    <td>
+                      {#if !bill.payment_complete}
+                        <span class="text-red-500 dark:text-red-200">{bill.remaining_amount}</span>
+                      {:else}
+                        <Icon src={TiTick} class="text-xl text-green-500 dark:text-green-400" />
+                      {/if}
+                    </td>
                   </tr>
                 {/each}
               </tbody>
@@ -182,5 +196,11 @@
         {/if}
       {/snippet}
     </Tabs>
+  {/if}
+{/snippet}
+
+{#snippet show_optional_content(val: any | null)}
+  {#if val}
+    {val}
   {/if}
 {/snippet}

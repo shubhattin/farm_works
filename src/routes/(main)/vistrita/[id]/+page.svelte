@@ -12,5 +12,5 @@
 </svelte:head>
 
 <div in:scale out:slide>
-  <CustomerInfo customer_id={data.id} />
+  <CustomerInfo customer_id={data.id} customer_uuid={data.uuid} />
 </div>

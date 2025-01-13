@@ -63,7 +63,15 @@ const get_customers_list_route = protectedProcedure
     return customers_list;
   });
 
-export const get_customers_data_func = async (customer_id: number) => {
+export const get_customers_data_func = async (customer_id: number, customer_uuid: string) => {
+  const customer_exists = await db.query.customers.findFirst({
+    where: ({ id, uuid }, { eq, and }) => and(eq(id, customer_id), eq(uuid, customer_uuid)),
+    columns: {
+      id: true
+    }
+  });
+  if (!customer_exists) throw new Error('Invalid Customer ID or UUID');
+
   const data_prom = db.query.customers.findFirst({
     where: ({ id }, { eq }) => eq(id, customer_id),
     columns: {
@@ -166,12 +174,13 @@ export const get_customers_data_func = async (customer_id: number) => {
 const get_customers_data_route = publicProcedure
   .input(
     z.object({
-      customer_id: z.number().int()
+      customer_id: z.number().int(),
+      customer_uuid: z.string().uuid()
     })
   )
-  .query(async ({ input: { customer_id } }) => {
+  .query(async ({ input: { customer_id, customer_uuid } }) => {
     await delay(700);
-    return await get_customers_data_func(customer_id);
+    return await get_customers_data_func(customer_id, customer_uuid);
   });
 
 export const customer_router = t.router({
