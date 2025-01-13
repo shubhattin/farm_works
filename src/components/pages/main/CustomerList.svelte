@@ -30,7 +30,7 @@
         bind:value={search_term}
         type="text"
         class="input inline-block w-[70%] rounded-md"
-        placeholder="ग्राहक आन्वेषण"
+        placeholder="ग्राहक अन्वेषण"
       />
     </label>
     <button

@@ -53,10 +53,16 @@ export const unNormaliseDate = (date: string) => {
 };
 type date_formats = 'yyyy-mm-dd' | 'dd/mm/yyyy';
 
-export const get_date_string = (date: Date, format: date_formats = 'dd/mm/yyyy') => {
+export const get_date_string = (date: Date, format: date_formats = 'dd/mm/yyyy', pad = false) => {
   const [dt, mn, yr] = [date.getUTCDate(), date.getUTCMonth() + 1, date.getUTCFullYear()];
-  if (format === 'yyyy-mm-dd') return `${yr}-${mn}-${dt}`;
-  return `${dt}/${mn}/${yr}`;
+  if (format === 'yyyy-mm-dd') {
+    const month = pad ? mn.toString().padStart(2, '0') : mn;
+    const dt1 = pad ? dt.toString().padStart(2, '0') : dt;
+    return `${yr}-${month}-${dt1}`;
+  }
+  const month = pad ? mn.toString().padStart(2, '0') : mn;
+  const dt1 = pad ? dt.toString().padStart(2, '0') : dt;
+  return `${dt1}/${month}/${yr}`;
 };
 
 const get_date_format = (date: string): date_formats | undefined => {
