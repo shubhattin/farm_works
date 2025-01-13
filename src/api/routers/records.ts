@@ -1,4 +1,4 @@
-import { t, protectedAdminProcedure } from '~/api/trpc_init';
+import { t, protectedAdminProcedure, publicProcedure } from '~/api/trpc_init';
 import { z } from 'zod';
 import { db } from '~/db/db';
 import {
@@ -7,6 +7,7 @@ import {
   TrolleyRecordsSchemaZod
 } from '~/db/schema_zod';
 import { jotAI_records, kaTAI_records, bills, trolley_records } from '~/db/schema';
+import { delay } from '~/tools/delay';
 
 const kaTAI_add_record_input_schema = z.object({
   customer_id: z.number().int(),
@@ -44,7 +45,7 @@ const add_record_input_schema = z.discriminatedUnion('type', [
   trolley_add_record_input_schema
 ]);
 
-const add_record_route = protectedAdminProcedure.input(add_record_input_schema).mutation(
+const add_bill_route = protectedAdminProcedure.input(add_record_input_schema).mutation(
   async ({
     input: DATA,
     ctx: {
@@ -112,6 +113,51 @@ const add_record_route = protectedAdminProcedure.input(add_record_input_schema).
   }
 );
 
+const get_bill_payments_route = publicProcedure
+  .input(
+    z.object({
+      customer_id: z.number().int(),
+      customer_uuid: z.string().uuid(),
+      bill_id: z.number().int()
+    })
+  )
+  .query(async ({ input: { customer_id, customer_uuid, bill_id } }) => {
+    await delay(800);
+    const bill_payments = await db.query.payments.findMany({
+      where: (tbl, { eq, and }) => and(eq(tbl.bill_id, bill_id)),
+      columns: {
+        id: true,
+        amount: true,
+        timestamp: true
+      },
+      with: {
+        bill: {
+          columns: {},
+          with: {
+            customer: {
+              columns: {
+                id: true,
+                uuid: true
+              }
+            }
+          }
+        }
+      }
+    });
+    // verify for correct id and uuid
+    bill_payments.forEach((pay) => {
+      const customer = pay.bill.customer;
+      if (customer.id !== customer_id || customer.uuid !== customer_uuid)
+        throw new Error('Invalid Id or UUID');
+    });
+    return bill_payments.map((v) => ({
+      id: v.id,
+      amount: v.amount,
+      timestamp: v.timestamp
+    }));
+  });
+
 export const records_router = t.router({
-  add_record: add_record_route
+  add_bill: add_bill_route,
+  get_bill_payments: get_bill_payments_route
 });

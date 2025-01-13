@@ -12,8 +12,9 @@
 
   let {
     current_page_open = $bindable(),
-    customer_id
-  }: { current_page_open: boolean; customer_id: number } = $props();
+    customer_id,
+    customer_uuid
+  }: { current_page_open: boolean; customer_id: number; customer_uuid: string } = $props();
 
   const query_client = useQueryClient();
 
@@ -30,7 +31,7 @@
   const handle_submit = async (e: Event) => {
     e.preventDefault();
     if (category === 'kaTAi' && rate && total && kheta && kaTAi) {
-      await $add_record_mut.mutateAsync({
+      await $add_bill_mut.mutateAsync({
         customer_id,
         type: 'kaTAI',
         date: get_utc_date(date),
@@ -43,7 +44,7 @@
         }
       });
     } else if (category === 'jotAI' && rate && total && kheta && jotAI) {
-      await $add_record_mut.mutateAsync({
+      await $add_bill_mut.mutateAsync({
         customer_id,
         type: 'jotAI',
         date: get_utc_date(date),
@@ -59,7 +60,7 @@
         }
       });
     } else if (category === 'trolley' && rate && total && trolley_number) {
-      await $add_record_mut.mutateAsync({
+      await $add_bill_mut.mutateAsync({
         customer_id,
         type: 'trolley',
         date: get_utc_date(date),
@@ -72,12 +73,12 @@
     }
   };
 
-  const add_record_mut = client_q.records.add_record.mutation({
+  const add_bill_mut = client_q.records.add_bill.mutation({
     onSuccess() {
       query_client.invalidateQueries({
         queryKey: [
           ['customer', 'get_customers_data'],
-          { input: { customer_id: customer_id }, type: 'query' }
+          { input: { customer_id, customer_uuid }, type: 'query' }
         ],
         exact: true
       });
@@ -120,7 +121,7 @@
   });
 </script>
 
-{#if !$add_record_mut.isSuccess}
+{#if !$add_bill_mut.isSuccess}
   <div class="mb-2 flex space-x-4">
     <button
       class="btn rounded-lg bg-error-500 px-1.5 py-1 outline-none"
@@ -130,10 +131,11 @@
     </button>
   </div>
   <form class="space-y-3" onsubmit={handle_submit}>
-    <label class="block">
+    <!-- Date Input for Needed as the current to be used -->
+    <!-- <label class="block">
       <span class="label-text font-bold">दिनांक</span>
-      <input type="date" class="input rounded-lg" bind:value={date} required />
-    </label>
+      <input type="date" class="input rounded-lg" bind:value={date} required readonly />
+    </label> -->
     <label class="block">
       <span class="label-text font-bold">श्रेणी</span>
       <select class="select rounded-lg" bind:value={category} required>
@@ -174,7 +176,7 @@
       {/if}
       <button
         type="submit"
-        disabled={$add_record_mut.isPending}
+        disabled={$add_bill_mut.isPending}
         class="btn gap-1 rounded-md bg-primary-500 px-2 py-1 pb-0 font-bold text-white dark:bg-primary-600"
       >
         <Icon src={VscAdd} class="text-xl" />

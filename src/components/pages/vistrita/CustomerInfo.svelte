@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { client_q, client } from '~/api/client';
+  import { client_q, type client } from '~/api/client';
   import { page } from '$app/state';
   import { TiArrowBackOutline, TiTick } from 'svelte-icons-pack/ti';
   import Icon from '~/tools/Icon.svelte';
@@ -8,10 +8,11 @@
   import { cl_join } from '~/tools/cl_join';
   import { BsDashCircleDotted, BsPlusLg } from 'svelte-icons-pack/bs';
   import AddRecord from './AddRecord.svelte';
-  import { slide } from 'svelte/transition';
+  import { fly, scale, slide } from 'svelte/transition';
   import { CATEOGORY_LIST, kaTAI_dhAn_list, jotAI_list, kaTAi_list } from './type_names';
   import { Tabs } from '@skeletonlabs/skeleton-svelte';
   import { get_date_string } from '~/tools/date';
+  import BillInfo from './BillInfo.svelte';
 
   let { customer_id, customer_uuid }: { customer_id: number; customer_uuid: string } = $props();
 
@@ -27,6 +28,11 @@
   );
 
   let selected_category: keyof typeof CATEOGORY_LIST = $state('kaTAi');
+  let selected_bill_id = $state<number | null>(null);
+
+  $effect(() => {
+    if (selected_category) selected_bill_id = null;
+  });
 </script>
 
 <div class={cl_join('mb-4 space-x-6', !$user_info && 'mt-4')}>
@@ -75,7 +81,7 @@
     </div>
     {#if add_record_opened}
       <div in:slide out:slide>
-        <AddRecord bind:current_page_open={add_record_opened} {customer_id} />
+        <AddRecord bind:current_page_open={add_record_opened} {customer_id} {customer_uuid} />
       </div>
     {:else}
       <div class="space-x-1">
@@ -120,7 +126,10 @@
             {CATEOGORY_LIST[selected_category]} संबन्धी कोई बिल नही है।
           </div>
         {:else}
-          <div class="table-container">
+          <div class="my-1 text-xs text-slate-400 dark:text-neutral-500">
+            बिल का विवरण जानने के लिए उस पर दो बार दबाएं।
+          </div>
+          <div class="table-wrap">
             <table class="table cursor-default select-none">
               <thead>
                 <tr>
@@ -146,61 +155,64 @@
                 class="[&>tr>td]:text-sm sm:[&>tr>td]:text-base hover:[&>tr]:preset-tonal-primary"
               >
                 {#each bills_filtered as bill}
-                  <tr>
-                    <td style="padding: 0; margin:0;padding-left: 0.35rem;">
-                      <span class="text-gray-500 dark:text-zinc-400" style="font-size: 0.6rem;"
-                        >{bill.id}</span
-                      >
-                    </td>
-                    <td>{get_date_string(bill.date, 'dd/mm/yyyy', true)}</td>
-                    <td>{bill.rate}</td>
-                    {#if selected_category === 'kaTAi'}
-                      {@const kaTAI_record = bill.kaTAI_records!}
-                      <td>{kaTAi_list[kaTAI_record.type]}</td>
-                      <td>{kaTAI_record.kheta}</td>
-                      <td>
-                        {#if kaTAI_record.dhAna_type}
-                          {kaTAI_dhAn_list[kaTAI_record.dhAna_type]}
-                        {:else}
-                          <Icon src={BsDashCircleDotted} />
-                        {/if}
+                  {#if !selected_bill_id || selected_bill_id === bill.id}
+                    <!-- Simplified from a' + ab, using boolean algebra -->
+                    <tr ondblclick={() => (selected_bill_id = bill.id)}>
+                      <td style="padding: 0; margin:0;padding-left: 0.35rem;">
+                        <span class="text-gray-500 dark:text-zinc-400" style="font-size: 0.6rem;"
+                          >{bill.id}</span
+                        >
                       </td>
-                    {:else if selected_category === 'jotAI'}
-                      {@const jotAI_record = bill.jotAI_records!}
-                      <td>{jotAI_list[jotAI_record.type]}</td>
-                      <td>{jotAI_record.kheta}</td>
-                      <td>
-                        {#if jotAI_record.chAsa}
-                          {jotAI_record.chAsa}
-                        {:else}
-                          <Icon src={BsDashCircleDotted} />
-                        {/if}
-                      </td>
-                    {:else if selected_category === 'trolley'}
-                      {@const trolley_record = bill.trolley_records!}
-                      <td>{trolley_record.number}</td>
-                    {/if}
-                    <td>{bill.total}</td>
-                    <td>
-                      {#if !bill.payment_complete}
-                        <span class="text-red-500 dark:text-red-200">{bill.remaining_amount}</span>
-                      {:else}
-                        <Icon src={TiTick} class="text-xl text-green-500 dark:text-green-400" />
+                      <td>{get_date_string(bill.date, 'dd/mm/yyyy', true)}</td>
+                      <td>{bill.rate}</td>
+                      {#if selected_category === 'kaTAi'}
+                        {@const kaTAI_record = bill.kaTAI_records!}
+                        <td>{kaTAi_list[kaTAI_record.type]}</td>
+                        <td>{kaTAI_record.kheta}</td>
+                        <td>
+                          {#if kaTAI_record.dhAna_type}
+                            {kaTAI_dhAn_list[kaTAI_record.dhAna_type]}
+                          {:else}
+                            <Icon src={BsDashCircleDotted} />
+                          {/if}
+                        </td>
+                      {:else if selected_category === 'jotAI'}
+                        {@const jotAI_record = bill.jotAI_records!}
+                        <td>{jotAI_list[jotAI_record.type]}</td>
+                        <td>{jotAI_record.kheta}</td>
+                        <td>
+                          {#if jotAI_record.chAsa}
+                            {jotAI_record.chAsa}
+                          {:else}
+                            <Icon src={BsDashCircleDotted} />
+                          {/if}
+                        </td>
+                      {:else if selected_category === 'trolley'}
+                        {@const trolley_record = bill.trolley_records!}
+                        <td>{trolley_record.number}</td>
                       {/if}
-                    </td>
-                  </tr>
+                      <td>{bill.total}</td>
+                      <td>
+                        {#if !bill.payment_complete}
+                          <span class="text-red-500 dark:text-red-200">{bill.remaining_amount}</span
+                          >
+                        {:else}
+                          <Icon src={TiTick} class="text-xl text-green-500 dark:text-green-400" />
+                        {/if}
+                      </td>
+                    </tr>
+                  {/if}
                 {/each}
               </tbody>
             </table>
           </div>
+          {#if selected_bill_id}
+            <div in:fly out:scale class="mt-3">
+              <BillInfo {customer_id} {customer_uuid} bind:bill_id={selected_bill_id} />
+            </div>
+          {/if}
         {/if}
       {/snippet}
     </Tabs>
-  {/if}
-{/snippet}
-
-{#snippet show_optional_content(val: any | null)}
-  {#if val}
-    {val}
   {/if}
 {/snippet}
