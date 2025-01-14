@@ -6,8 +6,9 @@ import {
   JotAIRecordsSchemaZod,
   TrolleyRecordsSchemaZod
 } from '~/db/schema_zod';
-import { jotAI_records, kaTAI_records, bills, trolley_records } from '~/db/schema';
+import { jotAI_records, kaTAI_records, bills, trolley_records, payments } from '~/db/schema';
 import { delay } from '~/tools/delay';
+import { eq, sql } from 'drizzle-orm';
 
 const kaTAI_add_record_input_schema = z.object({
   customer_id: z.number().int(),
@@ -157,7 +158,76 @@ const get_bill_payments_route = publicProcedure
     }));
   });
 
+const submit_bill_payment_route = protectedAdminProcedure
+  .input(
+    z.object({
+      customer_id: z.number().int(),
+      customer_uuid: z.string().uuid(),
+      bill_id: z.number().int(),
+      amount: z.number().int().min(1)
+    })
+  )
+  .output(
+    z.object({
+      success: z.boolean(),
+      message: z.enum(['already_paid', 'invalid_amount', 'added_payment'])
+    })
+  )
+  .mutation(async ({ input: { customer_id, customer_uuid, bill_id, amount } }) => {
+    const [bill_info, [{ remaining_amount }]] = await Promise.all([
+      db.query.bills.findFirst({
+        where: ({ id }, { eq }) => eq(id, bill_id),
+        columns: {
+          payment_complete: true
+        },
+        with: {
+          customer: {
+            columns: {
+              id: true,
+              uuid: true
+            }
+          }
+        }
+      }),
+      db
+        .select({
+          remaining_amount: sql<number>`CAST(${bills.total} - COALESCE(SUM(${payments.amount}), 0) AS INTEGER)`
+        })
+        .from(bills)
+        .leftJoin(payments, eq(payments.bill_id, bills.id))
+        .where(eq(bills.id, bill_id))
+        .groupBy(bills.id, bills.total)
+        .limit(1)
+    ]);
+    if (!bill_info) throw new Error('Invalid Bill ID');
+    if (bill_info.customer.id !== customer_id || bill_info.customer.uuid !== customer_uuid)
+      throw new Error('Invalid Customer ID or UUID');
+    if (bill_info.payment_complete)
+      return {
+        success: false,
+        message: 'already_paid'
+      };
+    if (amount > remaining_amount)
+      return {
+        success: false,
+        message: 'invalid_amount'
+      };
+    await Promise.all([
+      db.insert(payments).values({
+        bill_id,
+        amount
+      }),
+      amount === remaining_amount &&
+        db.update(bills).set({ payment_complete: true }).where(eq(bills.id, bill_id))
+    ]);
+    return {
+      success: true,
+      message: 'added_payment'
+    };
+  });
+
 export const records_router = t.router({
   add_bill: add_bill_route,
-  get_bill_payments: get_bill_payments_route
+  get_bill_payments: get_bill_payments_route,
+  submit_bill_payment: submit_bill_payment_route
 });

@@ -29,6 +29,7 @@
 
   let selected_category: keyof typeof CATEOGORY_LIST = $state('kaTAi');
   let selected_bill_id = $state<number | null>(null);
+  let selected_bill_id_index = $state(0);
 
   $effect(() => {
     if (selected_category) selected_bill_id = null;
@@ -90,7 +91,12 @@
       </div>
       <div class="space-x-1">
         <span>कुल बकाया राशि :</span>
-        <span class="text-rose-600 dark:text-rose-300">₹ {user_info.remaining_amount}</span>
+        <span
+          class={cl_join(
+            'text-rose-600 dark:text-rose-300',
+            user_info.remaining_amount === 0 && 'text-green-500 dark:text-green-400'
+          )}>₹ {user_info.remaining_amount}</span
+        >
       </div>
       <div>
         {@render render_bills()}
@@ -154,10 +160,15 @@
               <tbody
                 class="[&>tr>td]:text-sm sm:[&>tr>td]:text-base hover:[&>tr]:preset-tonal-primary"
               >
-                {#each bills_filtered as bill}
+                {#each bills_filtered as bill, bill_i}
                   {#if !selected_bill_id || selected_bill_id === bill.id}
                     <!-- Simplified from a' + ab, using boolean algebra -->
-                    <tr ondblclick={() => (selected_bill_id = bill.id)}>
+                    <tr
+                      ondblclick={() => {
+                        selected_bill_id = bill.id;
+                        selected_bill_id_index = bill_i;
+                      }}
+                    >
                       <td style="padding: 0; margin:0;padding-left: 0.35rem;">
                         <span class="text-gray-500 dark:text-zinc-400" style="font-size: 0.6rem;"
                           >{bill.id}</span
@@ -208,7 +219,12 @@
           </div>
           {#if selected_bill_id}
             <div in:fly out:scale class="mt-3">
-              <BillInfo {customer_id} {customer_uuid} bind:bill_id={selected_bill_id} />
+              <BillInfo
+                {customer_id}
+                {customer_uuid}
+                bill_info={bills[selected_bill_id_index]}
+                bind:bill_id={selected_bill_id}
+              />
             </div>
           {/if}
         {/if}

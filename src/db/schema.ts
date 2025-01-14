@@ -17,6 +17,7 @@ export const userTypeEnum = pgEnum('user_type', ['admin', 'non-admin']);
 export const users = pgTable('users', {
   id: serial().primaryKey(),
   name: varchar({ length: 50 }).notNull(),
+  phone_number: varchar({ length: 10 }).notNull(),
   password_hash: varchar({ length: 96 }).notNull(), // bcrypt hash (60)
   user_type: userTypeEnum().default('non-admin').notNull()
 });
@@ -51,7 +52,7 @@ export const bills = pgTable(
     date: date({ mode: 'date' }).notNull(),
     rate: integer().notNull(),
     total: integer().notNull(),
-    timestamp: timestamp().notNull().defaultNow(),
+    timestamp: timestamp({ withTimezone: true }).notNull().defaultNow(),
     kaTAI_record: integer().references(() => kaTAI_records.id),
     jotAI_record: integer().references(() => jotAI_records.id),
     trolley_record: integer().references(() => trolley_records.id)
@@ -71,7 +72,7 @@ export const payments = pgTable(
       .notNull()
       .references(() => bills.id, { onDelete: 'cascade' }),
     amount: integer().notNull(),
-    timestamp: timestamp().notNull().defaultNow()
+    timestamp: timestamp({ withTimezone: true }).notNull().defaultNow()
   },
   (table) => ({
     billIdx: index().on(table.bill_id),

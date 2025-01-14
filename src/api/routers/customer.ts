@@ -32,27 +32,28 @@ const get_customers_list_route = protectedProcedure
         customer_id: customers.id,
         customer_name: customers.name,
         customer_uuid: customers.uuid,
-        total_amount: sql<number>`CAST(COALESCE(SUM(CASE WHEN ${bills.payment_complete} = false THEN ${bills.total} ELSE 0 END), 0) AS INTEGER)`,
+        total_amount: sql<number>`CAST(
+      COALESCE(
+        SUM(CASE WHEN ${bills.payment_complete} = false THEN ${bills.total} ELSE 0 END)
+      , 0) 
+    AS INTEGER)`,
         remaining_amount: sql<number>`CAST(
-          COALESCE(
-            SUM(
-              CASE WHEN ${bills.payment_complete} = false THEN
-                ${bills.total} - (
-                  SELECT COALESCE(SUM(${payments.amount}), 0)
-                  FROM ${payments}
-                  WHERE ${payments.bill_id} = ${bills.id}
-                )
-              ELSE 0 END
-            ),
-            0
-          ) AS INTEGER)
-        `
+      COALESCE(
+        SUM(CASE WHEN ${bills.payment_complete} = false THEN ${bills.total} ELSE 0 END) -
+        (
+          SELECT COALESCE(SUM(p.amount), 0)
+          FROM ${payments} p
+          INNER JOIN ${bills} b ON b.id = p.bill_id
+          WHERE b.customer_id = ${customers.id}
+          AND b.payment_complete = false
+        )
+      , 0) 
+    AS INTEGER)`
       })
       .from(customers)
       .leftJoin(bills, eq(bills.customer_id, customers.id))
-      .groupBy(customers.id, customers.name)
+      .groupBy(customers.id, customers.name, customers.uuid)
       .orderBy(desc(sql`COALESCE(MAX(${bills.timestamp}), '1970-01-01'::timestamp)`))
-      // ^ here the ones with no bills or Null timestamps are treated differently
       .limit(30);
     // only doing aggregation on uncompleted bill paymenents
 
@@ -99,36 +100,34 @@ export const get_customers_data_func = async (customer_id: number, customer_uuid
     .select({
       customer_id: customers.id,
       customer_name: customers.name,
-      // last_bill_date: max(bills.timestamp),
-      total_amount: sql<number>`COALESCE(SUM(CASE WHEN ${bills.payment_complete} = false THEN ${bills.total} ELSE 0 END), 0)`,
-      total_paid: sql<number>`
+      total_amount: sql<number>`CAST(
       COALESCE(
-        SUM(
-          CASE WHEN ${bills.payment_complete} = false THEN
-            (
-              SELECT COALESCE(SUM(${payments.amount}), 0)
-              FROM ${payments}
-              WHERE ${payments.bill_id} = ${bills.id}
-            )
-          ELSE 0 END
-        ),
-        0
-      )
-    `,
-      remaining_amount: sql<number>`
+        SUM(CASE WHEN ${bills.payment_complete} = false THEN ${bills.total} ELSE 0 END)
+      , 0) AS INTEGER
+    )`,
+      total_paid: sql<number>`CAST(
       COALESCE(
-        SUM(
-          CASE WHEN ${bills.payment_complete} = false THEN
-            ${bills.total} - (
-              SELECT COALESCE(SUM(${payments.amount}), 0)
-              FROM ${payments}
-              WHERE ${payments.bill_id} = ${bills.id}
-            )
-          ELSE 0 END
-        ),
-        0
-      )
-    `
+        (
+          SELECT SUM(p.amount)
+          FROM ${payments} p
+          INNER JOIN ${bills} b ON b.id = p.bill_id
+          WHERE b.customer_id = ${customers.id}
+          AND b.payment_complete = false
+        )
+      , 0) AS INTEGER
+    )`,
+      remaining_amount: sql<number>`CAST(
+      COALESCE(
+        SUM(CASE WHEN ${bills.payment_complete} = false THEN ${bills.total} ELSE 0 END) -
+        (
+          SELECT SUM(p.amount)
+          FROM ${payments} p
+          INNER JOIN ${bills} b ON b.id = p.bill_id
+          WHERE b.customer_id = ${customers.id}
+          AND b.payment_complete = false
+        )
+      , 0) AS INTEGER
+    )`
     })
     .from(customers)
     .leftJoin(bills, eq(bills.customer_id, customers.id))
@@ -141,15 +140,13 @@ export const get_customers_data_func = async (customer_id: number, customer_uuid
     .select({
       bill_id: bills.id,
       remaining_amount: sql<number>`CAST(
-      ${bills.total} - (
-        SELECT COALESCE(SUM(${payments.amount}), 0)
-        FROM ${payments}
-        WHERE ${payments.bill_id} = ${bills.id}
-    ) AS INTEGER)`
+      ${bills.total} - COALESCE(SUM(${payments.amount}), 0)
+    AS INTEGER)`
     })
     .from(bills)
+    .leftJoin(payments, eq(payments.bill_id, bills.id))
     .where(eq(bills.customer_id, customer_id))
-    .groupBy(bills.id)
+    .groupBy(bills.id, bills.total) // Added bills.total to groupBy
     .orderBy(desc(bills.timestamp), desc(bills.id));
   /*
   Sorting both the fields by timestamp and id in descending order

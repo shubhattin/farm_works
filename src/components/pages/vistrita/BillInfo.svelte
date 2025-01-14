@@ -12,8 +12,14 @@
   let {
     customer_id,
     customer_uuid,
-    bill_id = $bindable()
-  }: { customer_id: number; customer_uuid: string; bill_id: number | null } = $props();
+    bill_id = $bindable(),
+    bill_info
+  }: {
+    customer_id: number;
+    customer_uuid: string;
+    bill_id: number | null;
+    bill_info: Awaited<ReturnType<typeof client.customer.get_customers_data.query>>['bills'][0];
+  } = $props();
 
   let add_payment_opened = $state(false);
 
@@ -32,7 +38,7 @@
     <Icon src={BiCollapseAlt} class="text-2xl" />
   </button>
   {#if !add_payment_opened}
-    {#if $user_info}
+    {#if $user_info && !bill_info.payment_complete && bill_info.remaining_amount > 0}
       <button
         onclick={() => (add_payment_opened = true)}
         class="btn gap-1 rounded-md bg-primary-600 p-1 pr-1.5 font-bold text-white dark:bg-primary-600"
@@ -62,7 +68,30 @@
     {#if payments.length === 0}
       <div class="mt-6 text-sm text-warning-700-300">इस बिल का अब तक कोई भुगतान नही है।</div>
     {:else}
-      <div class="table-wrap"></div>
+      <div class="table-wrap">
+        <table class="table">
+          <thead>
+            <tr>
+              <th></th>
+              <th class="font-bold">समय</th>
+              <th class="font-bold">राशि (₹)</th>
+            </tr>
+          </thead>
+          <tbody>
+            {#each payments as payment}
+              <tr>
+                <td style="padding: 0; margin:0;padding-left: 0.35rem;" class=""
+                  ><span class="text-gray-500 dark:text-zinc-400" style="font-size: 0.6rem;"
+                    >{payment.id}</span
+                  ></td
+                >
+                <td>{payment.timestamp}</td>
+                <td>{payment.amount}</td>
+              </tr>
+            {/each}
+          </tbody>
+        </table>
+      </div>
     {/if}
   {/if}
 {:else}
@@ -71,6 +100,7 @@
       {customer_id}
       {customer_uuid}
       bill_id={bill_id!}
+      remaning_amount={bill_info.remaining_amount}
       bind:current_page_opened={add_payment_opened}
     />
   </div>
