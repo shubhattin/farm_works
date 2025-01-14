@@ -14,7 +14,6 @@ const kaTAI_add_record_input_schema = z.object({
   customer_id: z.number().int(),
   total: z.number().int(),
   rate: z.number().int(),
-  date: z.coerce.date(),
   type: z.literal('kaTAI'),
   data: KaTAIRecordsSchemaZod.omit({
     id: true
@@ -24,7 +23,6 @@ const jotAI_add_record_input_schema = z.object({
   customer_id: z.number().int(),
   total: z.number().int(),
   rate: z.number().int(),
-  date: z.coerce.date(),
   type: z.literal('jotAI'),
   data: JotAIRecordsSchemaZod.omit({
     id: true
@@ -34,7 +32,6 @@ const trolley_add_record_input_schema = z.object({
   customer_id: z.number().int(),
   total: z.number().int(),
   rate: z.number().int(),
-  date: z.coerce.date(),
   type: z.literal('trolley'),
   data: TrolleyRecordsSchemaZod.omit({
     id: true
@@ -53,7 +50,7 @@ const add_bill_route = protectedAdminProcedure.input(add_record_input_schema).mu
       user: { id: user_id }
     }
   }) => {
-    const { type, customer_id, total, rate, date } = DATA;
+    const { type, customer_id, total, rate } = DATA;
     let kaTAI_record_id = null;
     let jotAI_record_id = null;
     let trolley_record_id = null;
@@ -95,13 +92,12 @@ const add_bill_route = protectedAdminProcedure.input(add_record_input_schema).mu
       )[0];
       trolley_record_id = id;
     }
-    const { id: transaction_id } = (
+    const { id: bill_id } = (
       await db
         .insert(bills)
         .values({
           added_by_user_id: user_id,
           customer_id,
-          date: date,
           rate,
           total,
           kaTAI_record: kaTAI_record_id,
@@ -110,7 +106,7 @@ const add_bill_route = protectedAdminProcedure.input(add_record_input_schema).mu
         })
         .returning()
     )[0];
-    return { transaction_id, kaTAI_record_id, jotAI_record_id, trolley_record_id };
+    return { bill_id, kaTAI_record_id, jotAI_record_id, trolley_record_id };
   }
 );
 

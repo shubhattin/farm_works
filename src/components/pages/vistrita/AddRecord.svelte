@@ -18,23 +18,12 @@
 
   const query_client = useQueryClient();
 
-  const todays_date = new Date();
-  const current_month = todays_date.getMonth() + 1;
-  const current_year = todays_date.getFullYear();
-
-  const get_todays_date = () => {
-    const prefix_zeros = (n: number) => `${n < 10 ? '0' : ''}${n}`;
-    return `${current_year}-${prefix_zeros(current_month)}-${prefix_zeros(todays_date.getDate())}`;
-  };
-
-  let date = $state(get_todays_date());
   const handle_submit = async (e: Event) => {
     e.preventDefault();
     if (category === 'kaTAi' && rate && total && kheta && kaTAi) {
       await $add_bill_mut.mutateAsync({
         customer_id,
         type: 'kaTAI',
-        date: get_utc_date(date),
         total: total,
         rate: rate,
         data: {
@@ -47,7 +36,6 @@
       await $add_bill_mut.mutateAsync({
         customer_id,
         type: 'jotAI',
-        date: get_utc_date(date),
         total: total,
         rate: rate,
         data: {
@@ -63,7 +51,6 @@
       await $add_bill_mut.mutateAsync({
         customer_id,
         type: 'trolley',
-        date: get_utc_date(date),
         total: total,
         rate: rate,
         data: {

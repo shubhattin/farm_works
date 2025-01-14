@@ -84,8 +84,8 @@ export const get_customers_data_func = async (customer_id: number, customer_uuid
           id: true,
           total: true,
           rate: true,
-          payment_complete: true,
-          date: true
+          timestamp: true,
+          payment_complete: true
         },
         orderBy: ({ timestamp, id }, { desc }) => [desc(timestamp), desc(id)],
         with: {

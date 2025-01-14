@@ -7,7 +7,8 @@ import {
   bills,
   jotAI_records,
   kaTAI_records,
-  trolley_records
+  trolley_records,
+  payments
 } from '~/db/schema';
 import {
   UsersSchemaZod,
@@ -15,7 +16,8 @@ import {
   BillsSchemaZod,
   JotAIRecordsSchemaZod,
   KaTAIRecordsSchemaZod,
-  TrolleyRecordsSchemaZod
+  TrolleyRecordsSchemaZod,
+  PaymentsSchemaZod
 } from '~/db/schema_zod';
 import { z } from 'zod';
 import { sql } from 'drizzle-orm';
@@ -44,12 +46,14 @@ const main = async () => {
       bills: z.array(BillsSchemaZod),
       jotAI_records: z.array(JotAIRecordsSchemaZod),
       kaTAI_records: z.array(KaTAIRecordsSchemaZod),
-      trolley_records: z.array(TrolleyRecordsSchemaZod)
+      trolley_records: z.array(TrolleyRecordsSchemaZod),
+      payments: z.array(PaymentsSchemaZod)
     })
     .parse(JSON.parse((await readFile(`./out/${in_file_name}`)).toString()));
 
   // deleting all the tables initially
   try {
+    await db.delete(payments);
     await db.delete(bills);
     await db.delete(jotAI_records);
     await db.delete(kaTAI_records);
@@ -116,6 +120,14 @@ const main = async () => {
     console.log(chalk.green('✓ Successfully added values into table'), chalk.blue('`bills`'));
   } catch (e) {
     console.log(chalk.red('✗ Error while inserting bills:'), chalk.yellow(e));
+  }
+
+  // inserting payments
+  try {
+    await db.insert(payments).values(data.payments);
+    console.log(chalk.green('✓ Successfully added values into table'), chalk.blue('`payments`'));
+  } catch (e) {
+    console.log(chalk.red('✗ Error while inserting payments:'), chalk.yellow(e));
   }
 
   // resetting SERIAL

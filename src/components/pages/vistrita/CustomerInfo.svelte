@@ -11,7 +11,6 @@
   import { fly, scale, slide } from 'svelte/transition';
   import { CATEOGORY_LIST, kaTAI_dhAn_list, jotAI_list, kaTAi_list } from './type_names';
   import { Tabs } from '@skeletonlabs/skeleton-svelte';
-  import { get_date_string } from '~/tools/date';
   import BillInfo from './BillInfo.svelte';
 
   let { customer_id, customer_uuid }: { customer_id: number; customer_uuid: string } = $props();
@@ -174,7 +173,13 @@
                           >{bill.id}</span
                         >
                       </td>
-                      <td>{get_date_string(bill.date, 'dd/mm/yyyy', true)}</td>
+                      <td
+                        >{bill.timestamp.toLocaleString('en-IN', {
+                          day: '2-digit',
+                          month: '2-digit',
+                          year: '2-digit'
+                        })}</td
+                      >
                       <td>{bill.rate}</td>
                       {#if selected_category === 'kaTAi'}
                         {@const kaTAI_record = bill.kaTAI_records!}
