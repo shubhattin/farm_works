@@ -160,13 +160,13 @@
               <tbody
                 class="[&>tr>td]:text-sm sm:[&>tr>td]:text-base hover:[&>tr]:preset-tonal-primary"
               >
-                {#each bills_filtered as bill, bill_i}
+                {#each bills_filtered as bill, bill_i (bill.id)}
                   {#if !selected_bill_id || selected_bill_id === bill.id}
                     <!-- Simplified from a' + ab, using boolean algebra -->
                     <tr
                       ondblclick={() => {
-                        selected_bill_id = bill.id;
                         selected_bill_id_index = bill_i;
+                        selected_bill_id = bill.id;
                       }}
                     >
                       <td style="padding: 0; margin:0;padding-left: 0.35rem;">
@@ -222,7 +222,7 @@
               <BillInfo
                 {customer_id}
                 {customer_uuid}
-                bill_info={bills[selected_bill_id_index]}
+                bill_info={bills_filtered[selected_bill_id_index]}
                 bind:bill_id={selected_bill_id}
               />
             </div>

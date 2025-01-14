@@ -101,40 +101,45 @@ export const get_customers_data_func = async (customer_id: number, customer_uuid
       customer_id: customers.id,
       customer_name: customers.name,
       total_amount: sql<number>`CAST(
-      COALESCE(
-        SUM(CASE WHEN ${bills.payment_complete} = false THEN ${bills.total} ELSE 0 END)
-      , 0) AS INTEGER
-    )`,
+        COALESCE(
+          SUM(CASE WHEN ${bills.payment_complete} = false THEN ${bills.total} ELSE 0 END)
+        , 0) AS INTEGER
+      )`,
       total_paid: sql<number>`CAST(
-      COALESCE(
-        (
-          SELECT SUM(p.amount)
-          FROM ${payments} p
-          INNER JOIN ${bills} b ON b.id = p.bill_id
-          WHERE b.customer_id = ${customers.id}
-          AND b.payment_complete = false
+        COALESCE(
+          (
+            SELECT COALESCE(SUM(p.amount), 0)
+            FROM ${payments} AS p
+            INNER JOIN ${bills} AS b ON b.id = p.bill_id
+            WHERE b.customer_id = ${customers.id}
+            AND b.payment_complete = false
+          )
+        , 0) AS INTEGER
+      )`,
+      remaining_amount: sql<number>`(
+        CAST(
+          COALESCE(
+            SUM(CASE WHEN ${bills.payment_complete} = false THEN ${bills.total} ELSE 0 END)
+          , 0) AS INTEGER
+        ) - 
+        CAST(
+          COALESCE(
+            (
+              SELECT COALESCE(SUM(p.amount), 0)
+              FROM ${payments} AS p
+              INNER JOIN ${bills} AS b ON b.id = p.bill_id
+              WHERE b.customer_id = ${customers.id}
+              AND b.payment_complete = false
+            )
+          , 0) AS INTEGER
         )
-      , 0) AS INTEGER
-    )`,
-      remaining_amount: sql<number>`CAST(
-      COALESCE(
-        SUM(CASE WHEN ${bills.payment_complete} = false THEN ${bills.total} ELSE 0 END) -
-        (
-          SELECT SUM(p.amount)
-          FROM ${payments} p
-          INNER JOIN ${bills} b ON b.id = p.bill_id
-          WHERE b.customer_id = ${customers.id}
-          AND b.payment_complete = false
-        )
-      , 0) AS INTEGER
-    )`
+      )`
     })
     .from(customers)
     .leftJoin(bills, eq(bills.customer_id, customers.id))
     .where(eq(customers.id, customer_id))
     .groupBy(customers.id, customers.name)
     .limit(1);
-  // only doing aggregation on uncompleted bill paymenents
 
   const bills_remaning_amounts_prom = db
     .select({

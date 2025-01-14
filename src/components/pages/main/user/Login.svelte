@@ -50,7 +50,7 @@
         <option value={0}>-- उपयोक्ता चुनें --</option>
       {/if}
       {#if !$users_list_q.isFetching && $users_list_q.isSuccess}
-        {#each $users_list_q.data as user}
+        {#each $users_list_q.data as user (user.id)}
           <option value={user.id}>{user.name}</option>
         {/each}
       {/if}

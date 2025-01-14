@@ -73,7 +73,7 @@
             </tr>
           {/each}
         {:else if $customers_list_q.isSuccess}
-          {#each $customers_list_q.data as customer}
+          {#each $customers_list_q.data as customer (customer.customer_id)}
             <tr
               ondblclick={() => goto(`/vistrita/${customer.customer_id}.${customer.customer_uuid}`)}
             >

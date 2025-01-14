@@ -77,15 +77,24 @@
               <th class="font-bold">राशि (₹)</th>
             </tr>
           </thead>
-          <tbody>
-            {#each payments as payment}
+          <tbody class="hover:[&>tr]:preset-tonal-tertiary">
+            {#each payments as payment (payment.id)}
               <tr>
                 <td style="padding: 0; margin:0;padding-left: 0.35rem;" class=""
                   ><span class="text-gray-500 dark:text-zinc-400" style="font-size: 0.6rem;"
                     >{payment.id}</span
                   ></td
                 >
-                <td>{payment.timestamp}</td>
+                <td
+                  >{payment.timestamp.toLocaleString('en-IN', {
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour12: true
+                  })}</td
+                >
                 <td>{payment.amount}</td>
               </tr>
             {/each}
