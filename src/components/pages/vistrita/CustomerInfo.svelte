@@ -177,7 +177,8 @@
                         >{bill.timestamp.toLocaleString('en-IN', {
                           day: '2-digit',
                           month: '2-digit',
-                          year: '2-digit'
+                          year: '2-digit',
+                          timeZone: 'Asia/Kolkata'
                         })}</td
                       >
                       <td>{bill.rate}</td>

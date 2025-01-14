@@ -3,7 +3,6 @@
   import { client_q } from '~/api/client';
   import Icon from '~/tools/Icon.svelte';
   import { FaSolidMoneyCheck } from 'svelte-icons-pack/fa';
-  import { get_utc_date } from '~/tools/date';
   import { scale, slide } from 'svelte/transition';
   import { TrOutlineArrowBackUp } from 'svelte-icons-pack/tr';
   import { CATEOGORY_LIST, kaTAi_list, kaTAI_dhAn_list, jotAI_list } from './type_names';

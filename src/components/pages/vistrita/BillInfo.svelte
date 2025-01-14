@@ -92,7 +92,8 @@
                     day: '2-digit',
                     month: '2-digit',
                     year: '2-digit',
-                    hour12: true
+                    hour12: true,
+                    timeZone: 'Asia/Kolkata'
                   })}</td
                 >
                 <td>{payment.amount}</td>
