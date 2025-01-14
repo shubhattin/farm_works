@@ -5,6 +5,7 @@
   import { cl_join } from '~/tools/cl_join';
   import Icon from '~/tools/Icon.svelte';
   import { useQueryClient } from '@tanstack/svelte-query';
+  import { onMount } from 'svelte';
 
   const query_client = useQueryClient();
 
@@ -60,6 +61,12 @@
       amount
     });
   };
+
+  onMount(() => {
+    amount_input_elmnt && amount_input_elmnt.focus();
+  });
+
+  let amount_input_elmnt = $state<HTMLInputElement | null>(null);
 </script>
 
 <div class="mb-2 flex space-x-4">
@@ -77,6 +84,7 @@
     <input
       type="number"
       bind:value={amount}
+      bind:this={amount_input_elmnt}
       class={cl_join(
         'input w-32 rounded-lg',
         amount && amount > remaning_amount && 'preset-tonal-error'

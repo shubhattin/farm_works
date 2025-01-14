@@ -4,7 +4,7 @@
   import Icon from '~/tools/Icon.svelte';
   import { FaSolidMoneyCheck } from 'svelte-icons-pack/fa';
   import { get_utc_date } from '~/tools/date';
-  import { scale } from 'svelte/transition';
+  import { scale, slide } from 'svelte/transition';
   import { TrOutlineArrowBackUp } from 'svelte-icons-pack/tr';
   import { CATEOGORY_LIST, kaTAi_list, kaTAI_dhAn_list, jotAI_list } from './type_names';
   import { AiOutlineClose } from 'svelte-icons-pack/ai';
@@ -117,59 +117,68 @@
       <Icon src={AiOutlineClose} class="text-2xl text-white" />
     </button>
   </div>
-  <form class="space-y-3" onsubmit={handle_submit}>
-    <!-- Date Input for Needed as the current to be used -->
-    <!-- <label class="block">
-      <span class="label-text font-bold">दिनांक</span>
-      <input type="date" class="input rounded-lg" bind:value={date} required readonly />
-    </label> -->
-    <label class="block">
-      <span class="label-text font-bold">श्रेणी</span>
-      <select class="select rounded-lg" bind:value={category} required>
-        <option value={null}>-- श्रेणी चयन करें --</option>
-        {#each Object.entries(CATEOGORY_LIST) as [key, val]}
-          <option value={key}>{val}</option>
-        {/each}
-      </select>
-    </label>
+  <form class="space-y-4" onsubmit={handle_submit}>
+    <div class="space-x-5 sm:space-x-8">
+      {#each Object.entries(CATEOGORY_LIST) as [key, val]}
+        <label class="space-x-2">
+          <input
+            required
+            type="radio"
+            class="radio text-lg"
+            bind:group={category}
+            name="category"
+            value={key}
+          />
+          <span class="text-lg font-bold">{val}</span>
+        </label>
+      {/each}
+    </div>
     {#if category === 'kaTAi'}
-      {@render kaTAI_types()}
+      <div class="space-y-4" in:slide out:slide>
+        {@render kaTAI_types()}
+      </div>
     {:else if category === 'jotAI'}
-      {@render jotAI_types()}
+      <div class="space-y-4" in:slide out:slide>
+        {@render jotAI_types()}
+      </div>
     {:else if category === 'trolley'}
-      {@render trolley_types()}
+      <div class="space-y-4" in:slide out:slide>
+        {@render trolley_types()}
+      </div>
     {/if}
-    {#if category === 'jotAI' || category === 'kaTAi'}
-      <label class="block">
-        <span class="label-text font-bold">खेत (बिस्सा में)</span>
-        <input type="number" class="input rounded-lg" bind:value={kheta} required />
-      </label>
-    {/if}
-    {#if category}
-      <label class="block">
-        <span class="label-text font-bold">दर (₹ में)</span>
-        <input type="number" class="input rounded-lg" bind:value={rate} required />
-      </label>
-      {#if total}
-        <div class="text-bold space-x-2">
-          <span>
-            <Icon src={FaSolidMoneyCheck} class="-mt-1 text-xl" />
-            सकल
-          </span>
-          <span>
-            ₹ {total}
-          </span>
-        </div>
+    <div transition:slide class="space-y-4">
+      {#if category === 'jotAI' || category === 'kaTAi'}
+        <label class="block">
+          <span class="label-text font-bold">खेत (बिस्सा में)</span>
+          <input type="number" class="input rounded-lg" bind:value={kheta} required />
+        </label>
       {/if}
-      <button
-        type="submit"
-        disabled={$add_bill_mut.isPending}
-        class="btn gap-1 rounded-md bg-primary-500 px-2 py-1 pb-0 font-bold text-white dark:bg-primary-600"
-      >
-        <Icon src={VscAdd} class="text-xl" />
-        जोड़ें
-      </button>
-    {/if}
+      {#if category}
+        <label class="block">
+          <span class="label-text font-bold">दर (₹)</span>
+          <input type="number" class="input rounded-lg" bind:value={rate} required />
+        </label>
+        {#if total}
+          <div class="text-bold space-x-2">
+            <span>
+              <Icon src={FaSolidMoneyCheck} class="-mt-1 text-xl" />
+              सकल
+            </span>
+            <span>
+              ₹ {total}
+            </span>
+          </div>
+        {/if}
+        <button
+          type="submit"
+          disabled={$add_bill_mut.isPending}
+          class="btn gap-1 rounded-md bg-primary-500 px-2 py-1 pb-0 font-bold text-white dark:bg-primary-600"
+        >
+          <Icon src={VscAdd} class="text-xl" />
+          जोड़ें
+        </button>
+      {/if}
+    </div>
   </form>
 {:else}
   <div class="space-y-1" transition:scale>
@@ -187,25 +196,47 @@
 {/if}
 
 {#snippet kaTAI_types()}
-  <label class="block">
-    <span class="label-text font-bold">काटाई का प्रकार चुनें</span>
-    <select class="select rounded-lg" bind:value={kaTAi} required>
-      <option value={null}>-- प्रकार चयन करें --</option>
+  <div class="space-y-0">
+    <div class="text-sm font-bold text-slate-400 dark:text-gray-400">
+      धान की कटाई का प्रकार चुनें
+    </div>
+    <div class="space-x-5">
       {#each Object.entries(kaTAi_list) as [key, val]}
-        <option value={key}>{val}</option>
+        <label class="flex-inline items-center space-x-2">
+          <input
+            required
+            type="radio"
+            class="radio text-base"
+            bind:group={kaTAi}
+            name="kaTAi"
+            value={key}
+          />
+          <span class="text-base font-bold">{val}</span>
+        </label>
       {/each}
-    </select>
-  </label>
+    </div>
+  </div>
   {#if kaTAi === 'dhAn'}
-    <label class="block">
-      <span class="label-text font-bold">धान की कटाई का प्रकार चुनें</span>
-      <select class="select rounded-lg" bind:value={kaTAI_dhAn} required>
-        <option value={null}>-- प्रकार चयन करें --</option>
+    <div in:slide out:slide class="space-y-0">
+      <span class="text-sm font-bold text-zinc-400 dark:text-gray-400"
+        >धान की कटाई का प्रकार चुनें</span
+      >
+      <div class="space-x-4">
         {#each Object.entries(kaTAI_dhAn_list) as [key, val]}
-          <option value={key}>{val}</option>
+          <label class="flex-inline items-center space-x-1">
+            <input
+              required
+              type="radio"
+              class="radio text-base"
+              bind:group={kaTAI_dhAn}
+              name="kaTAI_dhAn"
+              value={key}
+            />
+            <span class="text-base font-bold">{val}</span>
+          </label>
         {/each}
-      </select>
-    </label>
+      </div>
+    </div>
   {/if}
 {/snippet}
 {#snippet jotAI_types()}
