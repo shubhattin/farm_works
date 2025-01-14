@@ -9,6 +9,7 @@
   import { onMount, type Snippet } from 'svelte';
   import { pwa_event_triggerer, pwa_install_event_fired } from '~/state/main';
   import '@fontsource/roboto/latin.css';
+  import '@fontsource-variable/noto-sans-devanagari';
   import '../app.pcss';
 
   let { data, children }: { data: LayoutData; children: Snippet } = $props();

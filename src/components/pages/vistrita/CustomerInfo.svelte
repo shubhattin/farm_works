@@ -84,11 +84,11 @@
         <AddRecord bind:current_page_open={add_record_opened} {customer_id} {customer_uuid} />
       </div>
     {:else}
-      <div class="space-x-1">
+      <div class="space-x-1 font-semibold">
         <span>कुल देय राशि :</span>
         <span>₹ {user_info.total_amount}</span>
       </div>
-      <div class="space-x-1">
+      <div class="space-x-1 font-semibold">
         <span>कुल बकाया राशि :</span>
         <span
           class={cl_join(
@@ -112,7 +112,7 @@
     <Tabs bind:value={selected_category} fluid base="mt-6">
       {#snippet list()}
         {#each Object.entries(CATEOGORY_LIST) as [key, val]}
-          <Tabs.Control labelClasses="rounded-md" value={key}>{val}</Tabs.Control>
+          <Tabs.Control labelClasses="rounded-md font-semibold" value={key}>{val}</Tabs.Control>
         {/each}
       {/snippet}
       {#snippet content()}

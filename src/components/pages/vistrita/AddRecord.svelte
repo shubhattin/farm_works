@@ -148,13 +148,13 @@
     <div transition:slide class="space-y-4">
       {#if category === 'jotAI' || category === 'kaTAi'}
         <label class="block">
-          <span class="label-text font-bold">खेत (बिस्सा में)</span>
+          <span class="label-text font-semibold">खेत (बिस्सा में)</span>
           <input type="number" class="input rounded-lg" bind:value={kheta} required />
         </label>
       {/if}
       {#if category}
         <label class="block">
-          <span class="label-text font-bold">दर (₹)</span>
+          <span class="label-text font-semibold">दर (₹)</span>
           <input type="number" class="input rounded-lg" bind:value={rate} required />
         </label>
         {#if total}
@@ -196,7 +196,7 @@
 
 {#snippet kaTAI_types()}
   <div class="space-y-0">
-    <div class="text-sm font-bold text-slate-400 dark:text-gray-400">
+    <div class="text-sm font-semibold text-slate-400 dark:text-gray-400">
       धान की कटाई का प्रकार चुनें
     </div>
     <div class="space-x-5">
@@ -217,7 +217,7 @@
   </div>
   {#if kaTAi === 'dhAn'}
     <div in:slide out:slide class="space-y-0">
-      <span class="text-sm font-bold text-zinc-400 dark:text-gray-400"
+      <span class="text-sm font-semibold text-zinc-400 dark:text-gray-400"
         >धान की कटाई का प्रकार चुनें</span
       >
       <div class="space-x-4">
@@ -240,7 +240,7 @@
 {/snippet}
 {#snippet jotAI_types()}
   <label class="block">
-    <span class="label-text font-bold">जोताई का प्रकार चुनें</span>
+    <span class="label-text font-semibold">जोताई का प्रकार चुनें</span>
     <select class="select rounded-lg" bind:value={jotAI} required>
       <option value={null}>-- प्रकार चयन करें --</option>
       {#each Object.entries(jotAI_list) as [key, val]}
@@ -250,14 +250,14 @@
   </label>
   {#if jotAI === 'rota_meter' || jotAI === 'cultivator' || jotAI === 'tAva'}
     <label class="block">
-      <span class="label-text font-bold">चास की संख्या</span>
+      <span class="label-text font-semibold">चास की संख्या</span>
       <input type="number" class="input rounded-lg" bind:value={jotAI_chAsa} required />
     </label>
   {/if}
 {/snippet}
 {#snippet trolley_types()}
   <label class="block">
-    <span class="label-text font-bold">ट्रॉली का संख्या</span>
+    <span class="label-text font-semibold">ट्रॉली का संख्या</span>
     <input type="number" class="input rounded-lg" bind:value={trolley_number} required />
   </label>
 {/snippet}
