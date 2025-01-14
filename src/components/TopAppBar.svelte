@@ -52,11 +52,11 @@
             }}
           >
             <Icon src={OiDownload24} class="-mt-1 text-base" />
-            इन्स्टॉल
+            प्रतिस्थापन
           </button>
         {/if}
         <div class="flex space-x-3 rounded-md px-2 py-1">
-          <span class="mt-1">स्वरूप चुनें</span>
+          <span class="mt-1 font-semibold">अनुप्रयोग स्वरूप</span>
           <ThemeChanger />
         </div>
       {/snippet}
