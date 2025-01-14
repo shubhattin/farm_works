@@ -67,7 +67,7 @@
     />
     <button type="submit" class="btn gap-1 rounded-lg bg-primary-800 py-1 pl-0 pr-4 font-bold">
       <Spinner show={$pass_verify.isPending} />
-      <span class="text-white">भरण करें</span>
+      <span class="text-white">संप्रवेश करें</span>
     </button>
   </form>
 </div>
