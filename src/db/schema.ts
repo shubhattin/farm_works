@@ -143,7 +143,8 @@ export const billRelations = relations(bills, ({ one, many }) => ({
 }));
 
 export const paymentRelations = relations(payments, ({ one }) => ({
-  bill: one(bills, { fields: [payments.bill_id], references: [bills.id] })
+  bill: one(bills, { fields: [payments.bill_id], references: [bills.id] }),
+  added_by_user: one(users, { fields: [payments.added_by_user_id], references: [users.id] })
 }));
 
 export const kaTAIRelations = relations(kaTAI_records, ({ one }) => ({
