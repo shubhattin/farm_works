@@ -32,24 +32,23 @@ async function main() {
     });
     fs.rmSync(temp_file_name);
   }
+
+  // Backup using pg_dump
+  backup(
+    `pg_dump --dbname=${envs.PG_DATABASE_URL} --if-exists --schema-only --clean --no-owner -f b.sql`,
+    'db_dump_schema.sql',
+    'b.sql'
+  );
+  backup(
+    `pg_dump --dbname=${envs.PG_DATABASE_URL} --data-only --insert --no-owner --rows-per-insert=8000 -f b.sql`,
+    'db_dump_data.sql',
+    'b.sql'
+  );
+
   await import_data(true).then(() => {
     queryClient.end();
     fs.copyFileSync('./out/db_data.json', './backup/db_data.json');
   });
-
-  if (!process.argv.slice(2).includes('--only-trans')) {
-    // Backup using pg_dump
-    backup(
-      `pg_dump --dbname=${envs.PG_DATABASE_URL} --if-exists --schema-only --clean --no-owner -f b.sql`,
-      'db_dump_schema.sql',
-      'b.sql'
-    );
-    backup(
-      `pg_dump --dbname=${envs.PG_DATABASE_URL} --data-only --insert --no-owner --rows-per-insert=8000 -f b.sql`,
-      'db_dump_data.sql',
-      'b.sql'
-    );
-  }
 }
 
 main();
