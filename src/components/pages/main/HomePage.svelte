@@ -1,5 +1,4 @@
 <script lang="ts">
-  import UserControls from './user/UserControls.svelte';
   import Icon from '~/tools/Icon.svelte';
   import AddCustomer from './AddCustomer.svelte';
   import { AiOutlineUserAdd } from 'svelte-icons-pack/ai';
@@ -21,7 +20,7 @@
   let lipi_lekhika_search_switch = $state(true);
 </script>
 
-{#if add_new_customer_opened && $user_info?.user_type === 'admin'}
+{#if add_new_customer_opened && $user_info && $user_info.user_type === 'admin'}
   <div in:scale out:slide>
     <AddCustomer bind:current_page_open={add_new_customer_opened} />
   </div>

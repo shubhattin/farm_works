@@ -38,7 +38,7 @@
     <Icon src={BiCollapseAlt} class="text-2xl" />
   </button>
   {#if !add_payment_opened}
-    {#if $user_info && !bill_info.payment_complete && bill_info.remaining_amount > 0}
+    {#if $user_info && $user_info.user_type === 'admin' && !bill_info.payment_complete && bill_info.remaining_amount > 0}
       <button
         onclick={() => (add_payment_opened = true)}
         class="btn gap-1 rounded-md bg-primary-600 p-1 pr-1.5 font-bold text-white dark:bg-primary-600"

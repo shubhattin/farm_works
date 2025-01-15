@@ -71,6 +71,9 @@ export const payments = pgTable(
       .notNull()
       .references(() => bills.id, { onDelete: 'cascade' }),
     amount: integer().notNull(),
+    added_by_user_id: integer()
+      .notNull()
+      .references(() => users.id, { onDelete: 'cascade' }),
     timestamp: timestamp({ withTimezone: true }).notNull().defaultNow()
   },
   (table) => ({

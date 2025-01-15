@@ -169,7 +169,7 @@ const submit_bill_payment_route = protectedAdminProcedure
       message: z.enum(['already_paid', 'invalid_amount', 'added_payment'])
     })
   )
-  .mutation(async ({ input: { customer_id, customer_uuid, bill_id, amount } }) => {
+  .mutation(async ({ input: { customer_id, customer_uuid, bill_id, amount }, ctx: { user } }) => {
     const [bill_info, [{ remaining_amount }]] = await Promise.all([
       db.query.bills.findFirst({
         where: ({ id }, { eq }) => eq(id, bill_id),
@@ -211,7 +211,8 @@ const submit_bill_payment_route = protectedAdminProcedure
     await Promise.all([
       db.insert(payments).values({
         bill_id,
-        amount
+        amount,
+        added_by_user_id: user.id
       }),
       amount === remaining_amount &&
         db.update(bills).set({ payment_complete: true }).where(eq(bills.id, bill_id))

@@ -40,7 +40,7 @@
         >
           {#snippet trigger()}
             <span
-              class="btn m-0 gap-1 rounded-md bg-error-600 pb-1 pl-1 pr-2 pt-0 font-bold text-white"
+              class="btn m-0 gap-1 rounded-md bg-error-600 pb-0 pl-1 pr-2 pt-0 font-bold text-white"
             >
               <Icon class="text-2xl" src={BiLogOut} />
               <span>निर्प्रवेश</span>

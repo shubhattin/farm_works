@@ -37,13 +37,14 @@
 
 <div class={cl_join('mb-4 space-x-6', !$user_info && 'mt-4')}>
   {#if $user_info}
+    <!-- Non Admin Users also allowed to view but not to edit -->
     <a
       class="btn gap-1 rounded-lg bg-surface-500 p-1 pr-1.5 font-bold text-white outline-none"
       href="/"
     >
       <Icon src={TiArrowBackOutline} class="text-2xl" /> मुख्य पृष्ठ
     </a>
-    {#if !add_record_opened}
+    {#if !add_record_opened && $user_info.user_type === 'admin'}
       <button
         onclick={() => (add_record_opened = true)}
         class="btn gap-1 rounded-md bg-primary-600 p-1 pr-1.5 font-bold text-white dark:bg-primary-600"
