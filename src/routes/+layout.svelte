@@ -11,6 +11,8 @@
   import '@fontsource/roboto/latin.css';
   import '@fontsource-variable/noto-sans-devanagari';
   import '../app.pcss';
+  import PartyTown from '~/components/tags/PartyTown.svelte';
+  import GA from '~/components/tags/GA.svelte';
 
   let { data, children }: { data: LayoutData; children: Snippet } = $props();
 
@@ -36,3 +38,5 @@
   </div>
   <SvelteQueryDevtools initialIsOpen={false} />
 </QueryClientProvider>
+<PartyTown />
+<GA />
