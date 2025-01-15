@@ -2,8 +2,8 @@ import { dbClient_ext as db, queryClient } from './client';
 import { writeFile } from 'fs/promises';
 import { dbMode, make_dir, take_input } from '~/tools/kry_server';
 
-const main = async () => {
-  if (!(await confirm_environemnt())) return;
+export const import_data = async (no_confirm = false) => {
+  if (!no_confirm && !(await confirm_environemnt())) return;
 
   console.log(`Fetching Data from ${dbMode} Database...`);
 
@@ -33,9 +33,18 @@ const main = async () => {
   }[dbMode];
   await writeFile(`./out/${out_file_name}`, JSON.stringify(json_data, null, 2));
 };
-main().then(() => {
-  queryClient.end();
-});
+
+const isMainModule = () => {
+  try {
+    return import.meta.url === new URL(process.argv[1], 'file://').href;
+  } catch {
+    return false;
+  }
+};
+if (isMainModule())
+  import_data().then(() => {
+    queryClient.end();
+  });
 
 async function confirm_environemnt() {
   let confirmation: string = await take_input(`Are you sure SELECT from ${dbMode} ? `);
