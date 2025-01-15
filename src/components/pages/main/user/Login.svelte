@@ -34,7 +34,7 @@
     }
   });
 
-  const users_list_q = client_q.users.get_admin_users_list.query();
+  const users_list_q = client_q.users.get_registered_users_list.query();
 
   const check_pass_func = async (e: Event) => {
     e.preventDefault();
