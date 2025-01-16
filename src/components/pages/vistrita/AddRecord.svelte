@@ -192,7 +192,13 @@
           देयक जोड़ें
         </button>
       {/if}
-      <DateInput bind:value={date} />
+      <DateInput
+        bind:value={date}
+        required={true}
+        placeholder="दिनांक"
+        format="dd-MM-yy HH:mm"
+        timePrecision={'minute'}
+      />
     </div>
   </form>
 {:else}
