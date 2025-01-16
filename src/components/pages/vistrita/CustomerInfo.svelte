@@ -50,7 +50,7 @@
   };
 </script>
 
-<div class={cl_join('mb-4 space-x-6', !$user_info && 'mt-4')}>
+<div class={cl_join('mb-4 space-x-3 sm:space-x-4 md:space-x-6', !$user_info && 'mt-4')}>
   {#if $user_info}
     <!-- Non Admin Users also allowed to view but not to edit -->
     <a
