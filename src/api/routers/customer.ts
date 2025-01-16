@@ -84,10 +84,10 @@ export const get_customers_data_func = async (customer_id: number, customer_uuid
           id: true,
           total: true,
           rate: true,
-          timestamp: true,
+          date: true,
           payment_complete: true
         },
-        orderBy: ({ timestamp, id }, { desc }) => [desc(timestamp), desc(id)],
+        orderBy: ({ date, id }, { desc }) => [desc(date), desc(id)],
         with: {
           jotAI_records: true,
           kaTAI_records: true,
@@ -152,7 +152,7 @@ export const get_customers_data_func = async (customer_id: number, customer_uuid
     .leftJoin(payments, eq(payments.bill_id, bills.id))
     .where(eq(bills.customer_id, customer_id))
     .groupBy(bills.id, bills.total) // Added bills.total to groupBy
-    .orderBy(desc(bills.timestamp), desc(bills.id));
+    .orderBy(desc(bills.date), desc(bills.id));
   /*
   Sorting both the fields by timestamp and id in descending order
   This is to ensure that the entries(ids) in both of them are in same order

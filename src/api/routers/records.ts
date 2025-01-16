@@ -15,6 +15,7 @@ const kaTAI_add_record_input_schema = z.object({
   total: z.number().int(),
   rate: z.number().int(),
   type: z.literal('kaTAI'),
+  date: z.coerce.date(),
   data: KaTAIRecordsSchemaZod.omit({
     id: true
   })
@@ -24,6 +25,7 @@ const jotAI_add_record_input_schema = z.object({
   total: z.number().int(),
   rate: z.number().int(),
   type: z.literal('jotAI'),
+  date: z.coerce.date(),
   data: JotAIRecordsSchemaZod.omit({
     id: true
   })
@@ -33,6 +35,7 @@ const trolley_add_record_input_schema = z.object({
   total: z.number().int(),
   rate: z.number().int(),
   type: z.literal('trolley'),
+  date: z.coerce.date(),
   data: TrolleyRecordsSchemaZod.omit({
     id: true
   })
@@ -50,7 +53,7 @@ const add_bill_route = protectedAdminProcedure.input(add_record_input_schema).mu
       user: { id: user_id }
     }
   }) => {
-    const { type, customer_id, total, rate } = DATA;
+    const { type, customer_id, total, rate, date } = DATA;
     let kaTAI_record_id = null;
     let jotAI_record_id = null;
     let trolley_record_id = null;
@@ -100,6 +103,7 @@ const add_bill_route = protectedAdminProcedure.input(add_record_input_schema).mu
           customer_id,
           rate,
           total,
+          date,
           kaTAI_record: kaTAI_record_id,
           jotAI_record: jotAI_record_id,
           trolley_record: trolley_record_id
@@ -125,8 +129,9 @@ const get_bill_payments_route = publicProcedure
       columns: {
         id: true,
         amount: true,
-        timestamp: true
+        date: true
       },
+      orderBy: ({ date, id }, { desc }) => [desc(date), desc(id)],
       with: {
         bill: {
           columns: {},
@@ -150,7 +155,7 @@ const get_bill_payments_route = publicProcedure
     return bill_payments.map((v) => ({
       id: v.id,
       amount: v.amount,
-      timestamp: v.timestamp
+      date: v.date
     }));
   });
 
@@ -160,7 +165,8 @@ const submit_bill_payment_route = protectedAdminProcedure
       customer_id: z.number().int(),
       customer_uuid: z.string().uuid(),
       bill_id: z.number().int(),
-      amount: z.number().int().min(1)
+      amount: z.number().int().min(1),
+      date: z.coerce.date()
     })
   )
   .output(
@@ -169,59 +175,62 @@ const submit_bill_payment_route = protectedAdminProcedure
       message: z.enum(['already_paid', 'invalid_amount', 'added_payment'])
     })
   )
-  .mutation(async ({ input: { customer_id, customer_uuid, bill_id, amount }, ctx: { user } }) => {
-    const [bill_info, [{ remaining_amount }]] = await Promise.all([
-      db.query.bills.findFirst({
-        where: ({ id }, { eq }) => eq(id, bill_id),
-        columns: {
-          payment_complete: true
-        },
-        with: {
-          customer: {
-            columns: {
-              id: true,
-              uuid: true
+  .mutation(
+    async ({ input: { customer_id, customer_uuid, bill_id, amount, date }, ctx: { user } }) => {
+      const [bill_info, [{ remaining_amount }]] = await Promise.all([
+        db.query.bills.findFirst({
+          where: ({ id }, { eq }) => eq(id, bill_id),
+          columns: {
+            payment_complete: true
+          },
+          with: {
+            customer: {
+              columns: {
+                id: true,
+                uuid: true
+              }
             }
           }
-        }
-      }),
-      db
-        .select({
-          remaining_amount: sql<number>`CAST(${bills.total} - COALESCE(SUM(${payments.amount}), 0) AS INTEGER)`
-        })
-        .from(bills)
-        .leftJoin(payments, eq(payments.bill_id, bills.id))
-        .where(eq(bills.id, bill_id))
-        .groupBy(bills.id, bills.total)
-        .limit(1)
-    ]);
-    if (!bill_info) throw new Error('Invalid Bill ID');
-    if (bill_info.customer.id !== customer_id || bill_info.customer.uuid !== customer_uuid)
-      throw new Error('Invalid Customer ID or UUID');
-    if (bill_info.payment_complete)
+        }),
+        db
+          .select({
+            remaining_amount: sql<number>`CAST(${bills.total} - COALESCE(SUM(${payments.amount}), 0) AS INTEGER)`
+          })
+          .from(bills)
+          .leftJoin(payments, eq(payments.bill_id, bills.id))
+          .where(eq(bills.id, bill_id))
+          .groupBy(bills.id, bills.total)
+          .limit(1)
+      ]);
+      if (!bill_info) throw new Error('Invalid Bill ID');
+      if (bill_info.customer.id !== customer_id || bill_info.customer.uuid !== customer_uuid)
+        throw new Error('Invalid Customer ID or UUID');
+      if (bill_info.payment_complete)
+        return {
+          success: false,
+          message: 'already_paid'
+        };
+      if (amount > remaining_amount)
+        return {
+          success: false,
+          message: 'invalid_amount'
+        };
+      await Promise.all([
+        db.insert(payments).values({
+          bill_id,
+          amount,
+          added_by_user_id: user.id,
+          date
+        }),
+        amount === remaining_amount &&
+          db.update(bills).set({ payment_complete: true }).where(eq(bills.id, bill_id))
+      ]);
       return {
-        success: false,
-        message: 'already_paid'
+        success: true,
+        message: 'added_payment'
       };
-    if (amount > remaining_amount)
-      return {
-        success: false,
-        message: 'invalid_amount'
-      };
-    await Promise.all([
-      db.insert(payments).values({
-        bill_id,
-        amount,
-        added_by_user_id: user.id
-      }),
-      amount === remaining_amount &&
-        db.update(bills).set({ payment_complete: true }).where(eq(bills.id, bill_id))
-    ]);
-    return {
-      success: true,
-      message: 'added_payment'
-    };
-  });
+    }
+  );
 
 export const records_router = t.router({
   add_bill: add_bill_route,

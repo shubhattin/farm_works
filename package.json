@@ -60,6 +60,7 @@
     "buffer": "^6.0.3",
     "chalk": "^5.4.1",
     "clsx": "^2.1.1",
+    "date-picker-svelte": "^2.15.1",
     "devalue": "^5.1.1",
     "drizzle-orm": "^0.38.3",
     "drizzle-zod": "^0.5.1",

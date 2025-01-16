@@ -86,13 +86,13 @@
                   ></td
                 >
                 <td
-                  >{payment.timestamp.toLocaleString('en-IN', {
-                    hour: '2-digit',
-                    minute: '2-digit',
+                  >{payment.date.toLocaleString('en-IN', {
+                    // hour: '2-digit',
+                    // minute: '2-digit',
+                    // hour12: true,
                     day: '2-digit',
                     month: '2-digit',
                     year: '2-digit',
-                    hour12: true,
                     timeZone: 'Asia/Kolkata'
                   })}</td
                 >

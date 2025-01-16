@@ -26,7 +26,7 @@
   </div>
 {:else}
   <div class="flex justify-between">
-    <LipiLekhikaSwitch bind:status_on={$typing_tool_enabled} hide_until_mounted={true} />
+    <LipiLekhikaSwitch bind:status_on={$typing_tool_enabled} />
     <button
       onclick={() => (add_new_customer_opened = true)}
       class="gap-1 rounded-xl bg-secondary-600 px-2 py-1 pb-0 text-sm font-bold text-white dark:bg-secondary-700"

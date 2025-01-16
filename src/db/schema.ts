@@ -5,7 +5,6 @@ import {
   pgEnum,
   uuid,
   integer,
-  date,
   timestamp,
   index,
   boolean
@@ -51,6 +50,8 @@ export const bills = pgTable(
     payment_complete: boolean().notNull().default(false),
     rate: integer().notNull(),
     total: integer().notNull(),
+    date: timestamp({ withTimezone: true }).notNull(),
+    // ^ date is the date indended to be recored
     timestamp: timestamp({ withTimezone: true }).notNull().defaultNow(),
     kaTAI_record: integer().references(() => kaTAI_records.id),
     jotAI_record: integer().references(() => jotAI_records.id),
@@ -59,7 +60,8 @@ export const bills = pgTable(
   },
   (table) => ({
     customerIdx: index().on(table.customer_id),
-    timestampIdx: index().on(table.timestamp)
+    timestampIdx: index().on(table.timestamp),
+    dateIdx: index().on(table.date)
   })
 );
 
@@ -74,11 +76,13 @@ export const payments = pgTable(
     added_by_user_id: integer()
       .notNull()
       .references(() => users.id, { onDelete: 'cascade' }),
+    date: timestamp({ withTimezone: true }).notNull(),
     timestamp: timestamp({ withTimezone: true }).notNull().defaultNow()
   },
   (table) => ({
     billIdx: index().on(table.bill_id),
-    timestampIdx: index().on(table.timestamp)
+    timestampIdx: index().on(table.timestamp),
+    dateIdx: index().on(table.date)
   })
 );
 

@@ -9,6 +9,7 @@
   import { AiOutlineClose } from 'svelte-icons-pack/ai';
   import { useQueryClient } from '@tanstack/svelte-query';
   import ConfirmModal from '~/components/PopoverModals/ConfirmModal.svelte';
+  import { DateInput } from 'date-picker-svelte';
 
   let {
     current_page_open = $bindable(),
@@ -26,6 +27,7 @@
         type: 'kaTAI',
         total: total,
         rate: rate,
+        date,
         data: {
           type: kaTAi,
           kheta,
@@ -38,6 +40,7 @@
         type: 'jotAI',
         total: total,
         rate: rate,
+        date,
         data: {
           type: jotAI,
           kheta,
@@ -53,6 +56,7 @@
         type: 'trolley',
         total: total,
         rate: rate,
+        date,
         data: {
           number: trolley_number
         }
@@ -77,6 +81,8 @@
       // we may also invalidate the main list cache
     }
   });
+
+  let date = $state(new Date());
 
   let category: keyof typeof CATEOGORY_LIST | null = $state(null);
 
@@ -110,11 +116,6 @@
   let confirm_modal_opened = $state(false);
 </script>
 
-<ConfirmModal
-  bind:popup_state={confirm_modal_opened}
-  confirm_func={submit_bill_func}
-  description="क्या आप निश्चि हैं कि इस देयक को जोड़ना चाहते हैं ?"
-/>
 {#if !$add_bill_mut.isSuccess}
   <div class="mb-2 flex space-x-4">
     <button
@@ -191,6 +192,13 @@
           देयक जोड़ें
         </button>
       {/if}
+      <DateInput
+        bind:value={date}
+        required={true}
+        placeholder="दिनांक"
+        format="dd-MM-yyyy HH:mm"
+        timePrecision={'minute'}
+      />
     </div>
   </form>
 {:else}
@@ -275,3 +283,9 @@
     <input type="number" class="input rounded-lg" bind:value={trolley_number} required />
   </label>
 {/snippet}
+
+<ConfirmModal
+  bind:popup_state={confirm_modal_opened}
+  confirm_func={submit_bill_func}
+  description="क्या आप निश्चि हैं कि इस देयक को जोड़ना चाहते हैं ?"
+/>

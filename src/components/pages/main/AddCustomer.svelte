@@ -46,11 +46,6 @@
   let confirm_modal_opened = $state(false);
 </script>
 
-<ConfirmModal
-  bind:popup_state={confirm_modal_opened}
-  description={`क्या आप निस्चित हैं कि आप ${name} नामक ग्राहक को जोड़ना चाहते हैं ?`}
-  confirm_func={add_customer_func}
-></ConfirmModal>
 {#if !$register_customer_mut.isSuccess}
   <div class="flex space-x-4">
     <button
@@ -149,3 +144,9 @@
     मुख्य पृष्ठ
   </button>
 {/if}
+
+<ConfirmModal
+  bind:popup_state={confirm_modal_opened}
+  description={`क्या आप निस्चित हैं कि आप ${name} नामक ग्राहक को जोड़ना चाहते हैं ?`}
+  confirm_func={add_customer_func}
+></ConfirmModal>

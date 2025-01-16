@@ -198,7 +198,7 @@
                         >
                       </td>
                       <td
-                        >{bill.timestamp.toLocaleString('en-IN', {
+                        >{bill.date.toLocaleString('en-IN', {
                           day: '2-digit',
                           month: '2-digit',
                           year: '2-digit',

@@ -7,6 +7,7 @@
   import { useQueryClient } from '@tanstack/svelte-query';
   import { onMount } from 'svelte';
   import ConfirmModal from '~/components/PopoverModals/ConfirmModal.svelte';
+  import { DateInput } from 'date-picker-svelte';
 
   const query_client = useQueryClient();
 
@@ -53,6 +54,8 @@
     }
   });
 
+  let date = $state(new Date());
+
   const submit_bill_payment_func = async () => {
     confirm_modal_opened = false;
     if (!amount || amount <= 0 || amount > remaning_amount) return;
@@ -60,7 +63,8 @@
       customer_id,
       customer_uuid,
       bill_id,
-      amount
+      amount,
+      date
     });
   };
 
@@ -72,11 +76,6 @@
   let amount_input_elmnt = $state<HTMLInputElement | null>(null);
 </script>
 
-<ConfirmModal
-  bind:popup_state={confirm_modal_opened}
-  confirm_func={submit_bill_payment_func}
-  description={`क्या आप निश्चित हैं कि ₹ ${amount} के वित्तदन राशि को जोड़ना चाहते हैं ?`}
-/>
 <div class="mb-2 flex space-x-4">
   <button
     class="btn rounded-lg bg-error-500 px-1.5 py-1 outline-none"
@@ -86,6 +85,13 @@
   </button>
 </div>
 <div class="space-y-2">
+  <DateInput
+    bind:value={date}
+    required={true}
+    placeholder="दिनांक"
+    format="dd-MM-yyyy HH:mm"
+    timePrecision={'minute'}
+  />
   <div>पेय राशि : <span class="font-bold">₹ {remaning_amount}</span></div>
   <label>
     <span class="label-text">राशि (₹)</span>
@@ -109,6 +115,7 @@
           )}>₹ {remaning_amount - amount}</span
         >
       </div>
+
       <button
         onclick={() => (confirm_modal_opened = true)}
         class="btn block gap-1 rounded-md bg-primary-500 px-2 py-1 pb-0 font-bold text-white dark:bg-primary-600"
@@ -122,3 +129,9 @@
     {/if}
   {/if}
 </div>
+
+<ConfirmModal
+  bind:popup_state={confirm_modal_opened}
+  confirm_func={submit_bill_payment_func}
+  description={`क्या आप निश्चित हैं कि ₹ ${amount} के वित्तदन राशि को जोड़ना चाहते हैं ?`}
+/>
