@@ -19,6 +19,8 @@
     <label class="space-x-2 sm:space-x-3 md:space-x-4 lg:space-x-5">
       <Icon src={OiSearch16} class="text-2xl" />
       <input
+        autocapitalize="off"
+        autocomplete="off"
         oninput={async (e) => {
           if (lipi_lekhika_enabled)
             // @ts-ignore

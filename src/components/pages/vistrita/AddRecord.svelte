@@ -8,6 +8,7 @@
   import { CATEOGORY_LIST, kaTAi_list, kaTAI_dhAn_list, jotAI_list } from './type_names';
   import { AiOutlineClose } from 'svelte-icons-pack/ai';
   import { useQueryClient } from '@tanstack/svelte-query';
+  import ConfirmModal from '~/components/PopoverModals/ConfirmModal.svelte';
 
   let {
     current_page_open = $bindable(),
@@ -17,8 +18,7 @@
 
   const query_client = useQueryClient();
 
-  const handle_submit = async (e: Event) => {
-    e.preventDefault();
+  const submit_bill_func = async () => {
     if (category === 'kaTAi' && rate && total && kheta && kaTAi) {
       await $add_bill_mut.mutateAsync({
         customer_id,
@@ -74,6 +74,7 @@
       }); // wont refetch untill enabled (used)
       current_page_open = false;
       // we may also invalidate the main list cache
+      confirm_modal_opened = false;
     }
   });
 
@@ -105,8 +106,15 @@
     }
     return null;
   });
+
+  let confirm_modal_opened = $state(false);
 </script>
 
+<ConfirmModal
+  bind:popup_state={confirm_modal_opened}
+  confirm_func={submit_bill_func}
+  description="क्या आप निश्चि हैं कि इस देयक को जोड़ना चाहते हैं ?"
+/>
 {#if !$add_bill_mut.isSuccess}
   <div class="mb-2 flex space-x-4">
     <button
@@ -116,7 +124,13 @@
       <Icon src={AiOutlineClose} class="text-2xl text-white" />
     </button>
   </div>
-  <form class="space-y-4" onsubmit={handle_submit}>
+  <form
+    class="space-y-4"
+    onsubmit={(e: Event) => {
+      e.preventDefault();
+      confirm_modal_opened = true;
+    }}
+  >
     <div class="space-x-5 sm:space-x-8">
       {#each Object.entries(CATEOGORY_LIST) as [key, val]}
         <label class="space-x-2">
