@@ -188,7 +188,7 @@
           class="btn gap-1 rounded-md bg-primary-500 px-2 py-1 pb-0 font-bold text-white dark:bg-primary-600"
         >
           <Icon src={VscAdd} class="text-xl" />
-          जोड़ें
+          देयक जोड़ें
         </button>
       {/if}
     </div>

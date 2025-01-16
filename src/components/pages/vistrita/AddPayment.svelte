@@ -115,7 +115,7 @@
         disabled={$submit_bill_payment_mut.isPending}
       >
         <Icon src={VscAdd} class="text-xl" />
-        जोड़ें
+        वित्तदन जोड़ें
       </button>
     {:else}
       <div class="text-error-600 dark:text-error-500">पेय राशि से अधिक भुगतान नही हो सकता !</div>
