@@ -192,10 +192,7 @@
           देयक जोड़ें
         </button>
       {/if}
-        <DateInput
-          bind:value={date}
-        />
-      </div>
+      <DateInput bind:value={date} />
     </div>
   </form>
 {:else}
