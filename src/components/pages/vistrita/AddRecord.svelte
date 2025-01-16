@@ -19,6 +19,7 @@
   const query_client = useQueryClient();
 
   const submit_bill_func = async () => {
+    confirm_modal_opened = false;
     if (category === 'kaTAi' && rate && total && kheta && kaTAi) {
       await $add_bill_mut.mutateAsync({
         customer_id,
@@ -74,7 +75,6 @@
       }); // wont refetch untill enabled (used)
       current_page_open = false;
       // we may also invalidate the main list cache
-      confirm_modal_opened = false;
     }
   });
 

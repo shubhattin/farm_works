@@ -9,12 +9,11 @@
   import LipiLekhikaSwitch from '~/components/LipiLekhikaSwitch.svelte';
   import ConfirmModal from '~/components/PopoverModals/ConfirmModal.svelte';
   import { useQueryClient } from '@tanstack/svelte-query';
+  import { typing_tool_enabled } from '~/state/main';
 
   const query_client = useQueryClient();
 
   let { current_page_open = $bindable() }: { current_page_open: boolean } = $props();
-
-  let hindi_typing_tool_enabled = $state(true);
 
   const register_customer_mut = client_q.customer.register_customer.mutation({
     onSuccess: () => {
@@ -22,11 +21,11 @@
         queryKey: [['customer', 'get_customers_list']],
         exact: false
       });
-      confirm_modal_opened = false;
     }
   });
 
   const add_customer_func = async () => {
+    confirm_modal_opened = false;
     if (phone_number) {
       const ph_no = phone_number.toString();
       if (ph_no.length > 0 && ph_no.length !== 10) return;
@@ -60,7 +59,7 @@
     >
       <Icon src={TiArrowBackOutline} class="text-2xl" />
     </button>
-    <LipiLekhikaSwitch class="inline-flex" bind:status_on={hindi_typing_tool_enabled} />
+    <LipiLekhikaSwitch class="inline-flex" bind:status_on={$typing_tool_enabled} />
   </div>
   <form
     onsubmit={(e: Event) => {
@@ -76,7 +75,7 @@
         autocapitalize="off"
         autocomplete="off"
         oninput={async (e) => {
-          if (hindi_typing_tool_enabled)
+          if ($typing_tool_enabled)
             // @ts-ignore
             await lekhika_typing_tool(e.target, e.data, 'Hindi', true, (val) => {
               name = val;
@@ -113,7 +112,7 @@
         name="address"
         placeholder="पता"
         oninput={async (e) => {
-          if (hindi_typing_tool_enabled)
+          if ($typing_tool_enabled)
             // @ts-ignore
             await lekhika_typing_tool(e.target, e.data, 'Hindi', true, (val) => {
               address = val;

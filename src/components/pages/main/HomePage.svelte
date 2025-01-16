@@ -8,6 +8,7 @@
   import { user_info } from '~/state/user.svelte';
   import CustomerList from './CustomerList.svelte';
   import LipiLekhikaSwitch from '~/components/LipiLekhikaSwitch.svelte';
+  import { typing_tool_enabled } from '~/state/main';
 
   onMount(() => {
     setTimeout(() => {
@@ -17,7 +18,6 @@
   });
 
   let add_new_customer_opened = $state(false);
-  let lipi_lekhika_search_switch = $state(true);
 </script>
 
 {#if add_new_customer_opened && $user_info && $user_info.user_type === 'admin'}
@@ -26,7 +26,7 @@
   </div>
 {:else}
   <div class="flex justify-between">
-    <LipiLekhikaSwitch bind:status_on={lipi_lekhika_search_switch} />
+    <LipiLekhikaSwitch bind:status_on={$typing_tool_enabled} hide_until_mounted={true} />
     <button
       onclick={() => (add_new_customer_opened = true)}
       class="gap-1 rounded-xl bg-secondary-600 px-2 py-1 pb-0 text-sm font-bold text-white dark:bg-secondary-700"
@@ -35,5 +35,5 @@
       नया ग्राहक जोड़ें
     </button>
   </div>
-  <CustomerList lipi_lekhika_enabled={lipi_lekhika_search_switch} />
+  <CustomerList lipi_lekhika_enabled={$typing_tool_enabled} />
 {/if}

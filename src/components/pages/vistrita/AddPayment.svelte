@@ -50,11 +50,11 @@
         queryKey: [['customer', 'get_customers_list']],
         exact: false
       }); // wont refetch untill enabled (used)
-      confirm_modal_opened = false;
     }
   });
 
   const submit_bill_payment_func = async () => {
+    confirm_modal_opened = false;
     if (!amount || amount <= 0 || amount > remaning_amount) return;
     await $submit_bill_payment_mut.mutateAsync({
       customer_id,
