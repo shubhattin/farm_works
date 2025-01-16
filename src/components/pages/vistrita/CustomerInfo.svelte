@@ -37,10 +37,14 @@
 
   const share_info_func = async () => {
     if ($user_info && navigator.share) {
+      const customer_data = $customer_info_q.data!.customer_info;
       await navigator.share({
-        title: `${$customer_info_q.data!.customer_info.customer_name} के देयकों का विस्तृत विवरण | ${PUBLIC_APP_NAME ?? ''}`,
-        text: `कुल देय राशि के देयकों का विस्तृत विवरण`,
-        url: window.location.href
+        title: `${customer_data.customer_name} के देयकों का विस्तृत विवरण | ${PUBLIC_APP_NAME ?? ''}`,
+        text:
+          `कुल देय राशि : ₹ ${customer_data.total_amount}` +
+          `\nकुल बकाया राशि : ${customer_data.remaining_amount}` +
+          `\nअपने देयकों एवं भुगतानों का विस्तृत विवरण देखें नीचे दिए गए संचित से` +
+          `\n\n${window.location.href}`
       });
     }
   };
