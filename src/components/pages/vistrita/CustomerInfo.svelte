@@ -103,7 +103,7 @@
         </span>
       {/if}
     </div>
-    {#if add_record_opened}
+    {#if add_record_opened && $user_info}
       <div in:slide out:slide>
         <AddRecord bind:current_page_open={add_record_opened} {customer_id} {customer_uuid} />
       </div>

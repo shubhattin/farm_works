@@ -104,7 +104,7 @@
       </div>
     {/if}
   {/if}
-{:else}
+{:else if $user_info}
   <div in:fade out:slide>
     <AddPayment
       {customer_id}
