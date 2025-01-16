@@ -6,6 +6,7 @@
   import Icon from '~/tools/Icon.svelte';
   import { useQueryClient } from '@tanstack/svelte-query';
   import { onMount } from 'svelte';
+  import ConfirmModal from '~/components/PopoverModals/ConfirmModal.svelte';
 
   const query_client = useQueryClient();
 
@@ -49,6 +50,7 @@
         queryKey: [['customer', 'get_customers_list']],
         exact: false
       }); // wont refetch untill enabled (used)
+      confirm_modal_opened = false;
     }
   });
 
@@ -66,9 +68,15 @@
     amount_input_elmnt && amount_input_elmnt.focus();
   });
 
+  let confirm_modal_opened = $state(false);
   let amount_input_elmnt = $state<HTMLInputElement | null>(null);
 </script>
 
+<ConfirmModal
+  bind:popup_state={confirm_modal_opened}
+  confirm_func={submit_bill_payment_func}
+  description={`क्या आप निश्चित हैं कि ₹ ${amount} के वित्तदन राशि को जोड़ना चाहते हैं ?`}
+/>
 <div class="mb-2 flex space-x-4">
   <button
     class="btn rounded-lg bg-error-500 px-1.5 py-1 outline-none"
@@ -102,7 +110,7 @@
         >
       </div>
       <button
-        onclick={submit_bill_payment_func}
+        onclick={() => (confirm_modal_opened = true)}
         class="btn block gap-1 rounded-md bg-primary-500 px-2 py-1 pb-0 font-bold text-white dark:bg-primary-600"
         disabled={$submit_bill_payment_mut.isPending}
       >
