@@ -192,7 +192,7 @@
           देयक जोड़ें
         </button>
       {/if}
-      <div class="z-50">
+      <div class="relative z-50">
         <DateInput
           bind:value={date}
           required={true}
