@@ -8,7 +8,10 @@
 </script>
 
 <svelte:head>
-  <title>{PUBLIC_APP_NAME ?? ''}</title>
+  <title
+    >{data.customer_data.customer_info.customer_name} के देयकों का विस्तृत विवरण | {PUBLIC_APP_NAME ??
+      ''}</title
+  >
 </svelte:head>
 
 <div in:scale out:slide>

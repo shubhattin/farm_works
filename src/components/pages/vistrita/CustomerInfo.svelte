@@ -4,7 +4,7 @@
   import { TiArrowBackOutline, TiTick } from 'svelte-icons-pack/ti';
   import Icon from '~/tools/Icon.svelte';
   import { user_info } from '~/state/user.svelte';
-  import { LuRefreshCw } from 'svelte-icons-pack/lu';
+  import { LuRefreshCw, LuShare2 } from 'svelte-icons-pack/lu';
   import { cl_join } from '~/tools/cl_join';
   import { BsDashCircleDotted, BsPlusLg } from 'svelte-icons-pack/bs';
   import AddRecord from './AddRecord.svelte';
@@ -12,6 +12,7 @@
   import { CATEOGORY_LIST, kaTAI_dhAn_list, jotAI_list, kaTAi_list } from './type_names';
   import { Tabs } from '@skeletonlabs/skeleton-svelte';
   import BillInfo from './BillInfo.svelte';
+  import { PUBLIC_APP_NAME } from '$env/static/public';
 
   let { customer_id, customer_uuid }: { customer_id: number; customer_uuid: string } = $props();
 
@@ -33,6 +34,16 @@
   $effect(() => {
     if (selected_category) selected_bill_id = null;
   });
+
+  const share_info_func = async () => {
+    if ($user_info && navigator.share) {
+      await navigator.share({
+        title: `${$customer_info_q.data!.customer_info.customer_name} के देयकों का विस्तृत विवरण | ${PUBLIC_APP_NAME ?? ''}`,
+        text: `कुल देय राशि के देयकों का विस्तृत विवरण`,
+        url: window.location.href
+      });
+    }
+  };
 </script>
 
 <div class={cl_join('mb-4 space-x-6', !$user_info && 'mt-4')}>
@@ -75,10 +86,18 @@
     <div class="placeholder h-6 w-36 animate-pulse rounded-md"></div>
     <div class="placeholder h-96 w-full rounded-lg"></div>
   {:else if !$customer_info_q.isFetching && $customer_info_q.isSuccess}
-    {@const user_info = $customer_info_q.data!.user_info}
+    {@const customer_info = $customer_info_q.data!.customer_info}
     <div class="space-x-1">
-      <span class="text-lg font-bold">{user_info.customer_name}</span>
-      <span class="text-sm text-gray-500 dark:text-zinc-400">#{user_info.customer_id}</span>
+      <span class="text-lg font-bold">{customer_info.customer_name}</span>
+      <span class="text-sm text-gray-500 dark:text-zinc-400">#{customer_info.customer_id}</span>
+      {#if $user_info}
+        <!-- This option available to all registered users -->
+        <span>
+          <button class="btn m-0 select-none gap-1 p-0 outline-none" onclick={share_info_func}>
+            <Icon src={LuShare2} class="ml-4 text-2xl" />
+          </button>
+        </span>
+      {/if}
     </div>
     {#if add_record_opened}
       <div in:slide out:slide>
@@ -87,15 +106,15 @@
     {:else}
       <div class="space-x-1 font-semibold">
         <span>कुल देय राशि :</span>
-        <span>₹ {user_info.total_amount}</span>
+        <span>₹ {customer_info.total_amount}</span>
       </div>
       <div class="space-x-1 font-semibold">
         <span>कुल बकाया राशि :</span>
         <span
           class={cl_join(
             'text-rose-600 dark:text-rose-300',
-            user_info.remaining_amount === 0 && 'text-green-500 dark:text-green-400'
-          )}>₹ {user_info.remaining_amount}</span
+            customer_info.remaining_amount === 0 && 'text-green-500 dark:text-green-400'
+          )}>₹ {customer_info.remaining_amount}</span
         >
       </div>
       <div>

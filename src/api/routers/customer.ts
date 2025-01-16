@@ -96,7 +96,7 @@ export const get_customers_data_func = async (customer_id: number, customer_uuid
       }
     }
   });
-  const user_info_prom = db
+  const customer_info_prom = db
     .select({
       customer_id: customers.id,
       customer_name: customers.name,
@@ -159,14 +159,14 @@ export const get_customers_data_func = async (customer_id: number, customer_uuid
   As timestamps (possibly) can be same
   */
 
-  const [data, user_info, remaining_amounts] = await Promise.all([
+  const [data, customer_info, remaining_amounts] = await Promise.all([
     data_prom,
-    user_info_prom,
+    customer_info_prom,
     bills_remaning_amounts_prom
   ]);
   // console.log(data!.bills, remaining_amounts);
   return {
-    user_info: user_info[0],
+    customer_info: customer_info[0],
     bills: data!.bills.map((bill, i) => ({
       ...bill,
       remaining_amount: remaining_amounts[i].remaining_amount
