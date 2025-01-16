@@ -13,6 +13,9 @@ const config = {
     }),
     alias: {
       '~/*': 'src/*'
+    },
+    purge: {
+      safelist: [/svelte-date-picker/]
     }
   }
 };
