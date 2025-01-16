@@ -9,6 +9,7 @@
   import { AiOutlineClose } from 'svelte-icons-pack/ai';
   import { useQueryClient } from '@tanstack/svelte-query';
   import ConfirmModal from '~/components/PopoverModals/ConfirmModal.svelte';
+  import { DateInput } from 'date-picker-svelte';
 
   let {
     current_page_open = $bindable(),
@@ -191,15 +192,13 @@
           देयक जोड़ें
         </button>
       {/if}
-      {#await import('date-picker-svelte') then Module}
-        <Module.DateInput
-          bind:value={date}
-          required={true}
-          placeholder="दिनांक"
-          format="dd-MM-yyyy HH:mm"
-          timePrecision={'minute'}
-        />
-      {/await}
+      <DateInput
+        bind:value={date}
+        required={true}
+        placeholder="दिनांक"
+        format="dd-MM-yy HH:mm"
+        timePrecision={'minute'}
+      />
     </div>
   </form>
 {:else}
