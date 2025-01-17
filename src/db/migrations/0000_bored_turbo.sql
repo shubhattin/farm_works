@@ -9,6 +9,7 @@ CREATE TABLE "bills" (
 	"payment_complete" boolean DEFAULT false NOT NULL,
 	"rate" integer NOT NULL,
 	"total" integer NOT NULL,
+	"date" timestamp with time zone NOT NULL,
 	"timestamp" timestamp with time zone DEFAULT now() NOT NULL,
 	"kaTAI_record" integer,
 	"jotAI_record" integer,
@@ -42,6 +43,8 @@ CREATE TABLE "payments" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"bill_id" integer NOT NULL,
 	"amount" integer NOT NULL,
+	"added_by_user_id" integer NOT NULL,
+	"date" timestamp with time zone NOT NULL,
 	"timestamp" timestamp with time zone DEFAULT now() NOT NULL
 );
 --> statement-breakpoint
@@ -64,7 +67,11 @@ ALTER TABLE "bills" ADD CONSTRAINT "bills_kaTAI_record_kaTAI_records_id_fk" FORE
 ALTER TABLE "bills" ADD CONSTRAINT "bills_jotAI_record_jotAI_records_id_fk" FOREIGN KEY ("jotAI_record") REFERENCES "public"."jotAI_records"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "bills" ADD CONSTRAINT "bills_trolley_record_trolley_records_id_fk" FOREIGN KEY ("trolley_record") REFERENCES "public"."trolley_records"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "payments" ADD CONSTRAINT "payments_bill_id_bills_id_fk" FOREIGN KEY ("bill_id") REFERENCES "public"."bills"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "payments" ADD CONSTRAINT "payments_added_by_user_id_users_id_fk" FOREIGN KEY ("added_by_user_id") REFERENCES "public"."users"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "bills_customer_id_index" ON "bills" USING btree ("customer_id");--> statement-breakpoint
 CREATE INDEX "bills_timestamp_index" ON "bills" USING btree ("timestamp");--> statement-breakpoint
+CREATE INDEX "bills_date_index" ON "bills" USING btree ("date");--> statement-breakpoint
+CREATE INDEX "customers_uuid_index" ON "customers" USING btree ("uuid");--> statement-breakpoint
 CREATE INDEX "payments_bill_id_index" ON "payments" USING btree ("bill_id");--> statement-breakpoint
-CREATE INDEX "payments_timestamp_index" ON "payments" USING btree ("timestamp");
+CREATE INDEX "payments_timestamp_index" ON "payments" USING btree ("timestamp");--> statement-breakpoint
+CREATE INDEX "payments_date_index" ON "payments" USING btree ("date");

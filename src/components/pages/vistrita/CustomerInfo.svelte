@@ -14,7 +14,9 @@
   import BillInfo from './BillInfo.svelte';
   import { PUBLIC_APP_NAME } from '$env/static/public';
   import { BsTelephone } from 'svelte-icons-pack/bs';
-  import { FiMapPin } from 'svelte-icons-pack/fi';
+  import { FiEdit2, FiMapPin } from 'svelte-icons-pack/fi';
+  import { Modal } from '@skeletonlabs/skeleton-svelte';
+  import EditCustomerInfo from './edits/EditCustomerInfo.svelte';
 
   let { customer_id, customer_uuid }: { customer_id: number; customer_uuid: string } = $props();
 
@@ -38,6 +40,7 @@
   let selected_category: keyof typeof CATEOGORY_LIST = $state('kaTAi');
   let selected_bill_id = $state<number | null>(null);
   let selected_bill_id_index = $state(0);
+  let edit_modal_opened = $state(false);
 
   $effect(() => {
     if (selected_category) selected_bill_id = null;
@@ -112,13 +115,35 @@
         <span class="text-sm text-gray-500 dark:text-zinc-400">#{customer_info.customer_id}</span>
         {#if $user_info}
           <!-- This option available to all registered users -->
-          <span>
+          <span class="space-x-3">
             <button
               class="btn m-0 ml-2 select-none gap-1 p-0 outline-none hover:text-gray-500 sm:ml-3 md:ml-4 dark:hover:text-gray-400"
               onclick={share_info_func}
             >
               <Icon src={LuShare2} class="text-xl" />
             </button>
+            {#if $user_info.user_type === 'admin'}
+              <Modal
+                contentBase="card z-40 space-y-2 rounded-lg px-3 py-2 shadow-xl bg-surface-100-900"
+                triggerBase="btn p-0 m-0 outline-none select-none"
+                backdropBackground="backdrop-blur-md"
+                bind:open={edit_modal_opened}
+              >
+                {#snippet trigger()}
+                  <Icon src={FiEdit2} class="text-lg" />
+                {/snippet}
+                {#snippet content()}
+                  <EditCustomerInfo
+                    {customer_id}
+                    {customer_uuid}
+                    name={$customer_info_q.data.customer_info.customer_name}
+                    phone_number={$customer_additional_data_q.data!.phone_number}
+                    address={$customer_additional_data_q.data!.address}
+                    bind:modal_opened={edit_modal_opened}
+                  />
+                {/snippet}
+              </Modal>
+            {/if}
           </span>
         {/if}
       </div>

@@ -2,7 +2,7 @@ import { t, protectedAdminProcedure, protectedProcedure, publicProcedure } from 
 import { z } from 'zod';
 import { bills, customers, payments } from '~/db/schema';
 import { db } from '~/db/db';
-import { desc, eq, like, max, sql } from 'drizzle-orm';
+import { and, desc, eq, like, sql } from 'drizzle-orm';
 import { delay } from '~/tools/delay';
 
 const register_customer_route = protectedAdminProcedure
@@ -205,9 +205,28 @@ export const get_customer_additional_data_route = protectedProcedure
     return data!;
   });
 
+const edit_customer_info_route = protectedAdminProcedure
+  .input(
+    z.object({
+      customer_id: z.number().int(),
+      customer_uuid: z.string().uuid(),
+      name: z.string().min(2).max(50),
+      phone_number: z.string().min(10).max(13).nullable(),
+      address: z.string().min(5).max(100).nullable()
+    })
+  )
+  .mutation(async ({ input: { customer_id, customer_uuid, name, phone_number, address } }) => {
+    await delay(650);
+    return await db
+      .update(customers)
+      .set({ name, phone_number, address })
+      .where(and(eq(customers.id, customer_id), eq(customers.uuid, customer_uuid)));
+  });
+
 export const customer_router = t.router({
   register_customer: register_customer_route,
   get_customers_list: get_customers_list_route,
   get_customers_data: get_customers_data_route,
-  get_customer_additional_data: get_customer_additional_data_route
+  get_customer_additional_data: get_customer_additional_data_route,
+  edit_customer_info: edit_customer_info_route
 });

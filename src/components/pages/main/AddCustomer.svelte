@@ -1,14 +1,14 @@
 <script lang="ts">
-  import { lekhika_typing_tool } from '~/tools/converter';
   import { client_q } from '~/api/client';
   import Icon from '~/tools/Icon.svelte';
   import { VscAdd } from 'svelte-icons-pack/vsc';
   import { scale } from 'svelte/transition';
   import { TrOutlineArrowBackUp } from 'svelte-icons-pack/tr';
   import { TiArrowBackOutline } from 'svelte-icons-pack/ti';
-  import LipiLekhikaSwitch from '~/components/LipiLekhikaSwitch.svelte';
   import ConfirmModal from '~/components/PopoverModals/ConfirmModal.svelte';
   import { useQueryClient } from '@tanstack/svelte-query';
+  import { lekhika_typing_tool } from '~/tools/converter';
+  import LipiLekhikaSwitch from '~/components/LipiLekhikaSwitch.svelte';
   import { typing_tool_enabled } from '~/state/main';
 
   const query_client = useQueryClient();

@@ -5,22 +5,8 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1736859432062,
-      "tag": "0000_mute_daredevil",
-      "breakpoints": true
-    },
-    {
-      "idx": 1,
-      "version": "7",
-      "when": 1736910370194,
-      "tag": "0001_nice_selene",
-      "breakpoints": true
-    },
-    {
-      "idx": 2,
-      "version": "7",
-      "when": 1737046076259,
-      "tag": "0002_flaky_hairball",
+      "when": 1737116684746,
+      "tag": "0000_bored_turbo",
       "breakpoints": true
     }
   ]
