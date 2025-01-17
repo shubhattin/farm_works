@@ -85,16 +85,19 @@
   </button>
 </div>
 <div class="space-y-2">
-  <div class="relative isolate">
-    <DateInput
-      bind:value={date}
-      required={true}
-      closeOnSelection={true}
-      placeholder="दिनांक"
-      format="dd-MM-yyyy HH:mm"
-      timePrecision={'minute'}
-    />
-  </div>
+  <label class="block">
+    <span class="label-text font-semibold">दिनांक</span>
+    <div class="relative isolate">
+      <DateInput
+        bind:value={date}
+        required={true}
+        closeOnSelection={true}
+        placeholder="दिनांक"
+        format="dd-MM-yyyy HH:mm"
+        timePrecision={'minute'}
+      />
+    </div>
+  </label>
   <div>पेय राशि : <span class="font-bold">₹ {remaning_amount}</span></div>
   <label>
     <span class="label-text">राशि (₹)</span>

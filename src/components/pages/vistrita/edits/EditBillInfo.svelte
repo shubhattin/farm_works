@@ -26,18 +26,7 @@
   देयक अद्यतित करें
 </div>
 <div class="space-y-3">
-  <div>देयक ID : <span class="font-bold">{bill_info.id}</span></div>
-  <label class="block">
-    <span class="label-text font-semibold">दिनांक</span>
-    <DateInput
-      bind:value={date}
-      required={true}
-      closeOnSelection={true}
-      placeholder="दिनांक"
-      format="dd-MM-yyyy HH:mm"
-      timePrecision={'minute'}
-    />
-  </label>
+  <div class="text-sm">देयक ID : <span class="font-bold">{bill_info.id}</span></div>
   {#if bill_info.kaTAI_records || bill_info.jotAI_records}
     {#if bill_info.kaTAI_records}
       <div>
@@ -74,5 +63,18 @@
   <label class="block">
     <span class="label-text font-semibold">दर (₹)</span>
     <input type="number" class="input rounded-lg" bind:value={rate} />
+  </label>
+  <label class="block">
+    <span class="label-text font-semibold">दिनांक</span>
+    <div class="relative isolate">
+      <DateInput
+        bind:value={date}
+        required={true}
+        closeOnSelection={true}
+        placeholder="दिनांक"
+        format="dd-MM-yy HH:mm"
+        timePrecision={'minute'}
+      />
+    </div>
   </label>
 </div>
