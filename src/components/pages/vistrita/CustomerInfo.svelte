@@ -223,7 +223,7 @@
         )}
         {#if bills_filtered.length === 0}
           <div class="text-sm text-warning-700 dark:text-warning-400">
-            {CATEOGORY_LIST[selected_category]} संबन्धी कोई बिल नही है।
+            {CATEOGORY_LIST[selected_category]} संबन्धी कोई बिल नही है ।
           </div>
         {:else}
           <div class="my-1 text-xs text-slate-400 dark:text-neutral-500">

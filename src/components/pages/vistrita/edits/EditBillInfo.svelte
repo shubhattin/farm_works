@@ -2,6 +2,11 @@
   import { type client, client_q } from '~/api/client';
   import { jotAI_list, kaTAI_dhAn_list, kaTAi_list } from '../type_names';
   import { DateInput } from '~/components/DatePicker';
+  import { cl_join } from '~/tools/cl_join';
+  import ConfirmModal from '~/components/PopoverModals/ConfirmModal.svelte';
+  import { useQueryClient } from '@tanstack/svelte-query';
+  import Icon from '~/tools/Icon.svelte';
+  import { VscSave } from 'svelte-icons-pack/vsc';
 
   let {
     customer_id,
@@ -15,11 +20,54 @@
     modal_opened: boolean;
   } = $props();
 
+  const query_client = useQueryClient();
+
+  let edit_bill_mut = client_q.records.edit_bill.mutation({
+    onSuccess() {
+      query_client.invalidateQueries({
+        queryKey: [['customer', 'get_customers_data'], { input: { customer_id, customer_uuid } }]
+      });
+      modal_opened = false;
+    }
+  });
+
   let date = $state(bill_info.date);
   let rate = $state(bill_info.rate);
-  let kheta = $state(bill_info.jotAI_records?.kheta || bill_info.kaTAI_records?.kheta);
-  let chasa = $state(bill_info.jotAI_records?.chAsa);
-  let number = $state(bill_info.trolley_records?.number);
+  let kaTAI_jotAI_kheta = $state(bill_info.jotAI_records?.kheta || bill_info.kaTAI_records?.kheta);
+  let jotAI_chasa = $state(bill_info.jotAI_records?.chAsa);
+  let trolley_number = $state(bill_info.trolley_records?.number);
+
+  let total: number | null = $derived.by(() => {
+    if (!rate) return null;
+    if (bill_info.kaTAI_records && kaTAI_jotAI_kheta) {
+      return rate * kaTAI_jotAI_kheta;
+    } else if (bill_info.jotAI_records && kaTAI_jotAI_kheta) {
+      if (jotAI_chasa) return rate * jotAI_chasa * kaTAI_jotAI_kheta;
+      else return rate * kaTAI_jotAI_kheta;
+    } else if (bill_info.trolley_records && trolley_number) {
+      return rate * trolley_number;
+    }
+    return null;
+  });
+  const PAID_AMOUNT = bill_info.total - bill_info.remaining_amount;
+  let remaining_amount = $derived(total ? total - PAID_AMOUNT : null);
+
+  let confirm_modal_opened = $state(false);
+
+  const edit_bill_func = async () => {
+    confirm_modal_opened = false;
+    await $edit_bill_mut.mutateAsync({
+      customer_id,
+      bill_id: bill_info.id,
+      total: total!,
+      rate,
+      date,
+      kaTAI_jotAI_kheta: kaTAI_jotAI_kheta!,
+      jotAI_chAsa: jotAI_chasa!,
+      trolley_number: trolley_number!,
+      type: bill_info.kaTAI_records ? 'kaTAI' : bill_info.jotAI_records ? 'jotAI' : 'trolley'
+    });
+  };
 </script>
 
 <div class="text-center text-lg font-bold text-amber-700 dark:text-warning-500">
@@ -46,18 +94,18 @@
       {#if bill_info.jotAI_records.chAsa}
         <label>
           <span class="label-text font-semibold">चास</span>
-          <input type="number" class="input rounded-lg" bind:value={chasa} />
+          <input type="number" class="input rounded-lg" bind:value={jotAI_chasa} />
         </label>
       {/if}
     {/if}
     <label class="block">
       <span class="label-text font-semibold">खेत (बिस्सा)</span>
-      <input type="number" class="input rounded-lg" bind:value={kheta} />
+      <input type="number" class="input rounded-lg" bind:value={kaTAI_jotAI_kheta} />
     </label>
   {:else if bill_info.trolley_records}
     <label class="block">
       <span class="label-text font-semibold">संख्या</span>
-      <input type="number" class="input rounded-lg" bind:value={number} />
+      <input type="number" class="input rounded-lg" bind:value={trolley_number} />
     </label>
   {/if}
   <label class="block">
@@ -74,4 +122,39 @@
       timePrecision={'minute'}
     />
   </div>
+  {#if total}
+    <div>
+      कुल राशि : <span class="font-semibold">₹ {total}</span>
+    </div>
+    <div>
+      शेष राशि : <span
+        class={cl_join(
+          'font-semibold',
+          remaining_amount === 0 && 'text-green-600 dark:text-green-500'
+        )}>₹ {remaining_amount!}</span
+      >
+    </div>
+    {#if remaining_amount! < 0}
+      <div class="text-wrap text-sm text-amber-800 dark:text-warning-400">
+        ⚠️ क्यों कि शेष राशि शॊन्य से कम नहीं हो सकती इसिलिए एस देयक को पूर्ण मान लिया जाएगा और बची
+        हुई अधिक राशि का भविश्ष मे आपको स्वयं ध्यान रखना होगा ।
+      </div>
+    {/if}
+  {/if}
+  <button
+    disabled={$edit_bill_mut.isPending || !total}
+    class="btn gap-2 rounded-lg bg-secondary-700 px-2 py-1 font-bold text-white dark:bg-secondary-700"
+    onclick={() => (confirm_modal_opened = true)}
+  >
+    <Icon src={VscSave} class="text-xl" />
+    संपादित करें
+  </button>
 </div>
+
+<ConfirmModal
+  description={`क्या आप निश्चित हैं कि देयक को संपादित करना चाहते हैं ?`}
+  bind:popup_state={confirm_modal_opened}
+  confirm_func={() => {
+    edit_bill_func();
+  }}
+/>

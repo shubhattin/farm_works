@@ -8,7 +8,7 @@ import {
 } from '~/db/schema_zod';
 import { jotAI_records, kaTAI_records, bills, trolley_records, payments } from '~/db/schema';
 import { delay } from '~/tools/delay';
-import { eq, sql } from 'drizzle-orm';
+import { and, desc, eq, sql } from 'drizzle-orm';
 
 const kaTAI_add_record_input_schema = z.object({
   customer_id: z.number().int(),
@@ -232,8 +232,82 @@ const submit_bill_payment_route = protectedAdminProcedure
     }
   );
 
+const edit_bill_route = protectedAdminProcedure
+  .input(
+    z.object({
+      customer_id: z.number().int(),
+      bill_id: z.number().int(),
+      rate: z.number().int(),
+      total: z.number().int(),
+      date: z.coerce.date(),
+      type: z.enum(['kaTAI', 'jotAI', 'trolley']),
+      jotAI_chAsa: z.number().int().nullable().optional(),
+      kaTAI_jotAI_kheta: z.number().int().nullable().optional(),
+      trolley_number: z.number().int().nullable().optional()
+    })
+  )
+  .mutation(
+    async ({
+      input: {
+        bill_id,
+        rate,
+        total,
+        date,
+        type,
+        jotAI_chAsa,
+        kaTAI_jotAI_kheta,
+        trolley_number,
+        customer_id
+      }
+    }) => {
+      await delay(650);
+      const bill_info = (
+        await db
+          .select({
+            bill_id: bills.id,
+            remaining_amount: sql<number>`CAST(
+            ${bills.total} - COALESCE(SUM(${payments.amount}), 0)
+          AS INTEGER)`,
+            jotAI_record_id: bills.jotAI_record,
+            kaTAI_record_id: bills.kaTAI_record,
+            trolley_record_id: bills.trolley_record,
+            total: bills.total
+          })
+          .from(bills)
+          .leftJoin(payments, eq(payments.bill_id, bills.id))
+          .where(and(eq(bills.id, bill_id), eq(bills.customer_id, customer_id)))
+          .groupBy(bills.id, bills.total) // Added bills.total to groupBy
+          .orderBy(desc(bills.date), desc(bills.id))
+          .limit(1)
+      )[0];
+      const PAID_AMOUNT = bill_info.total - bill_info.remaining_amount;
+
+      await Promise.all([
+        db.update(bills).set({ rate, total, date }).where(eq(bills.id, bill_id)),
+        type === 'kaTAI' &&
+          db
+            .update(kaTAI_records)
+            .set({ kheta: kaTAI_jotAI_kheta! })
+            .where(eq(kaTAI_records.id, bill_info.kaTAI_record_id!)),
+        type === 'jotAI' &&
+          db
+            .update(jotAI_records)
+            .set({ kheta: kaTAI_jotAI_kheta!, ...(jotAI_chAsa ? { chAsa: jotAI_chAsa! } : {}) })
+            .where(eq(jotAI_records.id, bill_info.jotAI_record_id!)),
+        type === 'trolley' &&
+          db
+            .update(trolley_records)
+            .set({ number: trolley_number! })
+            .where(eq(trolley_records.id, bill_info.trolley_record_id!)),
+        total <= PAID_AMOUNT &&
+          db.update(bills).set({ payment_complete: true }).where(eq(bills.id, bill_id))
+      ]);
+    }
+  );
+
 export const records_router = t.router({
   add_bill: add_bill_route,
   get_bill_payments: get_bill_payments_route,
-  submit_bill_payment: submit_bill_payment_route
+  submit_bill_payment: submit_bill_payment_route,
+  edit_bill: edit_bill_route
 });
