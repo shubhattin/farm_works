@@ -9,7 +9,7 @@
   import { AiOutlineClose } from 'svelte-icons-pack/ai';
   import { useQueryClient } from '@tanstack/svelte-query';
   import ConfirmModal from '~/components/PopoverModals/ConfirmModal.svelte';
-  import DateInput from '~/components/DatePicker/DateInput.svelte';
+  import { DateInput } from 'date-picker-svelte';
 
   let {
     current_page_open = $bindable(),
