@@ -1,372 +1,372 @@
 <script lang="ts">
-	import TimePicker from './TimePicker.svelte'
-	import { getMonthLength, getCalendarDays, type CalendarDay } from './date-utils.js'
-	import { getInnerLocale, type Locale } from './locale.js'
-	import { createEventDispatcher } from 'svelte'
+  import TimePicker from './TimePicker.svelte';
+  import { getMonthLength, getCalendarDays, type CalendarDay } from './date-utils.js';
+  import { getInnerLocale, type Locale } from './locale.js';
+  import { createEventDispatcher } from 'svelte';
 
-	const dispatch = createEventDispatcher<{
-		/** Fires when the user selects a new value by clicking on a date or by pressing enter */
-		select: Date
-	}>()
+  const dispatch = createEventDispatcher<{
+    /** Fires when the user selects a new value by clicking on a date or by pressing enter */
+    select: Date;
+  }>();
 
-	function cloneDate(d: Date) {
-		return new Date(d.getTime())
-	}
+  function cloneDate(d: Date) {
+    return new Date(d.getTime());
+  }
 
-	/** Date value. It's `null` if no date is selected */
-	export let value: Date | null = null
+  /** Date value. It's `null` if no date is selected */
+  export let value: Date | null = null;
 
-	function setValue(d: Date) {
-		if (d.getTime() !== value?.getTime()) {
-			browseDate = clamp(d, min, max)
-			value = cloneDate(browseDate)
-		}
-	}
+  function setValue(d: Date) {
+    if (d.getTime() !== value?.getTime()) {
+      browseDate = clamp(d, min, max);
+      value = cloneDate(browseDate);
+    }
+  }
 
-	function setValueDate(d: Date) {
-		if (d.getTime() !== value?.getTime()) {
-			browseDate = clampDate(d, min, max)
-			value = cloneDate(browseDate)
-		}
-	}
+  function setValueDate(d: Date) {
+    if (d.getTime() !== value?.getTime()) {
+      browseDate = clampDate(d, min, max);
+      value = cloneDate(browseDate);
+    }
+  }
 
-	/** Set the browseDate */
-	function browse(d: Date) {
-		browseDate = clampDate(d, min, max)
-		if (!browseWithoutSelecting && value) {
-			setValue(browseDate)
-		}
-	}
+  /** Set the browseDate */
+  function browse(d: Date) {
+    browseDate = clampDate(d, min, max);
+    if (!browseWithoutSelecting && value) {
+      setValue(browseDate);
+    }
+  }
 
-	function setTime(d: Date) {
-		browseDate = clamp(d, min, max)
-		if (value) {
-			setValue(browseDate)
-		}
-		return browseDate
-	}
+  function setTime(d: Date) {
+    browseDate = clamp(d, min, max);
+    if (value) {
+      setValue(browseDate);
+    }
+    return browseDate;
+  }
 
-	const todayDate = new Date()
+  const todayDate = new Date();
 
-	/** Default Date to use */
-	const defaultDate = new Date()
+  /** Default Date to use */
+  const defaultDate = new Date();
 
-	/** Show a time picker with the specified precision */
-	export let timePrecision: 'minute' | 'second' | 'millisecond' | null = null
-	/** The earliest year the user can select */
-	export let min = new Date(defaultDate.getFullYear() - 20, 0, 1)
-	/** The latest year the user can select */
-	export let max = new Date(defaultDate.getFullYear(), 11, 31, 23, 59, 59, 999)
-	$: if (value && value > max) {
-		setValue(max)
-	} else if (value && value < min) {
-		setValue(min)
-	}
-	function clamp(d: Date, min: Date, max: Date) {
-		if (d > max) {
-			return cloneDate(max)
-		} else if (d < min) {
-			return cloneDate(min)
-		} else {
-			return cloneDate(d)
-		}
-	}
-	function clampDate(d: Date, min: Date, max: Date) {
-		const limit = clamp(d, min, max)
-		if (limit.getTime() !== d.getTime()) {
-			d = new Date(
-				limit.getFullYear(),
-				limit.getMonth(),
-				limit.getDate(),
-				d.getHours(),
-				d.getMinutes(),
-				d.getSeconds(),
-				d.getMilliseconds(),
-			)
-			d = clamp(d, min, max)
-		}
-		return d
-	}
+  /** Show a time picker with the specified precision */
+  export let timePrecision: 'minute' | 'second' | 'millisecond' | null = null;
+  /** The earliest year the user can select */
+  export let min = new Date(defaultDate.getFullYear() - 20, 0, 1);
+  /** The latest year the user can select */
+  export let max = new Date(defaultDate.getFullYear(), 11, 31, 23, 59, 59, 999);
+  $: if (value && value > max) {
+    setValue(max);
+  } else if (value && value < min) {
+    setValue(min);
+  }
+  function clamp(d: Date, min: Date, max: Date) {
+    if (d > max) {
+      return cloneDate(max);
+    } else if (d < min) {
+      return cloneDate(min);
+    } else {
+      return cloneDate(d);
+    }
+  }
+  function clampDate(d: Date, min: Date, max: Date) {
+    const limit = clamp(d, min, max);
+    if (limit.getTime() !== d.getTime()) {
+      d = new Date(
+        limit.getFullYear(),
+        limit.getMonth(),
+        limit.getDate(),
+        d.getHours(),
+        d.getMinutes(),
+        d.getSeconds(),
+        d.getMilliseconds()
+      );
+      d = clamp(d, min, max);
+    }
+    return d;
+  }
 
-	/** The date shown in the popup when none is selected */
-	let browseDate = value ? cloneDate(value) : cloneDate(clampDate(defaultDate, min, max))
-	$: setBrowseDate(value)
-	function setBrowseDate(value: Date | null) {
-		if (browseDate.getTime() !== value?.getTime()) {
-			browseDate = value ? cloneDate(value) : browseDate
-		}
-	}
+  /** The date shown in the popup when none is selected */
+  let browseDate = value ? cloneDate(value) : cloneDate(clampDate(defaultDate, min, max));
+  $: setBrowseDate(value);
+  function setBrowseDate(value: Date | null) {
+    if (browseDate.getTime() !== value?.getTime()) {
+      browseDate = value ? cloneDate(value) : browseDate;
+    }
+  }
 
-	let years = getYears(min, max)
-	$: years = getYears(min, max)
-	function getYears(min: Date, max: Date) {
-		let years = []
-		for (let i = min.getFullYear(); i <= max.getFullYear(); i++) {
-			years.push(i)
-		}
-		return years
-	}
+  let years = getYears(min, max);
+  $: years = getYears(min, max);
+  function getYears(min: Date, max: Date) {
+    let years = [];
+    for (let i = min.getFullYear(); i <= max.getFullYear(); i++) {
+      years.push(i);
+    }
+    return years;
+  }
 
-	/** Locale object for internationalization */
-	export let locale: Locale = {}
-	$: iLocale = getInnerLocale(locale)
-	/** Wait with updating the date until a date is selected */
-	export let browseWithoutSelecting = false
+  /** Locale object for internationalization */
+  export let locale: Locale = {};
+  $: iLocale = getInnerLocale(locale);
+  /** Wait with updating the date until a date is selected */
+  export let browseWithoutSelecting = false;
 
-	$: browseYear = browseDate.getFullYear()
-	function setYear(newYear: number) {
-		browseDate.setFullYear(newYear)
-		browse(browseDate)
-	}
+  $: browseYear = browseDate.getFullYear();
+  function setYear(newYear: number) {
+    browseDate.setFullYear(newYear);
+    browse(browseDate);
+  }
 
-	$: browseMonth = browseDate.getMonth()
-	function setMonth(newMonth: number) {
-		let newYear = browseDate.getFullYear()
-		if (newMonth === 12) {
-			newMonth = 0
-			newYear++
-		} else if (newMonth === -1) {
-			newMonth = 11
-			newYear--
-		}
+  $: browseMonth = browseDate.getMonth();
+  function setMonth(newMonth: number) {
+    let newYear = browseDate.getFullYear();
+    if (newMonth === 12) {
+      newMonth = 0;
+      newYear++;
+    } else if (newMonth === -1) {
+      newMonth = 11;
+      newYear--;
+    }
 
-		const maxDate = getMonthLength(newYear, newMonth)
-		const newDate = Math.min(browseDate.getDate(), maxDate)
-		browse(
-			new Date(
-				newYear,
-				newMonth,
-				newDate,
-				browseDate.getHours(),
-				browseDate.getMinutes(),
-				browseDate.getSeconds(),
-				browseDate.getMilliseconds(),
-			),
-		)
-	}
+    const maxDate = getMonthLength(newYear, newMonth);
+    const newDate = Math.min(browseDate.getDate(), maxDate);
+    browse(
+      new Date(
+        newYear,
+        newMonth,
+        newDate,
+        browseDate.getHours(),
+        browseDate.getMinutes(),
+        browseDate.getSeconds(),
+        browseDate.getMilliseconds()
+      )
+    );
+  }
 
-	$: calendarDays = getCalendarDays(browseDate, iLocale.weekStartsOn)
+  $: calendarDays = getCalendarDays(browseDate, iLocale.weekStartsOn);
 
-	function selectDay(calendarDay: CalendarDay) {
-		if (dayIsInRange(calendarDay, min, max)) {
-			browseDate.setFullYear(0)
-			browseDate.setMonth(0)
-			browseDate.setDate(1)
-			browseDate.setFullYear(calendarDay.year)
-			browseDate.setMonth(calendarDay.month)
-			browseDate.setDate(calendarDay.number)
-			setValueDate(browseDate)
-			dispatch('select', cloneDate(browseDate))
-		}
-	}
-	function dayIsInRange(calendarDay: CalendarDay, min: Date, max: Date) {
-		const date = new Date(calendarDay.year, calendarDay.month, calendarDay.number)
-		const minDate = new Date(min.getFullYear(), min.getMonth(), min.getDate())
-		const maxDate = new Date(max.getFullYear(), max.getMonth(), max.getDate())
-		return date >= minDate && date <= maxDate
-	}
-	function shiftKeydown(e: KeyboardEvent) {
-		if (e.shiftKey && e.key === 'ArrowUp') {
-			setYear(browseDate.getFullYear() - 1)
-		} else if (e.shiftKey && e.key === 'ArrowDown') {
-			setYear(browseDate.getFullYear() + 1)
-		} else if (e.shiftKey && e.key === 'ArrowLeft') {
-			setMonth(browseDate.getMonth() - 1)
-		} else if (e.shiftKey && e.key === 'ArrowRight') {
-			setMonth(browseDate.getMonth() + 1)
-		} else {
-			return false
-		}
-		e.preventDefault()
-		return true
-	}
-	function yearKeydown(e: KeyboardEvent) {
-		let shift = e.shiftKey || e.altKey
-		if (shift) {
-			shiftKeydown(e)
-			return
-		} else if (e.key === 'ArrowUp') {
-			setYear(browseDate.getFullYear() - 1)
-		} else if (e.key === 'ArrowDown') {
-			setYear(browseDate.getFullYear() + 1)
-		} else if (e.key === 'ArrowLeft') {
-			setMonth(browseDate.getMonth() - 1)
-		} else if (e.key === 'ArrowRight') {
-			setMonth(browseDate.getMonth() + 1)
-		} else {
-			shiftKeydown(e)
-			return
-		}
-		e.preventDefault()
-	}
-	function monthKeydown(e: KeyboardEvent) {
-		let shift = e.shiftKey || e.altKey
-		if (shift) {
-			shiftKeydown(e)
-			return
-		} else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
-			setMonth(browseDate.getMonth() - 1)
-		} else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
-			setMonth(browseDate.getMonth() + 1)
-		} else {
-			shiftKeydown(e)
-			return
-		}
-		e.preventDefault()
-	}
-	function keydown(e: KeyboardEvent) {
-		let shift = e.shiftKey || e.altKey
-		if (
-			(e.target as HTMLElement)?.tagName === 'SELECT' ||
-			(e.target as HTMLElement)?.tagName === 'SPAN'
-		) {
-			// Ignore date/month <select> & TimePicker <input>
-			return
-		}
-		if (shift) {
-			shiftKeydown(e)
-			return
-		} else if (e.key === 'ArrowUp') {
-			browseDate.setDate(browseDate.getDate() - 7)
-			setValueDate(browseDate)
-		} else if (e.key === 'ArrowDown') {
-			browseDate.setDate(browseDate.getDate() + 7)
-			setValueDate(browseDate)
-		} else if (e.key === 'ArrowLeft') {
-			browseDate.setDate(browseDate.getDate() - 1)
-			setValueDate(browseDate)
-		} else if (e.key === 'ArrowRight') {
-			browseDate.setDate(browseDate.getDate() + 1)
-			setValueDate(browseDate)
-		} else if (e.key === 'Enter') {
-			setValue(browseDate)
-			dispatch('select', cloneDate(browseDate))
-		} else {
-			return
-		}
-		e.preventDefault()
-	}
+  function selectDay(calendarDay: CalendarDay) {
+    if (dayIsInRange(calendarDay, min, max)) {
+      browseDate.setFullYear(0);
+      browseDate.setMonth(0);
+      browseDate.setDate(1);
+      browseDate.setFullYear(calendarDay.year);
+      browseDate.setMonth(calendarDay.month);
+      browseDate.setDate(calendarDay.number);
+      setValueDate(browseDate);
+      dispatch('select', cloneDate(browseDate));
+    }
+  }
+  function dayIsInRange(calendarDay: CalendarDay, min: Date, max: Date) {
+    const date = new Date(calendarDay.year, calendarDay.month, calendarDay.number);
+    const minDate = new Date(min.getFullYear(), min.getMonth(), min.getDate());
+    const maxDate = new Date(max.getFullYear(), max.getMonth(), max.getDate());
+    return date >= minDate && date <= maxDate;
+  }
+  function shiftKeydown(e: KeyboardEvent) {
+    if (e.shiftKey && e.key === 'ArrowUp') {
+      setYear(browseDate.getFullYear() - 1);
+    } else if (e.shiftKey && e.key === 'ArrowDown') {
+      setYear(browseDate.getFullYear() + 1);
+    } else if (e.shiftKey && e.key === 'ArrowLeft') {
+      setMonth(browseDate.getMonth() - 1);
+    } else if (e.shiftKey && e.key === 'ArrowRight') {
+      setMonth(browseDate.getMonth() + 1);
+    } else {
+      return false;
+    }
+    e.preventDefault();
+    return true;
+  }
+  function yearKeydown(e: KeyboardEvent) {
+    let shift = e.shiftKey || e.altKey;
+    if (shift) {
+      shiftKeydown(e);
+      return;
+    } else if (e.key === 'ArrowUp') {
+      setYear(browseDate.getFullYear() - 1);
+    } else if (e.key === 'ArrowDown') {
+      setYear(browseDate.getFullYear() + 1);
+    } else if (e.key === 'ArrowLeft') {
+      setMonth(browseDate.getMonth() - 1);
+    } else if (e.key === 'ArrowRight') {
+      setMonth(browseDate.getMonth() + 1);
+    } else {
+      shiftKeydown(e);
+      return;
+    }
+    e.preventDefault();
+  }
+  function monthKeydown(e: KeyboardEvent) {
+    let shift = e.shiftKey || e.altKey;
+    if (shift) {
+      shiftKeydown(e);
+      return;
+    } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+      setMonth(browseDate.getMonth() - 1);
+    } else if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+      setMonth(browseDate.getMonth() + 1);
+    } else {
+      shiftKeydown(e);
+      return;
+    }
+    e.preventDefault();
+  }
+  function keydown(e: KeyboardEvent) {
+    let shift = e.shiftKey || e.altKey;
+    if (
+      (e.target as HTMLElement)?.tagName === 'SELECT' ||
+      (e.target as HTMLElement)?.tagName === 'SPAN'
+    ) {
+      // Ignore date/month <select> & TimePicker <input>
+      return;
+    }
+    if (shift) {
+      shiftKeydown(e);
+      return;
+    } else if (e.key === 'ArrowUp') {
+      browseDate.setDate(browseDate.getDate() - 7);
+      setValueDate(browseDate);
+    } else if (e.key === 'ArrowDown') {
+      browseDate.setDate(browseDate.getDate() + 7);
+      setValueDate(browseDate);
+    } else if (e.key === 'ArrowLeft') {
+      browseDate.setDate(browseDate.getDate() - 1);
+      setValueDate(browseDate);
+    } else if (e.key === 'ArrowRight') {
+      browseDate.setDate(browseDate.getDate() + 1);
+      setValueDate(browseDate);
+    } else if (e.key === 'Enter') {
+      setValue(browseDate);
+      dispatch('select', cloneDate(browseDate));
+    } else {
+      return;
+    }
+    e.preventDefault();
+  }
 </script>
 
 <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
 <div class="date-time-picker" on:focusout tabindex="0" on:keydown={keydown}>
-	<div class="tab-container" tabindex="-1">
-		<div class="top">
-			<button
-				type="button"
-				aria-label="Previous month"
-				class="page-button"
-				tabindex="-1"
-				on:click={() => setMonth(browseDate.getMonth() - 1)}
-			>
-				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-					><path
-						d="M5 3l3.057-3 11.943 12-11.943 12-3.057-3 9-9z"
-						transform="rotate(180, 12, 12)"
-					/></svg
-				>
-			</button>
-			<div class="dropdown month">
-				<select
-					value={browseMonth}
-					on:keydown={monthKeydown}
-					on:input={(e) => setMonth(parseInt(e.currentTarget.value))}
-				>
-					{#each iLocale.months as monthName, i}
-						<option
-							disabled={new Date(browseYear, i, getMonthLength(browseYear, i), 23, 59, 59, 999) <
-								min || new Date(browseYear, i) > max}
-							value={i}>{monthName}</option
-						>
-					{/each}
-				</select>
-				<!--
+  <div class="tab-container" tabindex="-1">
+    <div class="top">
+      <button
+        type="button"
+        aria-label="Previous month"
+        class="page-button"
+        tabindex="-1"
+        on:click={() => setMonth(browseDate.getMonth() - 1)}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+          ><path
+            d="M5 3l3.057-3 11.943 12-11.943 12-3.057-3 9-9z"
+            transform="rotate(180, 12, 12)"
+          /></svg
+        >
+      </button>
+      <div class="dropdown month">
+        <select
+          value={browseMonth}
+          on:keydown={monthKeydown}
+          on:input={(e) => setMonth(parseInt(e.currentTarget.value))}
+        >
+          {#each iLocale.months as monthName, i}
+            <option
+              disabled={new Date(browseYear, i, getMonthLength(browseYear, i), 23, 59, 59, 999) <
+                min || new Date(browseYear, i) > max}
+              value={i}>{monthName}</option
+            >
+          {/each}
+        </select>
+        <!--
 					Here we have use `select.dummy-select` for showing just the <select> button. This
 					is to style the <select> button without affecting the menu popup
 					- `option { color: initial }` causes invisible menu in dark mode on Firefox
 					- `option { color: initial; background-color: initial }` causes invisible menu in Chrome
 					- `select { background-color: $bg; color: $text }` causes white scrollbar in dark mode on Firefox
 				-->
-				<select class="dummy-select" tabindex="-1">
-					{#each iLocale.months as monthName, i}
-						<option value={i} selected={i === browseMonth}>{monthName}</option>
-					{/each}
-				</select>
-				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-					><path d="M6 0l12 12-12 12z" transform="rotate(90, 12, 12)" /></svg
-				>
-			</div>
-			<div class="dropdown year">
-				<select
-					value={browseYear}
-					on:input={(e) => setYear(parseInt(e.currentTarget.value))}
-					on:keydown={yearKeydown}
-				>
-					{#each years as v}
-						<option value={v}>{v}</option>
-					{/each}
-				</select>
-				<!-- style <select> button without affecting menu popup -->
-				<select class="dummy-select" tabindex="-1">
-					{#each years as v}
-						<option value={v} selected={v === browseDate.getFullYear()}>{v}</option>
-					{/each}
-				</select>
-				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-					><path d="M6 0l12 12-12 12z" transform="rotate(90, 12, 12)" /></svg
-				>
-			</div>
-			<button
-				type="button"
-				aria-label="Next month"
-				class="page-button"
-				tabindex="-1"
-				on:click={() => setMonth(browseDate.getMonth() + 1)}
-			>
-				<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
-					><path d="M5 3l3.057-3 11.943 12-11.943 12-3.057-3 9-9z" /></svg
-				>
-			</button>
-		</div>
-		<div class="header">
-			<!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
-			{#each Array(7) as _, i}
-				{#if i + iLocale.weekStartsOn < 7}
-					<div class="header-cell">{iLocale.weekdays[iLocale.weekStartsOn + i]}</div>
-				{:else}
-					<div class="header-cell">{iLocale.weekdays[iLocale.weekStartsOn + i - 7]}</div>
-				{/if}
-			{/each}
-		</div>
-		<!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
-		{#each Array(6) as _, weekIndex}
-			<div class="week">
-				{#each calendarDays.slice(weekIndex * 7, weekIndex * 7 + 7) as calendarDay}
-					<!-- svelte-ignore a11y-click-events-have-key-events -->
-					<div
-						class="cell"
-						on:click={() => selectDay(calendarDay)}
-						class:disabled={!dayIsInRange(calendarDay, min, max)}
-						class:selected={value &&
-							calendarDay.year === value.getFullYear() &&
-							calendarDay.month === value.getMonth() &&
-							calendarDay.number === value.getDate()}
-						class:today={calendarDay.year === todayDate.getFullYear() &&
-							calendarDay.month === todayDate.getMonth() &&
-							calendarDay.number === todayDate.getDate()}
-						class:other-month={calendarDay.month !== browseMonth}
-					>
-						<span>{calendarDay.number}</span>
-					</div>
-				{/each}
-			</div>
-		{/each}
+        <select class="dummy-select" tabindex="-1">
+          {#each iLocale.months as monthName, i}
+            <option value={i} selected={i === browseMonth}>{monthName}</option>
+          {/each}
+        </select>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+          ><path d="M6 0l12 12-12 12z" transform="rotate(90, 12, 12)" /></svg
+        >
+      </div>
+      <div class="dropdown year">
+        <select
+          value={browseYear}
+          on:input={(e) => setYear(parseInt(e.currentTarget.value))}
+          on:keydown={yearKeydown}
+        >
+          {#each years as v}
+            <option value={v}>{v}</option>
+          {/each}
+        </select>
+        <!-- style <select> button without affecting menu popup -->
+        <select class="dummy-select" tabindex="-1">
+          {#each years as v}
+            <option value={v} selected={v === browseDate.getFullYear()}>{v}</option>
+          {/each}
+        </select>
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+          ><path d="M6 0l12 12-12 12z" transform="rotate(90, 12, 12)" /></svg
+        >
+      </div>
+      <button
+        type="button"
+        aria-label="Next month"
+        class="page-button"
+        tabindex="-1"
+        on:click={() => setMonth(browseDate.getMonth() + 1)}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+          ><path d="M5 3l3.057-3 11.943 12-11.943 12-3.057-3 9-9z" /></svg
+        >
+      </button>
+    </div>
+    <div class="header">
+      <!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
+      {#each Array(7) as _, i}
+        {#if i + iLocale.weekStartsOn < 7}
+          <div class="header-cell">{iLocale.weekdays[iLocale.weekStartsOn + i]}</div>
+        {:else}
+          <div class="header-cell">{iLocale.weekdays[iLocale.weekStartsOn + i - 7]}</div>
+        {/if}
+      {/each}
+    </div>
+    <!-- eslint-disable-next-line @typescript-eslint/no-unused-vars -->
+    {#each Array(6) as _, weekIndex}
+      <div class="week">
+        {#each calendarDays.slice(weekIndex * 7, weekIndex * 7 + 7) as calendarDay}
+          <!-- svelte-ignore a11y-click-events-have-key-events -->
+          <div
+            class="cell"
+            on:click={() => selectDay(calendarDay)}
+            class:disabled={!dayIsInRange(calendarDay, min, max)}
+            class:selected={value &&
+              calendarDay.year === value.getFullYear() &&
+              calendarDay.month === value.getMonth() &&
+              calendarDay.number === value.getDate()}
+            class:today={calendarDay.year === todayDate.getFullYear() &&
+              calendarDay.month === todayDate.getMonth() &&
+              calendarDay.number === todayDate.getDate()}
+            class:other-month={calendarDay.month !== browseMonth}
+          >
+            <span>{calendarDay.number}</span>
+          </div>
+        {/each}
+      </div>
+    {/each}
 
-		<TimePicker {timePrecision} bind:browseDate {setTime} />
+    <TimePicker {timePrecision} bind:browseDate {setTime} />
 
-		<slot />
-	</div>
+    <slot />
+  </div>
 </div>
 
 <style lang="sass">
