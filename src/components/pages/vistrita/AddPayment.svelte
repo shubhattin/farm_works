@@ -89,6 +89,7 @@
     <DateInput
       bind:value={date}
       required={true}
+      closeOnSelection={true}
       placeholder="दिनांक"
       format="dd-MM-yyyy HH:mm"
       timePrecision={'minute'}
