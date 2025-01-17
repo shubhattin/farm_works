@@ -7,7 +7,7 @@
   import { useQueryClient } from '@tanstack/svelte-query';
   import { onMount } from 'svelte';
   import ConfirmModal from '~/components/PopoverModals/ConfirmModal.svelte';
-  import DateInput from '~/components/DatePicker/DateInput.svelte';
+  import { DateInput } from 'date-picker-svelte';
 
   const query_client = useQueryClient();
 
