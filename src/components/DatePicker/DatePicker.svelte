@@ -250,17 +250,7 @@
 
 <!-- svelte-ignore a11y-no-noninteractive-tabindex -->
 <!-- svelte-ignore a11y-no-static-element-interactions -->
-<div
-  class="date-time-picker"
-  style="
-  --date-picker-popup-z-index: 9999;
-  position: relative;
-  z-index: var(--date-picker-popup-z-index);
-  "
-  on:focusout
-  tabindex="0"
-  on:keydown={keydown}
->
+<div class="date-time-picker" on:focusout tabindex="0" on:keydown={keydown}>
   <div class="tab-container" tabindex="-1">
     <div class="top">
       <button
