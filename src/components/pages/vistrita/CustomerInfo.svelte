@@ -13,6 +13,8 @@
   import { Tabs } from '@skeletonlabs/skeleton-svelte';
   import BillInfo from './BillInfo.svelte';
   import { PUBLIC_APP_NAME } from '$env/static/public';
+  import { BsTelephone } from 'svelte-icons-pack/bs';
+  import { FiMapPin } from 'svelte-icons-pack/fi';
 
   let { customer_id, customer_uuid }: { customer_id: number; customer_uuid: string } = $props();
 
@@ -24,6 +26,12 @@
     { customer_id, customer_uuid },
     {
       initialData: page.data.customer_data as customer_data_type
+    }
+  );
+  let customer_additional_data_q = client_q.customer.get_customer_additional_data.query(
+    { customer_id, customer_uuid },
+    {
+      enabled: !!$user_info // only for registered users
     }
   );
 
@@ -72,7 +80,9 @@
   {#if !add_record_opened}
     <button
       disabled={$customer_info_q.isFetching}
-      onclick={() => $customer_info_q.refetch()}
+      onclick={() => {
+        $customer_info_q.refetch();
+      }}
       class={cl_join(
         'btn select-none p-0 outline-none',
         $customer_info_q.isFetching && 'animate-spin'
@@ -85,22 +95,55 @@
 
 <div class="mt-3 space-y-2">
   {#if $customer_info_q.isFetching}
-    <div class="placeholder h-8 w-48 animate-pulse rounded-md"></div>
+    <div class="space-y-1">
+      <div class="placeholder h-8 w-48 animate-pulse rounded-md"></div>
+      {#if $user_info}
+        <div class="placeholder h-4 w-32 animate-pulse rounded-md"></div>
+      {/if}
+    </div>
     <div class="placeholder h-6 w-32 animate-pulse rounded-md"></div>
     <div class="placeholder h-6 w-36 animate-pulse rounded-md"></div>
     <div class="placeholder h-96 w-full rounded-lg"></div>
   {:else if !$customer_info_q.isFetching && $customer_info_q.isSuccess}
     {@const customer_info = $customer_info_q.data!.customer_info}
-    <div class="space-x-1">
-      <span class="text-lg font-bold">{customer_info.customer_name}</span>
-      <span class="text-sm text-gray-500 dark:text-zinc-400">#{customer_info.customer_id}</span>
+    <div class="space-y-0">
+      <div class="space-x-1">
+        <span class="text-lg font-bold">{customer_info.customer_name}</span>
+        <span class="text-sm text-gray-500 dark:text-zinc-400">#{customer_info.customer_id}</span>
+        {#if $user_info}
+          <!-- This option available to all registered users -->
+          <span>
+            <button
+              class="btn m-0 ml-2 select-none gap-1 p-0 outline-none hover:text-gray-500 sm:ml-3 md:ml-4 dark:hover:text-gray-400"
+              onclick={share_info_func}
+            >
+              <Icon src={LuShare2} class="text-xl" />
+            </button>
+          </span>
+        {/if}
+      </div>
       {#if $user_info}
-        <!-- This option available to all registered users -->
-        <span>
-          <button class="btn m-0 select-none gap-1 p-0 outline-none" onclick={share_info_func}>
-            <Icon src={LuShare2} class="ml-4 text-2xl" />
-          </button>
-        </span>
+        {#if $customer_additional_data_q.isFetching || !$customer_additional_data_q.isSuccess}
+          <div class="placeholder h-4 w-32 animate-pulse rounded-md"></div>
+        {:else if !$customer_additional_data_q.isFetching && $customer_additional_data_q.isSuccess}
+          {@const customer_additional_data = $customer_additional_data_q.data}
+          <div class="space-x-2">
+            <span class="space-x-1 text-sm">
+              <Icon src={BsTelephone} />
+              {#if !customer_additional_data.phone_number}
+                <span>--</span>
+              {:else}
+                <a href={`tel:${customer_additional_data.phone_number}`} class="text-blue-500">
+                  {customer_additional_data.phone_number}
+                </a>
+              {/if}
+            </span>
+            <span class="space-x-1 text-sm">
+              <Icon src={FiMapPin} />
+              <span>{customer_additional_data.address ?? '--'}</span>
+            </span>
+          </div>
+        {/if}
       {/if}
     </div>
     {#if add_record_opened && $user_info}

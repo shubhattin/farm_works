@@ -185,8 +185,29 @@ const get_customers_data_route = publicProcedure
     return await get_customers_data_func(customer_id, customer_uuid);
   });
 
+export const get_customer_additional_data_route = protectedProcedure
+  .input(
+    z.object({
+      customer_id: z.number().int(),
+      customer_uuid: z.string().uuid()
+    })
+  )
+  .query(async ({ input: { customer_id, customer_uuid } }) => {
+    await delay(550);
+    const data = await db.query.customers.findFirst({
+      where: ({ id, uuid }, { eq, and }) => and(eq(id, customer_id), eq(uuid, customer_uuid)),
+      columns: {
+        id: true,
+        phone_number: true,
+        address: true
+      }
+    });
+    return data!;
+  });
+
 export const customer_router = t.router({
   register_customer: register_customer_route,
   get_customers_list: get_customers_list_route,
-  get_customers_data: get_customers_data_route
+  get_customers_data: get_customers_data_route,
+  get_customer_additional_data: get_customer_additional_data_route
 });
