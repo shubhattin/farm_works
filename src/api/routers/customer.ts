@@ -10,7 +10,7 @@ const register_customer_route = protectedAdminProcedure
     z.object({
       name: z.string().min(2).max(50),
       phone_number: z.string().min(10).max(13).nullable(),
-      address: z.string().min(5).max(100).nullable()
+      address: z.string().min(3).max(100).nullable()
     })
   )
   .mutation(async ({ input: { name, address, phone_number } }) => {
@@ -212,7 +212,7 @@ const edit_customer_info_route = protectedAdminProcedure
       customer_uuid: z.string().uuid(),
       name: z.string().min(2).max(50),
       phone_number: z.string().min(10).max(13).nullable(),
-      address: z.string().min(5).max(100).nullable()
+      address: z.string().min(3).max(100).nullable()
     })
   )
   .mutation(async ({ input: { customer_id, customer_uuid, name, phone_number, address } }) => {

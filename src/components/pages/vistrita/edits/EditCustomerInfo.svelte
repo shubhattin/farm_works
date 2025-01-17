@@ -48,13 +48,18 @@
   let edit_customer_info_mut = client_q.customer.edit_customer_info.mutation({
     onSuccess() {
       query_client.invalidateQueries({
-        queryKey: [['customer', 'get_customers_data'], { input: { customer_id, customer_uuid } }]
+        queryKey: [
+          ['customer', 'get_customers_data'],
+          { input: { customer_id, customer_uuid }, type: 'query' }
+        ],
+        exact: true
       });
       query_client.invalidateQueries({
         queryKey: [
           ['customer', 'get_customer_additional_data'],
-          { input: { customer_id, customer_uuid } }
-        ]
+          { input: { customer_id, customer_uuid }, type: 'query' }
+        ],
+        exact: true
       });
       modal_opened = false;
     }

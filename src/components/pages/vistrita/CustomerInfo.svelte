@@ -52,8 +52,8 @@
       await navigator.share({
         title: `${customer_data.customer_name} के देयकों का विस्तृत विवरण | ${PUBLIC_APP_NAME ?? ''}`,
         text:
-          `कुल देय राशि : ₹ ${customer_data.total_amount}` +
-          `\nकुल बकाया राशि : ₹ ${customer_data.remaining_amount}` +
+          `वर्तमान कुल देय राशि : ₹ ${customer_data.total_amount}` +
+          `\nवर्तमान कुल बकाया राशि : ₹ ${customer_data.remaining_amount}` +
           `\nअपने देयकों एवं भुगतानों का विस्तृत विवरण देखें नीचे दिए गए संचित से` +
           `\n\n${window.location.href}`
       });
