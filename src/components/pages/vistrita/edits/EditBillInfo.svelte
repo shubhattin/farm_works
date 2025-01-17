@@ -64,17 +64,14 @@
     <span class="label-text font-semibold">दर (₹)</span>
     <input type="number" class="input rounded-lg" bind:value={rate} />
   </label>
-  <label class="block">
-    <span class="label-text font-semibold">दिनांक</span>
-    <div class="relative isolate">
-      <DateInput
-        bind:value={date}
-        required={true}
-        closeOnSelection={true}
-        placeholder="दिनांक"
-        format="dd-MM-yy HH:mm"
-        timePrecision={'minute'}
-      />
-    </div>
-  </label>
+  <div class="relative isolate">
+    <DateInput
+      bind:value={date}
+      required={true}
+      closeOnSelection={true}
+      placeholder="दिनांक"
+      format="dd-MM-yy HH:mm"
+      timePrecision={'minute'}
+    />
+  </div>
 </div>
