@@ -1,5 +1,5 @@
 {
-  "id": "d1c1e1df-3019-4b55-9f95-bccdc702d0f0",
+  "id": "84d2b219-4fe7-4e8d-a083-077380954840",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
@@ -113,6 +113,21 @@
           "columns": [
             {
               "expression": "date",
+              "isExpression": false,
+              "asc": true,
+              "nulls": "last"
+            }
+          ],
+          "isUnique": false,
+          "concurrently": false,
+          "method": "btree",
+          "with": {}
+        },
+        "bills_payment_complete_index": {
+          "name": "bills_payment_complete_index",
+          "columns": [
+            {
+              "expression": "payment_complete",
               "isExpression": false,
               "asc": true,
               "nulls": "last"

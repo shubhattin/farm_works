@@ -62,7 +62,8 @@ export const bills = pgTable(
   (table) => ({
     customerIdx: index().on(table.customer_id),
     timestampIdx: index().on(table.timestamp),
-    dateIdx: index().on(table.date)
+    dateIdx: index().on(table.date),
+    paymentCompleteIdx: index().on(table.payment_complete)
   })
 );
 

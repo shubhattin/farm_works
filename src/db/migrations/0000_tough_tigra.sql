@@ -71,6 +71,7 @@ ALTER TABLE "payments" ADD CONSTRAINT "payments_added_by_user_id_users_id_fk" FO
 CREATE INDEX "bills_customer_id_index" ON "bills" USING btree ("customer_id");--> statement-breakpoint
 CREATE INDEX "bills_timestamp_index" ON "bills" USING btree ("timestamp");--> statement-breakpoint
 CREATE INDEX "bills_date_index" ON "bills" USING btree ("date");--> statement-breakpoint
+CREATE INDEX "bills_payment_complete_index" ON "bills" USING btree ("payment_complete");--> statement-breakpoint
 CREATE INDEX "customers_uuid_index" ON "customers" USING btree ("uuid");--> statement-breakpoint
 CREATE INDEX "payments_bill_id_index" ON "payments" USING btree ("bill_id");--> statement-breakpoint
 CREATE INDEX "payments_timestamp_index" ON "payments" USING btree ("timestamp");--> statement-breakpoint
