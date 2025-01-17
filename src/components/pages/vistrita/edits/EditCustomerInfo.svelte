@@ -84,7 +84,7 @@
   };
 </script>
 
-<div class="text-center text-lg font-bold dark:text-warning-500">
+<div class="text-center text-lg font-bold text-amber-700 dark:text-warning-500">
   उपयोक्ता विज्ञप्ति का अद्यतन करें
 </div>
 <LipiLekhikaSwitch bind:status_on={$typing_tool_enabled} />

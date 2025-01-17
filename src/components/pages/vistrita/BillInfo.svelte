@@ -8,6 +8,9 @@
   import { BiCollapseAlt } from 'svelte-icons-pack/bi';
   import AddPayment from './AddPayment.svelte';
   import { fade, slide } from 'svelte/transition';
+  import { FiEdit2 } from 'svelte-icons-pack/fi';
+  import { Modal } from '@skeletonlabs/skeleton-svelte';
+  import EditBillInfo from './edits/EditBillInfo.svelte';
 
   let {
     customer_id,
@@ -28,9 +31,11 @@
     customer_uuid,
     bill_id: bill_id!
   });
+
+  let edit_modal_opened = $state(false);
 </script>
 
-<div class="mb-3 space-x-4">
+<div class="mb-3 space-x-2 sm:space-x-4">
   <button
     onclick={() => (bill_id = null)}
     class=" btn select-none rounded-lg bg-rose-600 p-1 text-white outline-none dark:bg-rose-500"
@@ -46,6 +51,26 @@
         <Icon src={BsPlusLg} class="text-2xl" />
         नया वित्तदन जोड़ें
       </button>
+    {/if}
+    {#if $user_info && $user_info.user_type === 'admin' && !bill_info.payment_complete && bill_info.remaining_amount > 0}
+      <Modal
+        contentBase="card z-40 space-y-2 rounded-lg px-3 py-2 shadow-xl bg-surface-100-900"
+        triggerBase="btn p-0 m-0 outline-none select-none"
+        backdropBackground="backdrop-blur-md"
+        bind:open={edit_modal_opened}
+      >
+        {#snippet trigger()}
+          <Icon src={FiEdit2} class="text-xl" />
+        {/snippet}
+        {#snippet content()}
+          <EditBillInfo
+            {customer_id}
+            {customer_uuid}
+            {bill_info}
+            bind:modal_opened={edit_modal_opened}
+          />
+        {/snippet}
+      </Modal>
     {/if}
     <button
       disabled={$bill_payments_q.isFetched && $bill_payments_q.isFetching}
