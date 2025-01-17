@@ -27,13 +27,15 @@
 {:else}
   <div class="flex justify-between">
     <LipiLekhikaSwitch bind:status_on={$typing_tool_enabled} />
-    <button
-      onclick={() => (add_new_customer_opened = true)}
-      class="gap-1 rounded-xl bg-secondary-600 px-2 py-1 pb-0 text-sm font-bold text-white dark:bg-secondary-700"
-    >
-      <Icon src={AiOutlineUserAdd} class="-mt-1 text-xl" />
-      नया ग्राहक जोड़ें
-    </button>
+    {#if $user_info && $user_info.user_type === 'admin'}
+      <button
+        onclick={() => (add_new_customer_opened = true)}
+        class="gap-1 rounded-xl bg-secondary-600 px-2 py-1 pb-0 text-sm font-bold text-white dark:bg-secondary-700"
+      >
+        <Icon src={AiOutlineUserAdd} class="-mt-1 text-xl" />
+        नया ग्राहक जोड़ें
+      </button>
+    {/if}
   </div>
   <CustomerList lipi_lekhika_enabled={$typing_tool_enabled} />
 {/if}

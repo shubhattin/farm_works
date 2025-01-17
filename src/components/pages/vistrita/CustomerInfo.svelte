@@ -128,17 +128,20 @@
         {:else if !$customer_additional_data_q.isFetching && $customer_additional_data_q.isSuccess}
           {@const customer_additional_data = $customer_additional_data_q.data}
           <div class="space-x-2">
-            <span class="space-x-1 text-sm">
+            <span class="inline-flex space-x-1 text-sm">
               <Icon src={BsTelephone} />
               {#if !customer_additional_data.phone_number}
                 <span>--</span>
               {:else}
-                <a href={`tel:${customer_additional_data.phone_number}`} class="text-blue-500">
+                <a
+                  href={`tel:${customer_additional_data.phone_number}`}
+                  class="text-blue-700 dark:text-blue-500"
+                >
                   {customer_additional_data.phone_number}
                 </a>
               {/if}
             </span>
-            <span class="space-x-1 text-sm">
+            <span class="inline-flex space-x-1 text-sm">
               <Icon src={FiMapPin} />
               <span>{customer_additional_data.address ?? '--'}</span>
             </span>

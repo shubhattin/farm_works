@@ -6,7 +6,8 @@ const get_registred_users_list_route = publicProcedure.query(async ({ ctx }) => 
     // both admin and non-admin users
     columns: {
       id: true,
-      name: true
+      name: true,
+      user_type: true
     }
   });
   return users;
