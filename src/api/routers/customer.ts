@@ -217,7 +217,7 @@ const edit_customer_info_route = protectedAdminProcedure
   )
   .mutation(async ({ input: { customer_id, customer_uuid, name, phone_number, address } }) => {
     await delay(650);
-    return await db
+    await db
       .update(customers)
       .set({ name, phone_number, address })
       .where(and(eq(customers.id, customer_id), eq(customers.uuid, customer_uuid)));
