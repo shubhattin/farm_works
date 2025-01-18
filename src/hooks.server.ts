@@ -7,13 +7,15 @@ import { id_token_schema } from '~/api/routers/auth';
 import { createTRPCHandle } from 'trpc-sveltekit';
 import { router } from '~/api/trpc_router';
 import { createContext } from '~/api/context';
+import { env } from '$env/dynamic/private';
 
 // Now that we are using id token verification we can no longer preredner any page
 // so we can load trpc normally as we would usually do
 
-export const handle_trpc: Handle = createTRPCHandle({ router, createContext });
+const handle_trpc: Handle = createTRPCHandle({ router, createContext });
 
 export const handle: Handle = async ({ event, resolve }) => {
+  if (env.APP_MAINTAIN_MODE === 'true') throw new Error('Maintainance Mode');
   try {
     // this is for verifying the user's identity and not the authorization
     const id_token = event.cookies.get(AUTH_ID_LOC);
