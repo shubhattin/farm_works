@@ -16,9 +16,11 @@ export const userTypeEnum = pgEnum('user_type', ['admin', 'non-admin']);
 export const users = pgTable('users', {
   id: serial().primaryKey(),
   name: varchar({ length: 50 }).notNull(),
-  phone_number: varchar({ length: 10 }).notNull(),
+  user_id: varchar({ length: 20 }).notNull().unique(),
+  phone_number: varchar({ length: 10 }).notNull().unique(),
   password_hash: varchar({ length: 96 }).notNull(), // bcrypt hash (60)
-  user_type: userTypeEnum().default('non-admin').notNull()
+  user_type: userTypeEnum().default('non-admin').notNull(),
+  super_admin: boolean().default(false).notNull()
 });
 
 export const customers = pgTable(

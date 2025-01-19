@@ -6,7 +6,7 @@
   import { get_id_token_info, storeAuthInfo } from '~/tools/auth_tools';
   import { slide } from 'svelte/transition';
 
-  let id = $state(0); // 1st user(admin)
+  let user_id_or_phone_number = $state('');
   let password = $state('');
   let pass_input_element = $state<HTMLInputElement>();
   let user_input_element = $state<HTMLInputElement>();
@@ -19,7 +19,7 @@
         const err_code = data.err_code;
         wrong_pass_status = false;
         if (err_code === 'user_not_found') {
-          id = 0;
+          user_id_or_phone_number = '';
           password = '';
           user_input_element && user_input_element.focus();
         } else if (err_code === 'wrong_password') {
@@ -28,43 +28,40 @@
           wrong_pass_status = true;
         }
       } else {
+        console.log(data);
         storeAuthInfo(data);
         $user_info = get_id_token_info().user;
       }
     }
   });
 
-  const users_list_q = client_q.users.get_registered_users_list.query();
-
   const check_pass_func = async (e: Event) => {
     e.preventDefault();
     if (password === '') return;
-    $pass_verify.mutate({ id, password });
+    $pass_verify.mutate({ user_id_or_phone_number, password });
   };
 </script>
 
 <div class="flex justify-center" in:slide>
   <form onsubmit={check_pass_func} class="mt-2 w-full space-y-2.5 sm:w-4/5 md:w-3/5">
-    <select bind:value={id} class="select rounded-md px-2 py-1">
-      {#if id === 0}
-        <option value={0}>-- उपयोक्ता चुनें --</option>
-      {/if}
-      {#if !$users_list_q.isFetching && $users_list_q.isSuccess}
-        {@const users_list = $users_list_q.data}
-        {#each users_list.filter((user) => user.user_type === 'admin') as user (user.id)}
-          <option value={user.id}>{user.name}</option>
-        {/each}
-        {#each users_list.filter((user) => user.user_type !== 'admin') as user (user.id)}
-          <option value={user.id}>{user.name}</option>
-        {/each}
-      {/if}
-    </select>
+    <label>
+      <span class="label-text">उपयोक्ता ID या फ़ोन नंबर</span>
+      <input
+        autocapitalize="off"
+        type="text"
+        class="input rounded-md px-2 py-1"
+        bind:this={user_input_element}
+        bind:value={user_id_or_phone_number}
+        name="user_id_or_phone_number"
+        placeholder="उपयोक्ता ID"
+      />
+    </label>
     <input
       class={cl_join('input rounded-md px-2 py-1', wrong_pass_status && 'preset-tonal-error')}
       type="password"
       bind:this={pass_input_element}
       bind:value={password}
-      disabled={id === 0}
+      disabled={user_id_or_phone_number.length === 0}
       placeholder="गूढपद"
       minlength={6}
       required

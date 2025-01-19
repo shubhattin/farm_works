@@ -12,11 +12,13 @@ import { delay } from '~/tools/delay';
 export const id_token_schema = UsersSchemaZod.pick({
   id: true,
   name: true,
-  user_type: true
+  user_type: true,
+  super_admin: true
 });
 export const accees_token_schema = id_token_schema.pick({
   id: true,
-  user_type: true
+  user_type: true,
+  super_admin: true
 });
 
 const BCRYPT_COST_FACTOR = 12;
@@ -37,7 +39,8 @@ const get_id_and_aceess_token = async (user_info: z.infer<typeof id_token_schema
   const access_token = await new SignJWT({
     user: {
       id: user_info.id,
-      user_type: user_info.user_type
+      user_type: user_info.user_type,
+      super_admin: user_info.super_admin
     },
     type: 'api'
   })
@@ -55,7 +58,7 @@ const get_id_and_aceess_token = async (user_info: z.infer<typeof id_token_schema
 const verify_pass_route = publicProcedure
   .input(
     z.object({
-      id: z.number(),
+      user_id_or_phone_number: z.string(),
       password: z.string()
     })
   )
@@ -72,12 +75,14 @@ const verify_pass_route = publicProcedure
       })
     ])
   )
-  .mutation(async ({ input: { password, id } }) => {
+  .mutation(async ({ input: { password, user_id_or_phone_number } }) => {
     let verified = false;
     await delay(600);
 
+    user_id_or_phone_number = user_id_or_phone_number.trim();
     const user_info = await db.query.users.findFirst({
-      where: (tbl, { eq }) => eq(tbl.id, id)
+      where: (tbl, { eq, or }) =>
+        or(eq(tbl.user_id, user_id_or_phone_number), eq(tbl.phone_number, user_id_or_phone_number))
     });
     if (!user_info) return { verified, err_code: 'user_not_found' };
 
@@ -89,7 +94,8 @@ const verify_pass_route = publicProcedure
     const { id_token, access_token } = await get_id_and_aceess_token({
       name: user_info.name,
       id: user_info.id,
-      user_type: user_info.user_type
+      user_type: user_info.user_type,
+      super_admin: user_info.super_admin
     });
     return {
       verified,
