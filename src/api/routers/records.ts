@@ -326,9 +326,47 @@ const edit_bill_route = protectedAdminProcedure
     }
   );
 
+const edit_payment_route = protectedAdminProcedure
+  .input(
+    z.object({
+      customer_id: z.number().int(),
+      customer_uuid: z.string().uuid(),
+      bill_id: z.number().int(),
+      payment_id: z.number().int(),
+      date: z.coerce.date()
+    })
+  )
+  .mutation(async ({ input: { customer_id, customer_uuid, payment_id, date, bill_id } }) => {
+    const info = await db.query.payments.findFirst({
+      where: ({ id, bill_id: bill_id_ }, { eq, and }) =>
+        and(eq(id, payment_id), eq(bill_id_, bill_id)),
+      columns: {
+        id: true
+      },
+      with: {
+        bill: {
+          columns: {},
+          with: {
+            customer: {
+              columns: {
+                id: true,
+                uuid: true
+              }
+            }
+          }
+        }
+      }
+    });
+    if (!info) throw new Error('Invalid Payment ID');
+    if (info.bill.customer.id !== customer_id || info.bill.customer.uuid !== customer_uuid)
+      throw new Error('Invalid Customer ID or UUID');
+    await db.update(payments).set({ date }).where(eq(payments.id, payment_id));
+  });
+
 export const records_router = t.router({
   add_bill: add_bill_route,
   get_bill_payments: get_bill_payments_route,
   submit_bill_payment: submit_bill_payment_route,
-  edit_bill: edit_bill_route
+  edit_bill: edit_bill_route,
+  edit_payment: edit_payment_route
 });

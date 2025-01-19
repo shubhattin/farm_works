@@ -10,6 +10,7 @@
   import { fade, slide } from 'svelte/transition';
   import { FiEdit2 } from 'svelte-icons-pack/fi';
   import { Modal } from '@skeletonlabs/skeleton-svelte';
+  import EditPaymentInfo from './edits/EditPaymentInfo.svelte';
   import EditBillInfo from './edits/EditBillInfo.svelte';
 
   let {
@@ -33,6 +34,12 @@
   });
 
   let edit_modal_opened = $state(false);
+  let selected_payment_id = $state<number | null>(null);
+  let payment_edit_modal_opened = $state(false);
+
+  $effect(() => {
+    if (!payment_edit_modal_opened) selected_payment_id = null;
+  });
 </script>
 
 <div class="mb-3 space-x-2 sm:space-x-4">
@@ -104,7 +111,7 @@
     {#if payments.length === 0}
       <div class="mt-2 text-sm text-warning-700-300">इस बिल का अब तक कोई भुगतान नही है।</div>
     {:else}
-      <div class="table-wrap">
+      <div class="table-wrap select-none">
         <table class="table">
           <thead>
             <tr>
@@ -114,7 +121,7 @@
             </tr>
           </thead>
           <tbody class="hover:[&>tr]:preset-tonal-tertiary">
-            {#each payments as payment (payment.id)}
+            {#each payments as payment, payment_i (payment.id)}
               <tr>
                 <td style="padding: 0; margin:0;padding-left: 0.35rem;" class=""
                   ><span class="text-gray-500 dark:text-zinc-400" style="font-size: 0.6rem;"
@@ -122,6 +129,12 @@
                   ></td
                 >
                 <td
+                  ondblclick={() => {
+                    if ($user_info && $user_info.user_type === 'admin') {
+                      selected_payment_id = payment_i;
+                      payment_edit_modal_opened = true;
+                    }
+                  }}
                   >{payment.date.toLocaleString('en-IN', {
                     // hour: '2-digit',
                     // minute: '2-digit',
@@ -139,7 +152,7 @@
           <tfoot>
             <tr>
               <td></td>
-              <td colspan="1" class="text-right font-semibold">कुल वित्ततित राशि</td>
+              <td colspan="1" class="text-right font-semibold">कुल वित्तदित राशि</td>
               <td class="text-left font-semibold"
                 >₹ {payments.reduce((sum, val) => sum + val.amount, 0)}</td
               >
@@ -159,4 +172,22 @@
       bind:current_page_opened={add_payment_opened}
     />
   </div>
+{/if}
+{#if $user_info && $user_info.user_type === 'admin' && selected_payment_id !== null && payment_edit_modal_opened}
+  <Modal
+    contentBase="card z-40 space-y-2 rounded-lg px-3 py-2 shadow-xl bg-surface-100-900"
+    triggerBase="btn p-0 m-0 outline-none select-none"
+    backdropBackground="backdrop-blur-md"
+    bind:open={payment_edit_modal_opened}
+  >
+    {#snippet content()}
+      <EditPaymentInfo
+        {customer_id}
+        {customer_uuid}
+        bill_id={bill_id!}
+        payment_info={$bill_payments_q.data!.payments[selected_payment_id!]}
+        bind:modal_opened={payment_edit_modal_opened}
+      />
+    {/snippet}
+  </Modal>
 {/if}
