@@ -98,7 +98,7 @@
   {:else if $bill_payments_q.isSuccess}
     {@const payments = $bill_payments_q.data.payments}
     {#if $user_info && $user_info.user_type === 'admin' && $user_info.super_admin}
-      <div class="py-1 text-sm dark:text-slate-400">
+      <div class="py-1 text-sm text-gray-500 dark:text-slate-400">
         योजक उपयोक्ता :
         {#if $bill_payments_q.data.added_by_user!.id === $user_info.id}
           <span class="font-semibold">स्वयं</span>
@@ -111,12 +111,17 @@
     {#if payments.length === 0}
       <div class="mt-2 text-sm text-warning-700-300">इस बिल का अब तक कोई भुगतान नही है।</div>
     {:else}
+      {@const is_super_admin =
+        $user_info && $user_info.user_type === 'admin' && $user_info.super_admin}
       <div class="table-wrap select-none">
         <table class="table">
           <thead>
             <tr>
               <th></th>
               <th class="font-bold">समय</th>
+              {#if is_super_admin}
+                <th class="font-bold">योजक उपयोक्ता</th>
+              {/if}
               <th class="font-bold">राशि (₹)</th>
             </tr>
           </thead>
@@ -145,6 +150,17 @@
                     timeZone: 'Asia/Kolkata'
                   })}</td
                 >
+                {#if is_super_admin}
+                  {@const added_by_user = payment.added_by_user!}
+                  {#if added_by_user.id === $user_info.id}
+                    <td class="text-sm">स्वयं</td>
+                  {:else}
+                    <td class="text-sm text-slate-500 dark:text-zinc-400"
+                      >{added_by_user.name.split(' ')[0]}
+                      <span class="text-xs">(#{added_by_user.id})</span></td
+                    >
+                  {/if}
+                {/if}
                 <td>{payment.amount}</td>
               </tr>
             {/each}
@@ -152,7 +168,9 @@
           <tfoot>
             <tr>
               <td></td>
-              <td colspan="1" class="text-right font-semibold">कुल वित्तदित राशि</td>
+              <td colspan={is_super_admin ? 2 : 1} class="text-right font-semibold"
+                >कुल वित्तदित राशि</td
+              >
               <td class="text-left font-semibold"
                 >₹ {payments.reduce((sum, val) => sum + val.amount, 0)}</td
               >

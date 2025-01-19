@@ -143,6 +143,12 @@ const get_bill_payments_route = publicProcedure
               }
             }
           }
+        },
+        added_by_user: {
+          columns: {
+            id: true,
+            name: true
+          }
         }
       }
     });
@@ -174,7 +180,8 @@ const get_bill_payments_route = publicProcedure
       payments: bill_payments.map((v) => ({
         id: v.id,
         amount: v.amount,
-        date: v.date
+        date: v.date,
+        added_by_user: (user?.super_admin ?? false) ? v.added_by_user : undefined
       })),
       added_by_user: added_by_user?.added_by_user
     };
