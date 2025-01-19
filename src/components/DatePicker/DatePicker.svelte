@@ -269,6 +269,7 @@
       </button>
       <div class="dropdown month">
         <select
+          class="select"
           value={browseMonth}
           on:keydown={monthKeydown}
           on:input={(e) => setMonth(parseInt(e.currentTarget.value))}
@@ -299,6 +300,7 @@
       </div>
       <div class="dropdown year">
         <select
+          class="select"
           value={browseYear}
           on:input={(e) => setYear(parseInt(e.currentTarget.value))}
           on:keydown={yearKeydown}
