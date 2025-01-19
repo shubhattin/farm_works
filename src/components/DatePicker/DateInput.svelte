@@ -83,6 +83,8 @@
   export let browseWithoutSelecting = false;
   export let timePrecision: 'minute' | 'second' | 'millisecond' | null = null;
 
+  let ignoreNextFocus = false;
+
   function onFocusOut(e: FocusEvent) {
     if (
       e?.currentTarget instanceof HTMLElement &&
@@ -107,10 +109,20 @@
     }
   }
 
+  function handleFocus() {
+    if (!ignoreNextFocus) {
+      visible = true;
+    }
+  }
+
   function onSelect(e: CustomEvent<Date>) {
     dispatch('select', e.detail);
     if (closeOnSelection) {
+      ignoreNextFocus = true;
       visible = false;
+      setTimeout(() => {
+        ignoreNextFocus = false;
+      }, 100);
     }
   }
 
@@ -177,8 +189,8 @@
     {placeholder}
     {disabled}
     {required}
-    on:focus={() => (visible = true)}
-    on:mousedown={() => (visible = true)}
+    on:focus={handleFocus}
+    on:mousedown={() => !ignoreNextFocus && (visible = true)}
     on:input={(e) => {
       if (
         e instanceof InputEvent &&
