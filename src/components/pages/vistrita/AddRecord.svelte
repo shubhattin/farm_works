@@ -192,16 +192,19 @@
           देयक जोड़ें
         </button>
       {/if}
-      <div class="relative isolate">
-        <DateInput
-          bind:value={date}
-          required={true}
-          closeOnSelection={true}
-          placeholder="दिनांक"
-          format="dd-MM-yy HH:mm"
-          timePrecision={'minute'}
-        />
-      </div>
+      <label class="block">
+        <span class="label-text font-semibold">दिनांक</span>
+        <div class="relative isolate">
+          <DateInput
+            bind:value={date}
+            required={true}
+            closeOnSelection={true}
+            placeholder="दिनांक"
+            format="dd-MM-yy HH:mm"
+            timePrecision={'minute'}
+          />
+        </div>
+      </label>
     </div>
   </form>
 {:else}
