@@ -6,7 +6,8 @@ import type { inferAsyncReturnType } from '@trpc/server';
 
 const access_token_payload_schema = UsersSchemaZod.pick({
   id: true,
-  user_type: true
+  user_type: true,
+  super_admin: true
 });
 
 export async function createContext(event: RequestEvent) {

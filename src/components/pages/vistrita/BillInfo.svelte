@@ -89,9 +89,20 @@
   {#if $bill_payments_q.isFetching || !$bill_payments_q.isSuccess}
     <div class="placeholder h-72 w-full rounded-md"></div>
   {:else if $bill_payments_q.isSuccess}
-    {@const payments = $bill_payments_q.data}
+    {@const payments = $bill_payments_q.data.payments}
+    {#if $user_info && $user_info.user_type === 'admin' && $user_info.super_admin}
+      <div class="py-1 text-sm dark:text-slate-400">
+        योजक उपयोक्ता :
+        {#if $bill_payments_q.data.added_by_user!.id === $user_info.id}
+          <span class="font-semibold">स्वयं</span>
+        {:else}
+          {$bill_payments_q.data.added_by_user!.name}
+          <span class="text-xs">(#{$bill_payments_q.data.added_by_user!.id})</span>
+        {/if}
+      </div>
+    {/if}
     {#if payments.length === 0}
-      <div class="mt-6 text-sm text-warning-700-300">इस बिल का अब तक कोई भुगतान नही है।</div>
+      <div class="mt-2 text-sm text-warning-700-300">इस बिल का अब तक कोई भुगतान नही है।</div>
     {:else}
       <div class="table-wrap">
         <table class="table">
@@ -125,6 +136,15 @@
               </tr>
             {/each}
           </tbody>
+          <tfoot>
+            <tr>
+              <td></td>
+              <td colspan="1" class="text-right font-semibold">कुल वित्ततित राशि</td>
+              <td class="text-left font-semibold"
+                >₹ {payments.reduce((sum, val) => sum + val.amount, 0)}</td
+              >
+            </tr>
+          </tfoot>
         </table>
       </div>
     {/if}

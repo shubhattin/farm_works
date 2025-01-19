@@ -122,9 +122,9 @@ const get_bill_payments_route = publicProcedure
       bill_id: z.number().int()
     })
   )
-  .query(async ({ input: { customer_id, customer_uuid, bill_id } }) => {
+  .query(async ({ ctx: { user }, input: { customer_id, customer_uuid, bill_id } }) => {
     await delay(800);
-    const bill_payments = await db.query.payments.findMany({
+    const bill_payments_pr = db.query.payments.findMany({
       where: (tbl, { eq, and }) => and(eq(tbl.bill_id, bill_id)),
       columns: {
         id: true,
@@ -146,17 +146,38 @@ const get_bill_payments_route = publicProcedure
         }
       }
     });
+    const added_by_user_pr =
+      (user?.super_admin ?? false)
+        ? db.query.bills.findFirst({
+            where: ({ id }, { eq }) => eq(id, bill_id),
+            columns: {
+              id: true
+            },
+            with: {
+              added_by_user: {
+                columns: {
+                  id: true,
+                  name: true
+                }
+              }
+            }
+          })
+        : undefined;
+    const [bill_payments, added_by_user] = await Promise.all([bill_payments_pr, added_by_user_pr]);
     // verify for correct id and uuid
     bill_payments.forEach((pay) => {
       const customer = pay.bill.customer;
       if (customer.id !== customer_id || customer.uuid !== customer_uuid)
         throw new Error('Invalid Id or UUID');
     });
-    return bill_payments.map((v) => ({
-      id: v.id,
-      amount: v.amount,
-      date: v.date
-    }));
+    return {
+      payments: bill_payments.map((v) => ({
+        id: v.id,
+        amount: v.amount,
+        date: v.date
+      })),
+      added_by_user: added_by_user?.added_by_user
+    };
   });
 
 const submit_bill_payment_route = protectedAdminProcedure
