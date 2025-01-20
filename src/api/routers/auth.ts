@@ -23,7 +23,7 @@ export const accees_token_schema = id_token_schema.pick({
 
 const BCRYPT_COST_FACTOR = 12;
 
-const ID_TOKREN_EXPIRE = '40d';
+const ID_TOKREN_EXPIRE = '28d';
 const ACCESS_TOKEN_EXPIRE = '4h';
 
 const get_id_and_aceess_token = async (user_info: z.infer<typeof id_token_schema>) => {

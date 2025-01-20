@@ -1,11 +1,12 @@
 <script lang="ts">
   import { Popover, Modal } from '@skeletonlabs/skeleton-svelte';
   import Icon from '~/tools/Icon.svelte';
-  import { BiLogOut } from 'svelte-icons-pack/bi';
+  import { BiLock, BiLogOut } from 'svelte-icons-pack/bi';
   import { deleteAuthCookies } from '~/tools/auth_tools';
   import { user_info } from '~/state/user.svelte';
   import { VscAccount } from 'svelte-icons-pack/vsc';
   import { AiOutlineUser } from 'svelte-icons-pack/ai';
+  import UpdatePassword from './UpdatePassword.svelte';
 
   let user_info_popover_status = $state(false);
   let logout_modal_status = $state(false);
@@ -14,6 +15,8 @@
     logout_modal_status = false;
     $user_info = null;
   };
+
+  let update_password_modal_status = $state(false);
 </script>
 
 <Popover
@@ -65,6 +68,23 @@
           {/snippet}
         </Modal>
       </div>
+      <Modal
+        bind:open={update_password_modal_status}
+        contentBase="card z-50 space-y-2 rounded-lg px-3 py-2 shadow-xl bg-surface-100-900"
+        backdropBackground="backdrop-blur-sm"
+      >
+        {#snippet trigger()}
+          <span
+            class="m-0 gap-1 rounded-md bg-secondary-800 px-1 py-1 pr-1.5 pt-1.5 text-sm font-bold text-white dark:bg-secondary-700"
+          >
+            <Icon class="text-lg" src={BiLock} />
+            <span>गूढपद अद्यतन</span>
+          </span>
+        {/snippet}
+        {#snippet content()}
+          <UpdatePassword on_done={() => (update_password_modal_status = false)} />
+        {/snippet}
+      </Modal>
     </div>
   {/snippet}
 </Popover>
