@@ -75,7 +75,7 @@
       >
         {#snippet trigger()}
           <span
-            class="m-0 gap-1 rounded-md bg-secondary-800 px-1 py-1 pr-1.5 pt-1.5 text-sm font-bold text-white dark:bg-secondary-700"
+            class="m-0 gap-1 rounded-md bg-surface-600 px-1 py-1 pr-1.5 pt-1.5 text-sm font-bold text-white dark:bg-surface-500"
           >
             <Icon class="text-lg" src={BiLock} />
             <span>गूढपद अद्यतन</span>
