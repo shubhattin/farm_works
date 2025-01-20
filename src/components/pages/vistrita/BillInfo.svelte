@@ -133,22 +133,25 @@
                     >{payment.id}</span
                   ></td
                 >
-                <td
-                  ondblclick={() => {
-                    if ($user_info && $user_info.user_type === 'admin') {
-                      selected_payment_id = payment_i;
-                      payment_edit_modal_opened = true;
-                    }
-                  }}
-                  >{payment.date.toLocaleString('en-IN', {
-                    // hour: '2-digit',
-                    // minute: '2-digit',
-                    // hour12: true,
-                    day: '2-digit',
-                    month: '2-digit',
-                    year: '2-digit',
-                    timeZone: 'Asia/Kolkata'
-                  })}</td
+                <td>
+                  <!-- svelte-ignore a11y_no_static_element_interactions -->
+                  <span
+                    ondblclick={() => {
+                      if ($user_info && $user_info.user_type === 'admin') {
+                        selected_payment_id = payment_i;
+                        payment_edit_modal_opened = true;
+                      }
+                    }}
+                    >{payment.date.toLocaleString('en-IN', {
+                      // hour: '2-digit',
+                      // minute: '2-digit',
+                      // hour12: true,
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: '2-digit',
+                      timeZone: 'Asia/Kolkata'
+                    })}</span
+                  ></td
                 >
                 {#if is_super_admin}
                   {@const added_by_user = payment.added_by_user!}
