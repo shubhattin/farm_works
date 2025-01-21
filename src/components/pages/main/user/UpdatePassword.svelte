@@ -52,6 +52,7 @@
       name="password"
       class={'input rounded-lg'}
       type="password"
+      autocapitalize="off"
       minlength={6}
       placeholder="वर्तमान गूढपद"
       bind:value={current_password}
@@ -65,6 +66,7 @@
       name="password"
       class={'input rounded-lg'}
       type="password"
+      autocapitalize="off"
       minlength={6}
       placeholder="नव गूढपद"
       bind:value={new_password}

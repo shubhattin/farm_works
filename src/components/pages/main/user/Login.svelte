@@ -59,6 +59,7 @@
     <input
       class={cl_join('input rounded-md px-2 py-1', wrong_pass_status && 'preset-tonal-error')}
       type="password"
+      autocapitalize="off"
       bind:this={pass_input_element}
       bind:value={password}
       disabled={user_id_or_phone_number.length === 0}
