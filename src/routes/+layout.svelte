@@ -13,6 +13,7 @@
   import '../app.pcss';
   import PartyTown from '~/components/tags/PartyTown.svelte';
   import GA from '~/components/tags/GA.svelte';
+  import { text } from '@sveltejs/kit';
 
   let { data, children }: { data: LayoutData; children: Snippet } = $props();
 
@@ -31,10 +32,16 @@
 <QueryClientProvider client={queryClient}>
   <ModeWatcher />
   <div class="contaiiner mx-auto mb-1 max-w-screen-lg">
-    <TopAppBar />
-    <div class="mx-2">
-      {@render children()}
-    </div>
+    {#if !import.meta.env.VITE_MAINTAIN_MSG || import.meta.env.VITE_MAINTAIN_MSG === 'false'}
+      <TopAppBar />
+      <div class="mx-2">
+        {@render children()}
+      </div>
+    {:else}
+      <div class="mt-4 text-center text-lg font-semibold">
+        {import.meta.env.VITE_MAINTAIN_MSG}
+      </div>
+    {/if}
   </div>
   <SvelteQueryDevtools initialIsOpen={false} />
 </QueryClientProvider>

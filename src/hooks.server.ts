@@ -15,7 +15,6 @@ import { env } from '$env/dynamic/private';
 const handle_trpc: Handle = createTRPCHandle({ router, createContext });
 
 export const handle: Handle = async ({ event, resolve }) => {
-  if (env.APP_MAINTAIN_MODE === 'true') throw new Error('Maintainance Mode');
   try {
     // this is for verifying the user's identity and not the authorization
     const id_token = event.cookies.get(AUTH_ID_LOC);
