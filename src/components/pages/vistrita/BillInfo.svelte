@@ -50,7 +50,7 @@
     <Icon src={BiCollapseAlt} class="text-2xl" />
   </button>
   {#if !add_payment_opened}
-    {#if user_info.value && user_info.value.user_type === 'admin' && !bill_info.payment_complete && bill_info.remaining_amount > 0}
+    {#if $user_info && $user_info.user_type === 'admin' && !bill_info.payment_complete && bill_info.remaining_amount > 0}
       <button
         onclick={() => (add_payment_opened = true)}
         class="btn gap-1 rounded-md bg-primary-600 p-1 pr-1.5 font-bold text-white dark:bg-primary-600"
@@ -59,7 +59,7 @@
         नया वित्तदन जोड़ें
       </button>
     {/if}
-    {#if user_info.value && user_info.value.user_type === 'admin' && !bill_info.payment_complete && bill_info.remaining_amount > 0}
+    {#if $user_info && $user_info.user_type === 'admin' && !bill_info.payment_complete && bill_info.remaining_amount > 0}
       <Modal
         contentBase="card z-40 space-y-2 rounded-lg px-3 py-2 shadow-xl bg-surface-100-900"
         triggerBase="btn p-0 m-0 outline-none select-none"
@@ -97,10 +97,10 @@
     <div class="placeholder h-72 w-full rounded-md"></div>
   {:else if $bill_payments_q.isSuccess}
     {@const payments = $bill_payments_q.data.payments}
-    {#if user_info.value && user_info.value.user_type === 'admin' && user_info.value.super_admin}
+    {#if $user_info && $user_info.user_type === 'admin' && $user_info.super_admin}
       <div class="py-1 text-sm text-gray-500 dark:text-slate-400">
         योजक उपयोक्ता :
-        {#if $bill_payments_q.data.added_by_user!.id === user_info.value.id}
+        {#if $bill_payments_q.data.added_by_user!.id === $user_info.id}
           <span class="font-semibold">स्वयं</span>
         {:else}
           {$bill_payments_q.data.added_by_user!.name}
@@ -112,7 +112,7 @@
       <div class="mt-2 text-sm text-warning-700-300">इस बिल का अब तक कोई भुगतान नही है।</div>
     {:else}
       {@const is_super_admin =
-        user_info.value && user_info.value.user_type === 'admin' && user_info.value.super_admin}
+        $user_info && $user_info.user_type === 'admin' && $user_info.super_admin}
       <div class="table-wrap select-none">
         <table class="table">
           <thead>
@@ -137,7 +137,7 @@
                   <!-- svelte-ignore a11y_no_static_element_interactions -->
                   <span
                     ondblclick={() => {
-                      if (user_info.value && user_info.value.user_type === 'admin') {
+                      if ($user_info && $user_info.user_type === 'admin') {
                         selected_payment_id = payment_i;
                         payment_edit_modal_opened = true;
                       }
@@ -155,7 +155,7 @@
                 >
                 {#if is_super_admin}
                   {@const added_by_user = payment.added_by_user!}
-                  {#if added_by_user.id === user_info.value!.id}
+                  {#if added_by_user.id === $user_info!.id}
                     <td class="text-sm">स्वयं</td>
                   {:else}
                     <td class="text-sm text-slate-500 dark:text-zinc-400"
@@ -183,7 +183,7 @@
       </div>
     {/if}
   {/if}
-{:else if user_info.value}
+{:else if $user_info}
   <div in:fade out:slide>
     <AddPayment
       {customer_id}
@@ -194,7 +194,7 @@
     />
   </div>
 {/if}
-{#if user_info.value && user_info.value.user_type === 'admin' && selected_payment_id !== null && payment_edit_modal_opened}
+{#if $user_info && $user_info.user_type === 'admin' && selected_payment_id !== null && payment_edit_modal_opened}
   <Modal
     contentBase="card z-40 space-y-2 rounded-lg px-3 py-2 shadow-xl bg-surface-100-900"
     triggerBase="btn p-0 m-0 outline-none select-none"

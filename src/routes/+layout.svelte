@@ -16,8 +16,8 @@
 
   let { data, children }: { data: LayoutData; children: Snippet } = $props();
 
-  user_info.value = null;
-  if (data.user_info) user_info.value = data.user_info;
+  $user_info = null;
+  if (data.user_info) $user_info = data.user_info;
 
   onMount(() => {
     window.addEventListener('beforeinstallprompt', (event) => {

@@ -13,7 +13,7 @@
   const log_out = () => {
     deleteAuthCookies();
     logout_modal_status = false;
-    user_info.value = null;
+    $user_info = null;
   };
 
   let update_password_modal_status = $state(false);
@@ -32,8 +32,8 @@
     <div class="select-none space-y-2 p-1">
       <div class="text-center text-base font-bold">
         <Icon class="-mt-1 text-2xl" src={AiOutlineUser} />
-        {user_info.value!.name}
-        <span class="ml-1 text-xs text-gray-500 dark:text-gray-400">#{user_info.value!.id}</span>
+        {$user_info!.name}
+        <span class="ml-1 text-xs text-gray-500 dark:text-gray-400">#{$user_info!.id}</span>
       </div>
       <div class="select-none space-y-2 p-1">
         <Modal

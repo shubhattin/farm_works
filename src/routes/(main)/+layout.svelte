@@ -6,7 +6,7 @@
   let { children }: { children: Snippet } = $props();
 </script>
 
-{#if user_info.value}
+{#if $user_info}
   <div class="flex justify-end">
     <UserControls />
   </div>

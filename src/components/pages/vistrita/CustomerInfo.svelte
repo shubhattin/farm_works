@@ -33,7 +33,7 @@
   let customer_additional_data_q = client_q.customer.get_customer_additional_data.query(
     { customer_id, customer_uuid },
     {
-      enabled: !!user_info.value // only for registered users
+      enabled: !!$user_info // only for registered users
     }
   );
 
@@ -47,7 +47,7 @@
   });
 
   const share_info_func = async () => {
-    if (user_info.value && navigator.share) {
+    if ($user_info && navigator.share) {
       const customer_data = $customer_info_q.data!.customer_info;
       await navigator.share({
         title: `${customer_data.customer_name} के देयकों का विस्तृत विवरण | ${PUBLIC_APP_NAME ?? ''}`,
@@ -61,8 +61,8 @@
   };
 </script>
 
-<div class={cl_join('mb-4 space-x-3 sm:space-x-4 md:space-x-6', !user_info.value && 'mt-4')}>
-  {#if user_info.value}
+<div class={cl_join('mb-4 space-x-3 sm:space-x-4 md:space-x-6', !$user_info && 'mt-4')}>
+  {#if $user_info}
     <!-- Non Admin Users also allowed to view but not to edit -->
     <a
       class="btn gap-1 rounded-lg bg-surface-500 p-1 pr-1.5 font-bold text-white outline-none"
@@ -70,7 +70,7 @@
     >
       <Icon src={TiArrowBackOutline} class="text-2xl" /> मुख्य पृष्ठ
     </a>
-    {#if !add_record_opened && user_info.value.user_type === 'admin'}
+    {#if !add_record_opened && $user_info.user_type === 'admin'}
       <button
         onclick={() => (add_record_opened = true)}
         class="btn gap-1 rounded-md bg-primary-600 p-1 pr-1.5 font-bold text-white dark:bg-primary-600"
@@ -100,7 +100,7 @@
   {#if $customer_info_q.isFetching}
     <div class="space-y-1">
       <div class="placeholder h-8 w-48 animate-pulse rounded-md"></div>
-      {#if user_info.value}
+      {#if $user_info}
         <div class="placeholder h-4 w-32 animate-pulse rounded-md"></div>
       {/if}
     </div>
@@ -113,7 +113,7 @@
       <div class="space-x-1">
         <span class="text-lg font-bold">{customer_info.customer_name}</span>
         <span class="text-sm text-gray-500 dark:text-zinc-400">#{customer_info.customer_id}</span>
-        {#if user_info.value}
+        {#if $user_info}
           <!-- This option available to all registered users -->
           <span class="space-x-3">
             <button
@@ -122,7 +122,7 @@
             >
               <Icon src={LuShare2} class="text-xl" />
             </button>
-            {#if user_info.value.user_type === 'admin'}
+            {#if $user_info.user_type === 'admin'}
               <Modal
                 contentBase="card z-40 space-y-2 rounded-lg px-3 py-2 shadow-xl bg-surface-100-900"
                 triggerBase="btn p-0 m-0 outline-none select-none"
@@ -147,7 +147,7 @@
           </span>
         {/if}
       </div>
-      {#if user_info.value}
+      {#if $user_info}
         {#if $customer_additional_data_q.isFetching || !$customer_additional_data_q.isSuccess}
           <div class="placeholder h-4 w-32 animate-pulse rounded-md"></div>
         {:else if !$customer_additional_data_q.isFetching && $customer_additional_data_q.isSuccess}
@@ -174,7 +174,7 @@
         {/if}
       {/if}
     </div>
-    {#if add_record_opened && user_info.value}
+    {#if add_record_opened && $user_info}
       <div in:slide out:slide>
         <AddRecord bind:current_page_open={add_record_opened} {customer_id} {customer_uuid} />
       </div>

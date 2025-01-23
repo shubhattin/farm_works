@@ -8,7 +8,7 @@
 <svelte:head>
   <title>{PUBLIC_APP_NAME ?? ''}</title>
 </svelte:head>
-{#if !user_info.value}
+{#if !$user_info}
   <Login />
 {:else}
   <HomePage />

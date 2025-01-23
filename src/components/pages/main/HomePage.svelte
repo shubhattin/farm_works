@@ -20,14 +20,14 @@
   let add_new_customer_opened = $state(false);
 </script>
 
-{#if add_new_customer_opened && user_info.value && user_info.value.user_type === 'admin'}
+{#if add_new_customer_opened && $user_info && $user_info.user_type === 'admin'}
   <div in:scale out:slide>
     <AddCustomer bind:current_page_open={add_new_customer_opened} />
   </div>
 {:else}
   <div class="flex justify-between">
     <LipiLekhikaSwitch bind:status_on={typing_tool_enabled.value} />
-    {#if user_info.value && user_info.value.user_type === 'admin'}
+    {#if $user_info && $user_info.user_type === 'admin'}
       <button
         onclick={() => (add_new_customer_opened = true)}
         class="gap-1 rounded-xl bg-secondary-600 px-2 py-1 pb-0 text-sm font-bold text-white dark:bg-secondary-700"
