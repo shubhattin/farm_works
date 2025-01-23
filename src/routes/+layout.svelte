@@ -7,13 +7,12 @@
   import TopAppBar from '~/components/TopAppBar.svelte';
   import type { LayoutData } from './$types';
   import { onMount, type Snippet } from 'svelte';
-  import { pwa_event_triggerer, pwa_install_event_fired } from '~/state/main';
+  import { pwa_state } from '~/state/main.svelte';
   import '@fontsource/roboto/latin.css';
   import '@fontsource-variable/noto-sans-devanagari';
   import '../app.pcss';
   import PartyTown from '~/components/tags/PartyTown.svelte';
   import GA from '~/components/tags/GA.svelte';
-  import { text } from '@sveltejs/kit';
 
   let { data, children }: { data: LayoutData; children: Snippet } = $props();
 
@@ -23,8 +22,8 @@
   onMount(() => {
     window.addEventListener('beforeinstallprompt', (event) => {
       event.preventDefault();
-      $pwa_event_triggerer = event;
-      $pwa_install_event_fired = true;
+      pwa_state.event_triggerer = event;
+      pwa_state.install_event_fired = true;
     });
   });
 </script>

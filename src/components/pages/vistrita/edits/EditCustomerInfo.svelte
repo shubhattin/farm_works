@@ -6,7 +6,7 @@
   import { useQueryClient } from '@tanstack/svelte-query';
   import { lekhika_typing_tool, load_parivartak_lang_data } from '~/tools/converter';
   import LipiLekhikaSwitch from '~/components/LipiLekhikaSwitch.svelte';
-  import { typing_tool_enabled } from '~/state/main';
+  import { typing_tool_enabled } from '~/state/main.svelte';
   import { onMount } from 'svelte';
 
   const query_client = useQueryClient();
@@ -87,14 +87,14 @@
 <div class="text-center text-lg font-bold text-amber-700 dark:text-warning-500">
   उपयोक्ता विज्ञप्ति का अद्यतन करें
 </div>
-<LipiLekhikaSwitch bind:status_on={$typing_tool_enabled} />
+<LipiLekhikaSwitch bind:status_on={typing_tool_enabled.value} />
 <div class="space-y-3">
   <label>
     <span class="label-text font-semibold">नाम</span>
     <input
       type="text"
       oninput={async (e) => {
-        if ($typing_tool_enabled)
+        if (typing_tool_enabled.value)
           // @ts-ignore
           await lekhika_typing_tool(e.target, e.data, 'Hindi', true, (val) => {
             name = val;
@@ -115,7 +115,7 @@
     <input
       type="text"
       oninput={async (e) => {
-        if ($typing_tool_enabled)
+        if (typing_tool_enabled.value)
           // @ts-ignore
           await lekhika_typing_tool(e.target, e.data, 'Hindi', true, (val) => {
             address = val;

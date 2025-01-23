@@ -9,7 +9,7 @@
   import { useQueryClient } from '@tanstack/svelte-query';
   import { lekhika_typing_tool } from '~/tools/converter';
   import LipiLekhikaSwitch from '~/components/LipiLekhikaSwitch.svelte';
-  import { typing_tool_enabled } from '~/state/main';
+  import { typing_tool_enabled } from '~/state/main.svelte';
 
   const query_client = useQueryClient();
 
@@ -54,7 +54,7 @@
     >
       <Icon src={TiArrowBackOutline} class="text-2xl" />
     </button>
-    <LipiLekhikaSwitch class="inline-flex" bind:status_on={$typing_tool_enabled} />
+    <LipiLekhikaSwitch class="inline-flex" bind:status_on={typing_tool_enabled.value} />
   </div>
   <form
     onsubmit={(e: Event) => {
@@ -70,7 +70,7 @@
         autocapitalize="off"
         autocomplete="off"
         oninput={async (e) => {
-          if ($typing_tool_enabled)
+          if (typing_tool_enabled.value)
             // @ts-ignore
             await lekhika_typing_tool(e.target, e.data, 'Hindi', true, (val) => {
               name = val;
@@ -107,7 +107,7 @@
         name="address"
         placeholder="पता"
         oninput={async (e) => {
-          if ($typing_tool_enabled)
+          if (typing_tool_enabled.value)
             // @ts-ignore
             await lekhika_typing_tool(e.target, e.data, 'Hindi', true, (val) => {
               address = val;
