@@ -10,7 +10,7 @@
   import { pwa_state } from '~/state/main.svelte';
   import '@fontsource/roboto/latin.css';
   import '@fontsource-variable/noto-sans-devanagari';
-  import '../app.pcss';
+  import '../app.scss';
   import PartyTown from '~/components/tags/PartyTown.svelte';
   import GA from '~/components/tags/GA.svelte';
 
