@@ -15,9 +15,11 @@
       // loading for allowing hindi typing
       load_parivartak_lang_data('Hindi', './src', true);
     }, 1500);
+    mounted = true;
   });
 
   let add_new_customer_opened = $state(false);
+  let mounted = $state(false);
 </script>
 
 {#if add_new_customer_opened && $user_info && $user_info.user_type === 'admin'}
@@ -26,16 +28,21 @@
   </div>
 {:else}
   <div class="flex justify-between">
-    <LipiLekhikaSwitch bind:status_on={typing_tool_enabled.value} />
+    {#if !mounted}
+      <span class="placeholder inline-block h-[2.25rem] w-32 animate-pulse rounded-md sm:w-40"
+      ></span>
+    {:else}
+      <LipiLekhikaSwitch bind:status_on={$typing_tool_enabled} />
+    {/if}
     {#if $user_info && $user_info.user_type === 'admin'}
       <button
         onclick={() => (add_new_customer_opened = true)}
-        class="gap-1 rounded-xl bg-secondary-600 px-2 py-1 pb-0 text-sm font-bold text-white dark:bg-secondary-700"
+        class="gap-1 rounded-lg bg-secondary-600 px-1 py-0 pb-0 text-xs font-bold text-white sm:px-2 sm:py-1 sm:text-sm dark:bg-secondary-700"
       >
-        <Icon src={AiOutlineUserAdd} class="-mt-1 text-xl" />
+        <Icon src={AiOutlineUserAdd} class="-mt-1 text-lg sm:text-xl" />
         नया ग्राहक जोड़ें
       </button>
     {/if}
   </div>
-  <CustomerList lipi_lekhika_enabled={typing_tool_enabled.value} />
+  <CustomerList lipi_lekhika_enabled={$typing_tool_enabled} />
 {/if}

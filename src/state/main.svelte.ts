@@ -1,3 +1,5 @@
+import { persistedStore } from '~/tools/persisted_store';
+
 /**
  * This should not be true if PWA is not installable or is already installed
  */
@@ -9,8 +11,4 @@ export let pwa_state = $state<{
   event_triggerer: null
 });
 
-export let typing_tool_enabled = $state<{
-  value: boolean;
-}>({
-  value: true
-});
+export let typing_tool_enabled = persistedStore('typing_tool_enabled', true);
