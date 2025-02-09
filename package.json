@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "vite dev --host",
     "dev:prod": "cross-env DB_MODE=PROD vite dev",
-    "build": "partytown copylib static/~partytown --no-debug && vite build",
+    "build": "vite build",
     "preview": "vite preview",
     "check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
     "check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
@@ -49,7 +49,6 @@
   },
   "type": "module",
   "dependencies": {
-    "@builder.io/partytown": "^0.10.3",
     "@fontsource-variable/noto-sans-devanagari": "^5.1.1",
     "@fontsource/roboto": "^5.1.1",
     "@neondatabase/serverless": "^0.10.4",
@@ -67,6 +66,7 @@
     "hash-wasm": "^4.12.0",
     "lucide-svelte": "^0.395.0",
     "ms": "^2.1.3",
+    "posthog-js": "^1.215.6",
     "superjson": "^2.2.2",
     "svelte-icons-pack": "^3.1.3",
     "tailwind-merge": "^2.6.0",
