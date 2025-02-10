@@ -3,6 +3,11 @@
   import { browser } from '$app/environment';
 
   onMount(() => {
+    console.log([
+      import.meta.env.VITE_POSTHOG_KEY,
+      import.meta.env.VITE_POSTHOG_URL,
+      import.meta.env.VITE_SITE_URL
+    ]);
     if (
       browser &&
       import.meta.env.PROD &&
