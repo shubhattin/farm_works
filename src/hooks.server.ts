@@ -1,4 +1,4 @@
-import type { Handle } from '@sveltejs/kit';
+import type { Handle, RequestEvent } from '@sveltejs/kit';
 import { AUTH_ID_LOC } from '~/tools/auth_tools';
 import { jwtVerify } from 'jose';
 import { JWT_SECRET } from '~/tools/jwt.server';
@@ -7,7 +7,6 @@ import { id_token_schema } from '~/api/routers/auth';
 import { createTRPCHandle } from 'trpc-sveltekit';
 import { router } from '~/api/trpc_router';
 import { createContext } from '~/api/context';
-import { env } from '$env/dynamic/private';
 
 // Now that we are using id token verification we can no longer preredner any page
 // so we can load trpc normally as we would usually do
@@ -30,8 +29,66 @@ export const handle: Handle = async ({ event, resolve }) => {
       event.locals.user = payload.user;
     }
   } catch {}
-  if (event.url.pathname.startsWith('/trpc')) {
-    return handle_trpc({ event, resolve });
-  }
+  if (
+    import.meta.env.PROD &&
+    // p => q
+    (!(import.meta.env.VITE_SITE_URL && import.meta.env.VITE_POSTHOG_URL) ||
+      import.meta.env.VITE_SITE_URL === import.meta.env.VITE_POSTHOG_URL) &&
+    event.url.pathname.startsWith('/ingest')
+  )
+    return await handle_posthog_proxy(event);
+  if (event.url.pathname.startsWith('/trpc')) return handle_trpc({ event, resolve });
+
   return resolve(event);
 };
+
+async function handle_posthog_proxy(
+  event: RequestEvent<Partial<Record<string, string>>, string | null>
+) {
+  try {
+    const ASSET_HOST = 'us-assets.i.posthog.com';
+    const API_HOST = 'us.i.posthog.com';
+    const hostname = event.url.pathname.startsWith('/ingest/static/') ? ASSET_HOST : API_HOST;
+
+    // Get the original URL components
+    const originalUrl = new URL(event.request.url);
+
+    // Construct the new URL properly
+    const newUrl = new URL(
+      `https://${hostname}${event.url.pathname.replace(/^\/ingest/, '')}${originalUrl.search}`
+    );
+
+    // Forward the original headers
+    const headers = new Headers(event.request.headers);
+    headers.set('host', hostname);
+
+    // Remove any problematic headers
+    headers.delete('connection');
+    headers.delete('content-length');
+
+    // Proxy the request
+    const response = await fetch(newUrl.toString(), {
+      method: event.request.method,
+      headers,
+      body:
+        event.request.method !== 'GET' && event.request.method !== 'HEAD'
+          ? await event.request.blob()
+          : undefined
+    });
+
+    // Return the proxied response
+    return new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: response.headers
+    });
+  } catch (error: any) {
+    console.error('Proxy error:', error);
+    return new Response(`Proxy error: ${error.message}`, {
+      status: 500,
+      headers: {
+        'Content-Type': 'text/plain'
+      }
+    });
+  }
+}
