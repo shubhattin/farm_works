@@ -54,11 +54,11 @@ importers:
         specifier: ^5.1.1
         version: 5.1.1
       drizzle-orm:
-        specifier: ^0.38.4
-        version: 0.38.4(@neondatabase/serverless@0.10.4)(@types/pg@8.11.6)(kysely@0.27.6)(postgres@3.4.5)
+        specifier: ^0.40.0
+        version: 0.40.0(@neondatabase/serverless@0.10.4)(@types/pg@8.11.6)(gel@2.0.1)(kysely@0.27.6)(postgres@3.4.5)
       drizzle-zod:
-        specifier: ^0.5.1
-        version: 0.5.1(drizzle-orm@0.38.4(@neondatabase/serverless@0.10.4)(@types/pg@8.11.6)(kysely@0.27.6)(postgres@3.4.5))(zod@3.24.1)
+        specifier: ^0.7.0
+        version: 0.7.0(drizzle-orm@0.40.0(@neondatabase/serverless@0.10.4)(@types/pg@8.11.6)(gel@2.0.1)(kysely@0.27.6)(postgres@3.4.5))(zod@3.24.1)
       ms:
         specifier: ^2.1.3
         version: 2.1.3
@@ -112,8 +112,8 @@ importers:
         specifier: ^16.4.7
         version: 16.4.7
       drizzle-kit:
-        specifier: ^0.30.2
-        version: 0.30.2
+        specifier: ^0.30.5
+        version: 0.30.5
       mode-watcher:
         specifier: ^0.3.1
         version: 0.3.1(svelte@5.18.0)
@@ -1031,6 +1031,9 @@ packages:
   '@peculiar/asn1-x509@2.3.15':
     resolution: {integrity: sha512-0dK5xqTqSLaxv1FHXIcd4Q/BZNuopg+u1l23hT9rOmQ1g4dNtw0g/RnEi+TboB0gOwGtrWn269v27cMgchFIIg==}
 
+  '@petamoriken/float16@3.9.1':
+    resolution: {integrity: sha512-j+ejhYwY6PeB+v1kn7lZFACUIG97u90WxMuGosILFsl9d4Ovi0sjk0GlPfoEcx+FzvXZDAfioD+NGnnPamXgMA==}
+
   '@polka/url@1.0.0-next.28':
     resolution: {integrity: sha512-8LduaNlMZGwdZ6qWrKlfa+2M4gahzFkprZiAt2TF8uS0qQgBizKXpXURqvTJ4WtmupWxaLqjRb2UCTe72mu+Aw==}
 
@@ -1602,12 +1605,12 @@ packages:
     resolution: {integrity: sha512-47qPchRCykZC03FhkYAhrvwU4xDBFIj1QPqaarj6mdM/hgUzfPHcpkHJOn3mJAufFeeAxAzeGsr5X0M4k6fLZQ==}
     engines: {node: '>=12'}
 
-  drizzle-kit@0.30.2:
-    resolution: {integrity: sha512-vhdLrxWA32WNVF77NabpSnX7pQBornx64VDQDmKddRonOB2Xe/yY4glQ7rECoa+ogqcQNo7VblLUbeBK6Zn9Ow==}
+  drizzle-kit@0.30.5:
+    resolution: {integrity: sha512-l6dMSE100u7sDaTbLczibrQZjA35jLsHNqIV+jmhNVO3O8jzM6kywMOmV9uOz9ZVSCMPQhAZEFjL/qDPVrqpUA==}
     hasBin: true
 
-  drizzle-orm@0.38.4:
-    resolution: {integrity: sha512-s7/5BpLKO+WJRHspvpqTydxFob8i1vo2rEx4pY6TGY7QSMuUfWUuzaY0DIpXCkgHOo37BaFC+SJQb99dDUXT3Q==}
+  drizzle-orm@0.40.0:
+    resolution: {integrity: sha512-7ptk/HQiMSrEZHnAsSlBESXWj52VwgMmyTEfoNmpNN2ZXpcz13LwHfXTIghsAEud7Z5UJhDOp8U07ujcqme7wg==}
     peerDependencies:
       '@aws-sdk/client-rds-data': '>=3'
       '@cloudflare/workers-types': '>=4'
@@ -1622,20 +1625,19 @@ packages:
       '@tidbcloud/serverless': '*'
       '@types/better-sqlite3': '*'
       '@types/pg': '*'
-      '@types/react': '>=18'
       '@types/sql.js': '*'
       '@vercel/postgres': '>=0.8.0'
       '@xata.io/client': '*'
       better-sqlite3: '>=7'
       bun-types: '*'
       expo-sqlite: '>=14.0.0'
+      gel: '>=2'
       knex: '*'
       kysely: '*'
       mysql2: '>=2'
       pg: '>=8'
       postgres: '>=3'
       prisma: '*'
-      react: '>=18'
       sql.js: '>=1'
       sqlite3: '>=5'
     peerDependenciesMeta:
@@ -1665,8 +1667,6 @@ packages:
         optional: true
       '@types/pg':
         optional: true
-      '@types/react':
-        optional: true
       '@types/sql.js':
         optional: true
       '@vercel/postgres':
@@ -1678,6 +1678,8 @@ packages:
       bun-types:
         optional: true
       expo-sqlite:
+        optional: true
+      gel:
         optional: true
       knex:
         optional: true
@@ -1691,18 +1693,16 @@ packages:
         optional: true
       prisma:
         optional: true
-      react:
-        optional: true
       sql.js:
         optional: true
       sqlite3:
         optional: true
 
-  drizzle-zod@0.5.1:
-    resolution: {integrity: sha512-C/8bvzUH/zSnVfwdSibOgFjLhtDtbKYmkbPbUCq46QZyZCH6kODIMSOgZ8R7rVjoI+tCj3k06MRJMDqsIeoS4A==}
+  drizzle-zod@0.7.0:
+    resolution: {integrity: sha512-xgCRYYVEzRkeXTS33GSMgoowe3vKsMNBjSI+cwG1oLQVEhAWWbqtb/AAMlm7tkmV4fG/uJjEmWzdzlEmTgWOoQ==}
     peerDependencies:
-      drizzle-orm: '>=0.23.13'
-      zod: '*'
+      drizzle-orm: '>=0.36.0'
+      zod: '>=3.0.0'
 
   electron-to-chromium@1.5.83:
     resolution: {integrity: sha512-LcUDPqSt+V0QmI47XLzZrz5OqILSMGsPFkDYus22rIbgorSvBYEFqq854ltTmUdHkY92FSdAAvsh4jWEULMdfQ==}
@@ -1710,6 +1710,10 @@ packages:
   enhanced-resolve@5.18.1:
     resolution: {integrity: sha512-ZSW3ma5GkcQBIpwZTSRAI8N71Uuwgs93IezB7mf7R60tC8ZbJideoDNKjHn2O9KIlx6rkGTTEk1xUCK2E1Y2Yg==}
     engines: {node: '>=10.13.0'}
+
+  env-paths@3.0.0:
+    resolution: {integrity: sha512-dtJUTepzMW3Lm/NPxRf3wP4642UWhjL2sQxc+ym2YMj1m/H2zDNQOlezafzkHwn6sMstjHTwG6iQQsctDW/b1A==}
+    engines: {node: ^12.20.0 || ^14.13.1 || >=16.0.0}
 
   es-module-lexer@1.6.0:
     resolution: {integrity: sha512-qqnD1yMU6tk/jnaMosogGySTZP8YtUgAffA9nMN+E/rjxcfRQ6IEk7IiozUjgxKoFHBGjTLnrHB/YC45r/59EQ==}
@@ -1789,6 +1793,11 @@ packages:
   function-bind@1.1.2:
     resolution: {integrity: sha512-7XHNxH7qX9xG5mIwxkhumTox/MIRNcOgDrxWsMt2pAr23WHp6MrRlN7FBSFpCpr+oVO0F744iUgR82nJMfG2SA==}
 
+  gel@2.0.1:
+    resolution: {integrity: sha512-gfem3IGvqKqXwEq7XseBogyaRwGsQGuE7Cw/yQsjLGdgiyqX92G1xENPCE0ltunPGcsJIa6XBOTx/PK169mOqw==}
+    engines: {node: '>= 18.0.0'}
+    hasBin: true
+
   get-tsconfig@4.8.1:
     resolution: {integrity: sha512-k9PN+cFBmaLWtVz29SkUoqU5O0slLuHJXt/2P+tMVFT+phsSGXGkp9t3rQIqdz0e+06EHNGs3oM6ZX1s2zHxRg==}
 
@@ -1851,6 +1860,10 @@ packages:
 
   isexe@2.0.0:
     resolution: {integrity: sha512-RHxMLp9lnKHGHRng9QFhRCMbYAcVpn69smSGcq3f36xjgVVWThj4qqLbTLlq7Ssj8B+fIQ1EuCEGI2lKsyQeIw==}
+
+  isexe@3.1.1:
+    resolution: {integrity: sha512-LpB/54B+/2J5hqQ7imZHfdU31OlgQqx7ZicVlkm9kzg9/w8GKLEcFfJl/t7DCEDueOyBAD6zCCwTO6Fzs0NoEQ==}
+    engines: {node: '>=16'}
 
   jiti@2.4.2:
     resolution: {integrity: sha512-rg9zJN+G4n2nfJl5MW3BMygZX56zKPNVEYYqq7adpmMh4Jn2QNEwhvQlFy6jPVdcod7txZtKHWnyZiA3a0zP7A==}
@@ -2167,6 +2180,11 @@ packages:
     engines: {node: '>=14.0.0'}
     hasBin: true
 
+  semver@7.7.1:
+    resolution: {integrity: sha512-hlq8tAfn0m/61p4BVRcPzIGr6LKiMwo4VM6dGi6pt4qcRkmNzTcWq6eCEjEh+qXjkMDvPlOFFSGwQjoEa6gyMA==}
+    engines: {node: '>=10'}
+    hasBin: true
+
   set-cookie-parser@2.7.1:
     resolution: {integrity: sha512-IOc8uWeOZgnb3ptbCURJWNjWUPcO3ZnTTdzsurqERrP6nPyv+paC55vJM0LpOlT2ne+Ix+9+CRG1MNLlyZ4GjQ==}
 
@@ -2177,6 +2195,10 @@ packages:
   shebang-regex@3.0.0:
     resolution: {integrity: sha512-7++dFhtcx3353uBaq8DDR4NuxBetBzC7ZQOhmTQInHEd6bSrXdiEyzCvG07Z44UYdLShWUyXt5M/yhz8ekcb1A==}
     engines: {node: '>=8'}
+
+  shell-quote@1.8.2:
+    resolution: {integrity: sha512-AzqKpGKjrj7EM6rKVQEPpB288oCfnrEIuyoT9cyF4nmGa7V8Zk6f7RRqYisX8X9m+Q7bd632aZW4ky7EhbQztA==}
+    engines: {node: '>= 0.4'}
 
   sirv@3.0.0:
     resolution: {integrity: sha512-BPwJGUeDaDCHihkORDchNyyTvWFhcusy1XMmhEVTQTwGeybFbp8YEmB+njbPnth1FibULBSBVwCQni25XlCUDg==}
@@ -2379,6 +2401,11 @@ packages:
   which@2.0.2:
     resolution: {integrity: sha512-BLI3Tl1TW3Pvl70l3yq3Y64i+awpwXqsGBYWkkqMtnbXgrMD+yj7rhW0kuEDxzJaYXGjEW5ogapKNMEKNMjibA==}
     engines: {node: '>= 8'}
+    hasBin: true
+
+  which@4.0.0:
+    resolution: {integrity: sha512-GlaYyEb07DPxYCKhKzplCWBJtvxZcZMrL+4UkrTSJHHPyZU4mYYTv3qaOe77H7EODLSSopAUFAc6W8U4yqvscg==}
+    engines: {node: ^16.13.0 || >=18.0.0}
     hasBin: true
 
   wrappy@1.0.2:
@@ -2922,6 +2949,8 @@ snapshots:
       asn1js: 3.0.5
       pvtsutils: 1.3.6
       tslib: 2.8.1
+
+  '@petamoriken/float16@3.9.1': {}
 
   '@polka/url@1.0.0-next.28': {}
 
@@ -3599,25 +3628,27 @@ snapshots:
 
   dotenv@16.4.7: {}
 
-  drizzle-kit@0.30.2:
+  drizzle-kit@0.30.5:
     dependencies:
       '@drizzle-team/brocli': 0.10.2
       '@esbuild-kit/esm-loader': 2.6.5
       esbuild: 0.19.12
       esbuild-register: 3.6.0(esbuild@0.19.12)
+      gel: 2.0.1
     transitivePeerDependencies:
       - supports-color
 
-  drizzle-orm@0.38.4(@neondatabase/serverless@0.10.4)(@types/pg@8.11.6)(kysely@0.27.6)(postgres@3.4.5):
+  drizzle-orm@0.40.0(@neondatabase/serverless@0.10.4)(@types/pg@8.11.6)(gel@2.0.1)(kysely@0.27.6)(postgres@3.4.5):
     optionalDependencies:
       '@neondatabase/serverless': 0.10.4
       '@types/pg': 8.11.6
+      gel: 2.0.1
       kysely: 0.27.6
       postgres: 3.4.5
 
-  drizzle-zod@0.5.1(drizzle-orm@0.38.4(@neondatabase/serverless@0.10.4)(@types/pg@8.11.6)(kysely@0.27.6)(postgres@3.4.5))(zod@3.24.1):
+  drizzle-zod@0.7.0(drizzle-orm@0.40.0(@neondatabase/serverless@0.10.4)(@types/pg@8.11.6)(gel@2.0.1)(kysely@0.27.6)(postgres@3.4.5))(zod@3.24.1):
     dependencies:
-      drizzle-orm: 0.38.4(@neondatabase/serverless@0.10.4)(@types/pg@8.11.6)(kysely@0.27.6)(postgres@3.4.5)
+      drizzle-orm: 0.40.0(@neondatabase/serverless@0.10.4)(@types/pg@8.11.6)(gel@2.0.1)(kysely@0.27.6)(postgres@3.4.5)
       zod: 3.24.1
 
   electron-to-chromium@1.5.83: {}
@@ -3626,6 +3657,8 @@ snapshots:
     dependencies:
       graceful-fs: 4.2.11
       tapable: 2.2.1
+
+  env-paths@3.0.0: {}
 
   es-module-lexer@1.6.0: {}
 
@@ -3802,6 +3835,17 @@ snapshots:
 
   function-bind@1.1.2: {}
 
+  gel@2.0.1:
+    dependencies:
+      '@petamoriken/float16': 3.9.1
+      debug: 4.4.0
+      env-paths: 3.0.0
+      semver: 7.7.1
+      shell-quote: 1.8.2
+      which: 4.0.0
+    transitivePeerDependencies:
+      - supports-color
+
   get-tsconfig@4.8.1:
     dependencies:
       resolve-pkg-maps: 1.0.0
@@ -3861,6 +3905,8 @@ snapshots:
   is-what@4.1.16: {}
 
   isexe@2.0.0: {}
+
+  isexe@3.1.1: {}
 
   jiti@2.4.2: {}
 
@@ -4090,6 +4136,8 @@ snapshots:
     optionalDependencies:
       '@parcel/watcher': 2.5.0
 
+  semver@7.7.1: {}
+
   set-cookie-parser@2.7.1: {}
 
   shebang-command@2.0.0:
@@ -4097,6 +4145,8 @@ snapshots:
       shebang-regex: 3.0.0
 
   shebang-regex@3.0.0: {}
+
+  shell-quote@1.8.2: {}
 
   sirv@3.0.0:
     dependencies:
@@ -4260,6 +4310,10 @@ snapshots:
   which@2.0.2:
     dependencies:
       isexe: 2.0.0
+
+  which@4.0.0:
+    dependencies:
+      isexe: 3.1.1
 
   wrappy@1.0.2: {}
 

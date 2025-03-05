@@ -5,8 +5,8 @@ import { import_data } from './import_data';
 import * as dotenv from 'dotenv';
 import { queryClient } from './client';
 
-// Load environment variables from .env.local
-dotenv.config({ path: '../../../.env.local' });
+// Load environment variables from .env
+dotenv.config({ path: '../../../.env' });
 
 const OUT_FOLDER = './backup';
 

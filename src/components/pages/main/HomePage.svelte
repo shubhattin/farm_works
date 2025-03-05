@@ -22,7 +22,7 @@
   let mounted = $state(false);
 </script>
 
-{#if add_new_customer_opened && $user_info && $user_info.role === 'admin'}
+{#if add_new_customer_opened && $user_info && $user_info.is_approved && $user_info.role === 'admin'}
   <div in:scale out:slide>
     <AddCustomer bind:current_page_open={add_new_customer_opened} />
   </div>

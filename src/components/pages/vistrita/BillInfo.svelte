@@ -182,7 +182,7 @@
       </div>
     {/if}
   {/if}
-{:else if $user_info}
+{:else if $user_info && $user_info.role === 'admin'}
   <div in:fade out:slide>
     <AddPayment
       {customer_id}

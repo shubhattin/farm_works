@@ -12,7 +12,7 @@ export const protectedProcedure = publicProcedure.use(async function isAuthed({
   next,
   ctx: { user }
 }) {
-  if (!user) throw new TRPCError({ code: 'UNAUTHORIZED' });
+  if (!user || !user.is_approved) throw new TRPCError({ code: 'UNAUTHORIZED' });
   return next({
     ctx: { user }
   });

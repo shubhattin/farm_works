@@ -8,8 +8,9 @@ export const import_data = async (no_confirm = false) => {
   console.log(`Fetching Data from ${dbMode} Database...`);
 
   const user = await db.query.user.findMany();
-  const customer = await db.query.customer.findMany();
+  const account = await db.query.account.findMany();
   const verification = await db.query.verification.findMany();
+  const customer = await db.query.customer.findMany();
   const bill = await db.query.bill.findMany();
   const payment = await db.query.payment.findMany();
   const jotAI_record = await db.query.jotAI_record.findMany();
@@ -18,8 +19,9 @@ export const import_data = async (no_confirm = false) => {
 
   const json_data = {
     user,
-    customer,
+    account,
     verification,
+    customer,
     bill,
     payment,
     jotAI_record,

@@ -33,7 +33,7 @@
   let customer_additional_data_q = client_q.customer.get_customer_additional_data.query(
     { customer_id, customer_uuid },
     {
-      enabled: !!$user_info // only for registered users
+      enabled: !!$user_info && $user_info.is_approved // only for registered users
     }
   );
 
@@ -47,7 +47,7 @@
   });
 
   const share_info_func = async () => {
-    if ($user_info && navigator.share) {
+    if ($user_info && $user_info.is_approved && navigator.share) {
       const customer_data = $customer_info_q.data!.customer_info;
       await navigator.share({
         title: `${customer_data.customer_name} के देयकों का विस्तृत विवरण | ${PUBLIC_APP_NAME ?? ''}`,
@@ -62,7 +62,7 @@
 </script>
 
 <div class={cl_join('mb-4 space-x-3 sm:space-x-4 md:space-x-6', !$user_info && 'mt-4')}>
-  {#if $user_info}
+  {#if $user_info && $user_info.is_approved}
     <!-- Non Admin Users also allowed to view but not to edit -->
     <a
       class="btn bg-surface-500 gap-1 rounded-lg p-1 pr-1.5 font-bold text-white outline-hidden"
@@ -100,7 +100,7 @@
   {#if $customer_info_q.isFetching}
     <div class="space-y-1">
       <div class="placeholder h-8 w-48 animate-pulse rounded-md"></div>
-      {#if $user_info}
+      {#if $user_info && $user_info.is_approved}
         <div class="placeholder h-4 w-32 animate-pulse rounded-md"></div>
       {/if}
     </div>
@@ -113,7 +113,7 @@
       <div class="space-x-1">
         <span class="text-lg font-bold">{customer_info.customer_name}</span>
         <span class="text-sm text-gray-500 dark:text-zinc-400">#{customer_info.customer_id}</span>
-        {#if $user_info}
+        {#if $user_info && $user_info.is_approved}
           <!-- This option available to all registered users -->
           <span class="space-x-3">
             <button
@@ -147,7 +147,7 @@
           </span>
         {/if}
       </div>
-      {#if $user_info}
+      {#if $user_info && $user_info.is_approved}
         {#if $customer_additional_data_q.isFetching || !$customer_additional_data_q.isSuccess}
           <div class="placeholder h-4 w-32 animate-pulse rounded-md"></div>
         {:else if !$customer_additional_data_q.isFetching && $customer_additional_data_q.isSuccess}

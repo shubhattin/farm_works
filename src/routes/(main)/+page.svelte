@@ -13,6 +13,10 @@
 </svelte:head>
 {#if !user_info}
   <Login />
-{:else}
+{:else if user_info.is_approved}
   <HomePage />
+{:else}
+  <div class="text-warning-500 dark:text-warning-400 mt-6 text-lg">
+    आपको अभी अनुमोदोत नहीं किया गया
+  </div>
 {/if}

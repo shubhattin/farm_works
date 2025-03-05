@@ -8,7 +8,7 @@ export const userInfoPlugin = () => {
         fields: {
           is_approved: {
             type: 'boolean',
-            defaultValue: true
+            defaultValue: false
           },
           super_admin: {
             type: 'boolean',
