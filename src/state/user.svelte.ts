@@ -1,5 +1,6 @@
 import { writable } from 'svelte/store';
-import { ID_TOKEN_INFO_SCHEMA } from '~/tools/auth_tools';
-import { z } from 'zod';
+import { authClient } from '$lib/auth-client';
 
-export let user_info = writable<z.infer<typeof ID_TOKEN_INFO_SCHEMA> | null>(null);
+export const user_info = writable<(typeof authClient.$Infer.Session)['user'] | null | undefined>(
+  null
+);

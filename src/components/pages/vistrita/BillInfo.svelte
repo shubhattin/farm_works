@@ -45,24 +45,24 @@
 <div class="mb-3 space-x-2 sm:space-x-4">
   <button
     onclick={() => (bill_id = null)}
-    class=" btn select-none rounded-lg bg-rose-600 p-1 text-white outline-none dark:bg-rose-500"
+    class=" btn rounded-lg bg-rose-600 p-1 text-white outline-hidden select-none dark:bg-rose-500"
   >
     <Icon src={BiCollapseAlt} class="text-2xl" />
   </button>
   {#if !add_payment_opened}
-    {#if $user_info && $user_info.user_type === 'admin' && !bill_info.payment_complete && bill_info.remaining_amount > 0}
+    {#if $user_info && $user_info.role === 'admin' && !bill_info.payment_complete && bill_info.remaining_amount > 0}
       <button
         onclick={() => (add_payment_opened = true)}
-        class="btn gap-1 rounded-md bg-primary-600 p-1 pr-1.5 font-bold text-white dark:bg-primary-600"
+        class="btn bg-primary-600 dark:bg-primary-600 gap-1 rounded-md p-1 pr-1.5 font-bold text-white"
       >
         <Icon src={BsPlusLg} class="text-2xl" />
         नया वित्तदन जोड़ें
       </button>
     {/if}
-    {#if $user_info && $user_info.user_type === 'admin' && !bill_info.payment_complete && bill_info.remaining_amount > 0}
+    {#if $user_info && $user_info.role === 'admin' && !bill_info.payment_complete && bill_info.remaining_amount > 0}
       <Modal
         contentBase="card z-40 space-y-2 rounded-lg px-3 py-2 shadow-xl bg-surface-100-900"
-        triggerBase="btn p-0 m-0 outline-none select-none"
+        triggerBase="btn p-0 m-0 outline-hidden select-none"
         backdropBackground="backdrop-blur-md"
         bind:open={edit_modal_opened}
       >
@@ -83,7 +83,7 @@
       disabled={$bill_payments_q.isFetched && $bill_payments_q.isFetching}
       onclick={() => $bill_payments_q.refetch()}
       class={cl_join(
-        'btn select-none p-0 outline-none',
+        'btn p-0 outline-hidden select-none',
         $bill_payments_q.isFetched && $bill_payments_q.isFetching && 'animate-spin'
       )}
     >
@@ -97,7 +97,7 @@
     <div class="placeholder h-72 w-full rounded-md"></div>
   {:else if $bill_payments_q.isSuccess}
     {@const payments = $bill_payments_q.data.payments}
-    {#if $user_info && $user_info.user_type === 'admin' && $user_info.super_admin}
+    {#if $user_info && $user_info.role === 'admin' && $user_info.super_admin}
       <div class="py-1 text-sm text-gray-500 dark:text-slate-400">
         योजक उपयोक्ता :
         {#if $bill_payments_q.data.added_by_user!.id === $user_info.id}
@@ -109,10 +109,9 @@
       </div>
     {/if}
     {#if payments.length === 0}
-      <div class="mt-2 text-sm text-warning-700-300">इस बिल का अब तक कोई भुगतान नही है।</div>
+      <div class="text-warning-700-300 mt-2 text-sm">इस बिल का अब तक कोई भुगतान नही है।</div>
     {:else}
-      {@const is_super_admin =
-        $user_info && $user_info.user_type === 'admin' && $user_info.super_admin}
+      {@const is_super_admin = $user_info && $user_info.role === 'admin' && $user_info.super_admin}
       <div class="table-wrap select-none">
         <table class="table">
           <thead>
@@ -125,7 +124,7 @@
               <th class="font-bold">राशि (₹)</th>
             </tr>
           </thead>
-          <tbody class="hover:[&>tr]:preset-tonal-tertiary">
+          <tbody class="[&>tr]:hover:preset-tonal-tertiary">
             {#each payments as payment, payment_i (payment.id)}
               <tr>
                 <td style="padding: 0; margin:0;padding-left: 0.35rem;" class=""
@@ -137,7 +136,7 @@
                   <!-- svelte-ignore a11y_no_static_element_interactions -->
                   <span
                     ondblclick={() => {
-                      if ($user_info && $user_info.user_type === 'admin') {
+                      if ($user_info && $user_info.role === 'admin') {
                         selected_payment_id = payment_i;
                         payment_edit_modal_opened = true;
                       }
@@ -183,7 +182,7 @@
       </div>
     {/if}
   {/if}
-{:else if $user_info}
+{:else if $user_info && $user_info.role === 'admin'}
   <div in:fade out:slide>
     <AddPayment
       {customer_id}
@@ -194,10 +193,10 @@
     />
   </div>
 {/if}
-{#if $user_info && $user_info.user_type === 'admin' && selected_payment_id !== null && payment_edit_modal_opened}
+{#if $user_info && $user_info.role === 'admin' && selected_payment_id !== null && payment_edit_modal_opened}
   <Modal
     contentBase="card z-40 space-y-2 rounded-lg px-3 py-2 shadow-xl bg-surface-100-900"
-    triggerBase="btn p-0 m-0 outline-none select-none"
+    triggerBase="btn p-0 m-0 outline-hidden select-none"
     backdropBackground="backdrop-blur-md"
     bind:open={payment_edit_modal_opened}
   >

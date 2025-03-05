@@ -26,7 +26,7 @@
     'card z-50 space-y-2 p-2 rounded-lg shadow-xl bg-surface-100-900',
     contentBase
   )}
-  backdropBackground="backdrop-blur-sm"
+  backdropBackground="backdrop-blur-xs"
 >
   {#snippet trigger()}
     {@render children?.()}

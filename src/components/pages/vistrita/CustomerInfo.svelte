@@ -33,7 +33,7 @@
   let customer_additional_data_q = client_q.customer.get_customer_additional_data.query(
     { customer_id, customer_uuid },
     {
-      enabled: !!$user_info // only for registered users
+      enabled: !!$user_info && $user_info.is_approved // only for registered users
     }
   );
 
@@ -47,7 +47,7 @@
   });
 
   const share_info_func = async () => {
-    if ($user_info && navigator.share) {
+    if ($user_info && $user_info.is_approved && navigator.share) {
       const customer_data = $customer_info_q.data!.customer_info;
       await navigator.share({
         title: `${customer_data.customer_name} के देयकों का विस्तृत विवरण | ${PUBLIC_APP_NAME ?? ''}`,
@@ -62,18 +62,18 @@
 </script>
 
 <div class={cl_join('mb-4 space-x-3 sm:space-x-4 md:space-x-6', !$user_info && 'mt-4')}>
-  {#if $user_info}
+  {#if $user_info && $user_info.is_approved}
     <!-- Non Admin Users also allowed to view but not to edit -->
     <a
-      class="btn gap-1 rounded-lg bg-surface-500 p-1 pr-1.5 font-bold text-white outline-none"
+      class="btn bg-surface-500 gap-1 rounded-lg p-1 pr-1.5 font-bold text-white outline-hidden"
       href="/"
     >
       <Icon src={TiArrowBackOutline} class="text-2xl" /> मुख्य पृष्ठ
     </a>
-    {#if !add_record_opened && $user_info.user_type === 'admin'}
+    {#if !add_record_opened && $user_info.role === 'admin'}
       <button
         onclick={() => (add_record_opened = true)}
-        class="btn gap-1 rounded-md bg-primary-600 p-1 pr-1.5 font-bold text-white dark:bg-primary-600"
+        class="btn bg-primary-600 dark:bg-primary-600 gap-1 rounded-md p-1 pr-1.5 font-bold text-white"
       >
         <Icon src={BsPlusLg} class="text-2xl" />
         नया बिल जोड़ें
@@ -87,7 +87,7 @@
         $customer_info_q.refetch();
       }}
       class={cl_join(
-        'btn select-none p-0 outline-none',
+        'btn p-0 outline-hidden select-none',
         $customer_info_q.isFetching && 'animate-spin'
       )}
     >
@@ -100,7 +100,7 @@
   {#if $customer_info_q.isFetching}
     <div class="space-y-1">
       <div class="placeholder h-8 w-48 animate-pulse rounded-md"></div>
-      {#if $user_info}
+      {#if $user_info && $user_info.is_approved}
         <div class="placeholder h-4 w-32 animate-pulse rounded-md"></div>
       {/if}
     </div>
@@ -113,19 +113,19 @@
       <div class="space-x-1">
         <span class="text-lg font-bold">{customer_info.customer_name}</span>
         <span class="text-sm text-gray-500 dark:text-zinc-400">#{customer_info.customer_id}</span>
-        {#if $user_info}
+        {#if $user_info && $user_info.is_approved}
           <!-- This option available to all registered users -->
           <span class="space-x-3">
             <button
-              class="btn m-0 ml-2 select-none gap-1 p-0 outline-none hover:text-gray-500 sm:ml-3 md:ml-4 dark:hover:text-gray-400"
+              class="btn m-0 ml-2 gap-1 p-0 outline-hidden select-none hover:text-gray-500 sm:ml-3 md:ml-4 dark:hover:text-gray-400"
               onclick={share_info_func}
             >
               <Icon src={LuShare2} class="text-xl" />
             </button>
-            {#if $user_info.user_type === 'admin'}
+            {#if $user_info.role === 'admin'}
               <Modal
                 contentBase="card z-40 space-y-2 rounded-lg px-3 py-2 shadow-xl bg-surface-100-900"
-                triggerBase="btn p-0 m-0 outline-none select-none"
+                triggerBase="btn p-0 m-0 outline-hidden select-none"
                 backdropBackground="backdrop-blur-md"
                 bind:open={edit_modal_opened}
               >
@@ -147,7 +147,7 @@
           </span>
         {/if}
       </div>
-      {#if $user_info}
+      {#if $user_info && $user_info.is_approved}
         {#if $customer_additional_data_q.isFetching || !$customer_additional_data_q.isSuccess}
           <div class="placeholder h-4 w-32 animate-pulse rounded-md"></div>
         {:else if !$customer_additional_data_q.isFetching && $customer_additional_data_q.isSuccess}
@@ -202,7 +202,7 @@
 {#snippet render_bills()}
   {@const bills = $customer_info_q.data!.bills}
   {#if bills.length === 0}
-    <div class="mt-6 text-sm text-warning-700-300">वर्तमान मे उपभोक्ता का कोई बिल नही है ।</div>
+    <div class="text-warning-700-300 mt-6 text-sm">वर्तमान मे उपभोक्ता का कोई बिल नही है ।</div>
   {:else}
     <Tabs bind:value={selected_category} fluid base="mt-6">
       {#snippet list()}
@@ -222,7 +222,7 @@
             ]
         )}
         {#if bills_filtered.length === 0}
-          <div class="text-sm text-warning-700 dark:text-warning-400">
+          <div class="text-warning-700 dark:text-warning-400 text-sm">
             {CATEOGORY_LIST[selected_category]} संबन्धी कोई बिल नही है ।
           </div>
         {:else}
@@ -252,7 +252,7 @@
                 </tr>
               </thead>
               <tbody
-                class="[&>tr>td]:text-sm sm:[&>tr>td]:text-base hover:[&>tr]:preset-tonal-primary"
+                class="[&>tr]:hover:preset-tonal-primary [&>tr>td]:text-sm sm:[&>tr>td]:text-base"
               >
                 {#each bills_filtered as bill, bill_i (bill.id)}
                   {#if !selected_bill_id || selected_bill_id === bill.id}

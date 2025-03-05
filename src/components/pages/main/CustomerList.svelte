@@ -39,7 +39,7 @@
       disabled={$customers_list_q.isFetched && $customers_list_q.isFetching}
       onclick={() => $customers_list_q.refetch()}
       class={cl_join(
-        'btn select-none p-0 outline-none',
+        'btn select-none p-0 outline-hidden',
         $customers_list_q.isFetched && $customers_list_q.isFetching && 'animate-spin'
       )}
     >
@@ -56,12 +56,12 @@
           <th style="font-weight:700;">शेष राशि</th>
         </tr>
       </thead>
-      <tbody class="hover:[&>tr]:preset-tonal-primary">
+      <tbody class="[&>tr]:hover:preset-tonal-primary">
         {#if $customers_list_q.isFetching || !$customers_list_q.isSuccess}
           {#each Array(20) as _, i}
             <tr>
               <td style="padding: 0; margin:0;">
-                <span class="placeholder inline-block h-4 w-4 animate-pulse rounded-sm"></span>
+                <span class="placeholder inline-block h-4 w-4 animate-pulse rounded-xs"></span>
               </td>
               <td>
                 <span class="placeholder inline-block h-6 w-28 animate-pulse rounded-lg"></span>

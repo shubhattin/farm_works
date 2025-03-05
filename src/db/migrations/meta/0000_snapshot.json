@@ -1,11 +1,11 @@
 {
-  "id": "84d2b219-4fe7-4e8d-a083-077380954840",
+  "id": "92f03b2d-e978-4297-a3d9-01c3c08125d8",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
-    "public.bills": {
-      "name": "bills",
+    "public.bill": {
+      "name": "bill",
       "schema": "",
       "columns": {
         "id": {
@@ -22,7 +22,7 @@
         },
         "added_by_user_id": {
           "name": "added_by_user_id",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -78,8 +78,8 @@
         }
       },
       "indexes": {
-        "bills_customer_id_index": {
-          "name": "bills_customer_id_index",
+        "bill_customerIdx": {
+          "name": "bill_customerIdx",
           "columns": [
             {
               "expression": "customer_id",
@@ -93,8 +93,8 @@
           "method": "btree",
           "with": {}
         },
-        "bills_timestamp_index": {
-          "name": "bills_timestamp_index",
+        "bill_timestampIdx": {
+          "name": "bill_timestampIdx",
           "columns": [
             {
               "expression": "timestamp",
@@ -108,8 +108,8 @@
           "method": "btree",
           "with": {}
         },
-        "bills_date_index": {
-          "name": "bills_date_index",
+        "bill_dateIdx": {
+          "name": "bill_dateIdx",
           "columns": [
             {
               "expression": "date",
@@ -123,8 +123,8 @@
           "method": "btree",
           "with": {}
         },
-        "bills_payment_complete_index": {
-          "name": "bills_payment_complete_index",
+        "bill_paymentCompleteIdx": {
+          "name": "bill_paymentCompleteIdx",
           "columns": [
             {
               "expression": "payment_complete",
@@ -140,10 +140,10 @@
         }
       },
       "foreignKeys": {
-        "bills_customer_id_customers_id_fk": {
-          "name": "bills_customer_id_customers_id_fk",
-          "tableFrom": "bills",
-          "tableTo": "customers",
+        "bill_customer_id_customer_id_fk": {
+          "name": "bill_customer_id_customer_id_fk",
+          "tableFrom": "bill",
+          "tableTo": "customer",
           "columnsFrom": [
             "customer_id"
           ],
@@ -153,10 +153,10 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "bills_added_by_user_id_users_id_fk": {
-          "name": "bills_added_by_user_id_users_id_fk",
-          "tableFrom": "bills",
-          "tableTo": "users",
+        "bill_added_by_user_id_user_id_fk": {
+          "name": "bill_added_by_user_id_user_id_fk",
+          "tableFrom": "bill",
+          "tableTo": "user",
           "columnsFrom": [
             "added_by_user_id"
           ],
@@ -166,10 +166,10 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "bills_kaTAI_record_kaTAI_records_id_fk": {
-          "name": "bills_kaTAI_record_kaTAI_records_id_fk",
-          "tableFrom": "bills",
-          "tableTo": "kaTAI_records",
+        "bill_kaTAI_record_kaTAI_record_id_fk": {
+          "name": "bill_kaTAI_record_kaTAI_record_id_fk",
+          "tableFrom": "bill",
+          "tableTo": "kaTAI_record",
           "columnsFrom": [
             "kaTAI_record"
           ],
@@ -179,10 +179,10 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "bills_jotAI_record_jotAI_records_id_fk": {
-          "name": "bills_jotAI_record_jotAI_records_id_fk",
-          "tableFrom": "bills",
-          "tableTo": "jotAI_records",
+        "bill_jotAI_record_jotAI_record_id_fk": {
+          "name": "bill_jotAI_record_jotAI_record_id_fk",
+          "tableFrom": "bill",
+          "tableTo": "jotAI_record",
           "columnsFrom": [
             "jotAI_record"
           ],
@@ -192,10 +192,10 @@
           "onDelete": "no action",
           "onUpdate": "no action"
         },
-        "bills_trolley_record_trolley_records_id_fk": {
-          "name": "bills_trolley_record_trolley_records_id_fk",
-          "tableFrom": "bills",
-          "tableTo": "trolley_records",
+        "bill_trolley_record_trolley_record_id_fk": {
+          "name": "bill_trolley_record_trolley_record_id_fk",
+          "tableFrom": "bill",
+          "tableTo": "trolley_record",
           "columnsFrom": [
             "trolley_record"
           ],
@@ -212,8 +212,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.customers": {
-      "name": "customers",
+    "public.customer": {
+      "name": "customer",
       "schema": "",
       "columns": {
         "id": {
@@ -249,8 +249,8 @@
         }
       },
       "indexes": {
-        "customers_uuid_index": {
-          "name": "customers_uuid_index",
+        "customer_uuidIdx": {
+          "name": "customer_uuidIdx",
           "columns": [
             {
               "expression": "uuid",
@@ -268,8 +268,8 @@
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
-        "customers_uuid_unique": {
-          "name": "customers_uuid_unique",
+        "customer_uuid_unique": {
+          "name": "customer_uuid_unique",
           "nullsNotDistinct": false,
           "columns": [
             "uuid"
@@ -280,8 +280,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.jotAI_records": {
-      "name": "jotAI_records",
+    "public.jotAI_record": {
+      "name": "jotAI_record",
       "schema": "",
       "columns": {
         "id": {
@@ -318,8 +318,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.kaTAI_records": {
-      "name": "kaTAI_records",
+    "public.kaTAI_record": {
+      "name": "kaTAI_record",
       "schema": "",
       "columns": {
         "id": {
@@ -357,8 +357,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.payments": {
-      "name": "payments",
+    "public.payment": {
+      "name": "payment",
       "schema": "",
       "columns": {
         "id": {
@@ -381,7 +381,7 @@
         },
         "added_by_user_id": {
           "name": "added_by_user_id",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
@@ -400,8 +400,8 @@
         }
       },
       "indexes": {
-        "payments_bill_id_index": {
-          "name": "payments_bill_id_index",
+        "payment_billIdx": {
+          "name": "payment_billIdx",
           "columns": [
             {
               "expression": "bill_id",
@@ -415,8 +415,8 @@
           "method": "btree",
           "with": {}
         },
-        "payments_timestamp_index": {
-          "name": "payments_timestamp_index",
+        "payment_timestampIdx": {
+          "name": "payment_timestampIdx",
           "columns": [
             {
               "expression": "timestamp",
@@ -430,8 +430,8 @@
           "method": "btree",
           "with": {}
         },
-        "payments_date_index": {
-          "name": "payments_date_index",
+        "payment_dateIdx": {
+          "name": "payment_dateIdx",
           "columns": [
             {
               "expression": "date",
@@ -447,10 +447,10 @@
         }
       },
       "foreignKeys": {
-        "payments_bill_id_bills_id_fk": {
-          "name": "payments_bill_id_bills_id_fk",
-          "tableFrom": "payments",
-          "tableTo": "bills",
+        "payment_bill_id_bill_id_fk": {
+          "name": "payment_bill_id_bill_id_fk",
+          "tableFrom": "payment",
+          "tableTo": "bill",
           "columnsFrom": [
             "bill_id"
           ],
@@ -460,10 +460,10 @@
           "onDelete": "cascade",
           "onUpdate": "no action"
         },
-        "payments_added_by_user_id_users_id_fk": {
-          "name": "payments_added_by_user_id_users_id_fk",
-          "tableFrom": "payments",
-          "tableTo": "users",
+        "payment_added_by_user_id_user_id_fk": {
+          "name": "payment_added_by_user_id_user_id_fk",
+          "tableFrom": "payment",
+          "tableTo": "user",
           "columnsFrom": [
             "added_by_user_id"
           ],
@@ -480,8 +480,8 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.trolley_records": {
-      "name": "trolley_records",
+    "public.trolley_record": {
+      "name": "trolley_record",
       "schema": "",
       "columns": {
         "id": {
@@ -505,41 +505,249 @@
       "checkConstraints": {},
       "isRLSEnabled": false
     },
-    "public.users": {
-      "name": "users",
+    "public.account": {
+      "name": "account",
       "schema": "",
       "columns": {
         "id": {
           "name": "id",
-          "type": "serial",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "account_id": {
+          "name": "account_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "provider_id": {
+          "name": "provider_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "access_token": {
+          "name": "access_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "refresh_token": {
+          "name": "refresh_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "id_token": {
+          "name": "id_token",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "access_token_expires_at": {
+          "name": "access_token_expires_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "refresh_token_expires_at": {
+          "name": "refresh_token_expires_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "scope": {
+          "name": "scope",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "password": {
+          "name": "password",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "account_user_id_user_id_fk": {
+          "name": "account_user_id_user_id_fk",
+          "tableFrom": "account",
+          "tableTo": "user",
+          "columnsFrom": [
+            "user_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.user": {
+      "name": "user",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
           "primaryKey": true,
           "notNull": true
         },
         "name": {
           "name": "name",
-          "type": "varchar(50)",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "phone_number": {
-          "name": "phone_number",
-          "type": "varchar(10)",
+        "email": {
+          "name": "email",
+          "type": "text",
           "primaryKey": false,
           "notNull": true
         },
-        "password_hash": {
-          "name": "password_hash",
-          "type": "varchar(96)",
+        "email_verified": {
+          "name": "email_verified",
+          "type": "boolean",
           "primaryKey": false,
           "notNull": true
         },
-        "user_type": {
-          "name": "user_type",
-          "type": "user_type",
-          "typeSchema": "public",
+        "image": {
+          "name": "image",
+          "type": "text",
           "primaryKey": false,
-          "notNull": true,
-          "default": "'non-admin'"
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role": {
+          "name": "role",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "banned": {
+          "name": "banned",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ban_reason": {
+          "name": "ban_reason",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "ban_expires": {
+          "name": "ban_expires",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_approved": {
+          "name": "is_approved",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "super_admin": {
+          "name": "super_admin",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "user_email_unique": {
+          "name": "user_email_unique",
+          "nullsNotDistinct": false,
+          "columns": [
+            "email"
+          ]
+        }
+      },
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.verification": {
+      "name": "verification",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "text",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "identifier": {
+          "name": "identifier",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "value": {
+          "name": "value",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "expires_at": {
+          "name": "expires_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
@@ -579,14 +787,6 @@
       "values": [
         "dhAn",
         "gehUM"
-      ]
-    },
-    "public.user_type": {
-      "name": "user_type",
-      "schema": "public",
-      "values": [
-        "admin",
-        "non-admin"
       ]
     }
   },

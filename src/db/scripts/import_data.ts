@@ -7,22 +7,26 @@ export const import_data = async (no_confirm = false) => {
 
   console.log(`Fetching Data from ${dbMode} Database...`);
 
-  const users = await db.query.users.findMany();
-  const customers = await db.query.customers.findMany();
-  const bills = await db.query.bills.findMany();
-  const payments = await db.query.payments.findMany();
-  const jotAI_records = await db.query.jotAI_records.findMany();
-  const kaTAI_records = await db.query.kaTAI_records.findMany();
-  const trolley_records = await db.query.trolley_records.findMany();
+  const user = await db.query.user.findMany();
+  const account = await db.query.account.findMany();
+  const verification = await db.query.verification.findMany();
+  const customer = await db.query.customer.findMany();
+  const bill = await db.query.bill.findMany();
+  const payment = await db.query.payment.findMany();
+  const jotAI_record = await db.query.jotAI_record.findMany();
+  const kaTAI_record = await db.query.kaTAI_record.findMany();
+  const trolley_record = await db.query.trolley_record.findMany();
 
   const json_data = {
-    users,
-    customers,
-    bills,
-    payments,
-    jotAI_records,
-    kaTAI_records,
-    trolley_records
+    user,
+    account,
+    verification,
+    customer,
+    bill,
+    payment,
+    jotAI_record,
+    kaTAI_record,
+    trolley_record
   };
 
   await make_dir('./out');

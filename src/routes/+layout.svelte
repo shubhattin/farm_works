@@ -1,22 +1,19 @@
 <script lang="ts">
+  import '@fontsource/roboto/latin.css';
+  import '@fontsource-variable/noto-sans-devanagari';
+  import '../app.css';
+  import '../app.scss';
   import { ModeWatcher } from 'mode-watcher';
   import { QueryClientProvider } from '@tanstack/svelte-query';
-  import { user_info } from '~/state/user.svelte';
   import { queryClient } from '~/state/queryClient';
   import { SvelteQueryDevtools } from '@tanstack/svelte-query-devtools';
   import TopAppBar from '~/components/TopAppBar.svelte';
-  import type { LayoutData } from './$types';
   import { onMount, type Snippet } from 'svelte';
   import { pwa_state } from '~/state/main.svelte';
-  import '@fontsource/roboto/latin.css';
-  import '@fontsource-variable/noto-sans-devanagari';
-  import '../app.pcss';
   import PostHogInit from '~/components/tags/PostHogInit.svelte';
+  import CookieCacheRefresh from '~/lib/CookieCacheRefresh.svelte';
 
-  let { data, children }: { data: LayoutData; children: Snippet } = $props();
-
-  $user_info = null;
-  if (data.user_info) $user_info = data.user_info;
+  let { children }: { children: Snippet } = $props();
 
   onMount(() => {
     window.addEventListener('beforeinstallprompt', (event) => {
@@ -29,7 +26,7 @@
 
 <QueryClientProvider client={queryClient}>
   <ModeWatcher />
-  <div class="contaiiner mx-auto mb-1 max-w-screen-lg">
+  <div class="contaiiner mx-auto mb-1 max-w-(--breakpoint-lg)">
     {#if !import.meta.env.VITE_MAINTAIN_MSG || import.meta.env.VITE_MAINTAIN_MSG === 'false'}
       <TopAppBar />
       <div class="mx-2">
@@ -42,5 +39,6 @@
     {/if}
   </div>
   <SvelteQueryDevtools initialIsOpen={false} />
+  <CookieCacheRefresh />
 </QueryClientProvider>
 <PostHogInit />

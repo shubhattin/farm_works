@@ -34,7 +34,7 @@
       positioning={{ placement: 'left-start' }}
       arrow={false}
       contentBase="card z-50 space-y-2 rounded-lg p-2 shadow-xl bg-surface-100-900"
-      triggerBase="btn m-0 p-0 gap-0 outline-none select-none"
+      triggerBase="btn m-0 p-0 gap-0 outline-hidden select-none"
     >
       {#snippet trigger()}
         <Icon
@@ -45,7 +45,7 @@
       {#snippet content()}
         {#if pwa_state.install_event_fired}
           <button
-            class="select-none gap-1 px-2 py-1 text-sm outline-none"
+            class="select-none gap-1 px-2 py-1 text-sm outline-hidden"
             onclick={async () => {
               app_bar_popover_status = false;
               if (pwa_state.install_event_fired && pwa_state.event_triggerer)

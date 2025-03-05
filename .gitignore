@@ -17,3 +17,4 @@ src/db/scripts/backup/
 static/~partytown
 
 **/a.ts
+/auth-schema.ts
