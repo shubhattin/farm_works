@@ -124,7 +124,7 @@ const get_bill_payments_route = publicProcedure
   )
   .query(async ({ ctx: { user }, input: { customer_id, customer_uuid, bill_id } }) => {
     await delay(800);
-    const bill_payments_pr = db.query.payments.findMany({
+    const bill_payments_pr = db.query.payment.findMany({
       where: (tbl, { eq, and }) => and(eq(tbl.bill_id, bill_id)),
       columns: {
         id: true,
@@ -154,7 +154,7 @@ const get_bill_payments_route = publicProcedure
     });
     const added_by_user_pr =
       (user?.super_admin ?? false)
-        ? db.query.bills.findFirst({
+        ? db.query.bill.findFirst({
             where: ({ id }, { eq }) => eq(id, bill_id),
             columns: {
               id: true
@@ -206,7 +206,7 @@ const submit_bill_payment_route = protectedAdminProcedure
   .mutation(
     async ({ input: { customer_id, customer_uuid, bill_id, amount, date }, ctx: { user } }) => {
       const [bill_info, [{ remaining_amount }]] = await Promise.all([
-        db.query.bills.findFirst({
+        db.query.bill.findFirst({
           where: ({ id }, { eq }) => eq(id, bill_id),
           columns: {
             payment_complete: true
@@ -344,7 +344,7 @@ const edit_payment_route = protectedAdminProcedure
     })
   )
   .mutation(async ({ input: { customer_id, customer_uuid, payment_id, date, bill_id } }) => {
-    const info = await db.query.payments.findFirst({
+    const info = await db.query.payment.findFirst({
       where: ({ id, bill_id: bill_id_ }, { eq, and }) =>
         and(eq(id, payment_id), eq(bill_id_, bill_id)),
       columns: {

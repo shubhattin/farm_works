@@ -3,7 +3,9 @@ import { readFile } from 'fs/promises';
 import { dbMode, take_input } from '~/tools/kry_server';
 import {
   customer,
-  users,
+  user,
+  account,
+  verification,
   bill,
   jotAI_record,
   kaTAI_record,
@@ -11,7 +13,9 @@ import {
   payment
 } from '~/db/schema';
 import {
-  UsersSchemaZod,
+  UserSchemaZod,
+  AccountSchemaZod,
+  VerificationSchemaZod,
   CustomersSchemaZod,
   BillsSchemaZod,
   JotAIRecordsSchemaZod,
@@ -41,13 +45,15 @@ const main = async () => {
 
   const data = z
     .object({
-      users: z.array(UsersSchemaZod),
-      customers: z.array(CustomersSchemaZod),
-      bills: z.array(BillsSchemaZod),
-      jotAI_records: z.array(JotAIRecordsSchemaZod),
-      kaTAI_records: z.array(KaTAIRecordsSchemaZod),
-      trolley_records: z.array(TrolleyRecordsSchemaZod),
-      payments: z.array(PaymentsSchemaZod)
+      user: z.array(UserSchemaZod),
+      account: z.array(AccountSchemaZod),
+      verification: z.array(VerificationSchemaZod),
+      customer: z.array(CustomersSchemaZod),
+      bill: z.array(BillsSchemaZod),
+      jotAI_record: z.array(JotAIRecordsSchemaZod),
+      kaTAI_record: z.array(KaTAIRecordsSchemaZod),
+      trolley_record: z.array(TrolleyRecordsSchemaZod),
+      payment: z.array(PaymentsSchemaZod)
     })
     .parse(JSON.parse((await readFile(`./out/${in_file_name}`)).toString()));
 
@@ -59,7 +65,9 @@ const main = async () => {
     await db.delete(kaTAI_record);
     await db.delete(trolley_record);
     await db.delete(customer);
-    await db.delete(users);
+    await db.delete(user);
+    await db.delete(account);
+    await db.delete(verification);
     console.log(chalk.green('✓ Deleted All Tables Successfully'));
   } catch (e) {
     console.log(chalk.red('✗ Error while deleting tables:'), chalk.yellow(e));
@@ -67,15 +75,34 @@ const main = async () => {
 
   // inserting users
   try {
-    await db.insert(users).values(data.users);
+    await db.insert(user).values(data.user);
     console.log(chalk.green('✓ Successfully added values into table'), chalk.blue('`users`'));
   } catch (e) {
     console.log(chalk.red('✗ Error while inserting users:'), chalk.yellow(e));
   }
 
+  // inserting account
+  try {
+    await db.insert(account).values(data.account);
+    console.log(chalk.green('✓ Successfully added values into table'), chalk.blue('`account`'));
+  } catch (e) {
+    console.log(chalk.red('✗ Error while inserting account:'), chalk.yellow(e));
+  }
+
+  // inserting verification
+  try {
+    await db.insert(verification).values(data.verification);
+    console.log(
+      chalk.green('✓ Successfully added values into table'),
+      chalk.blue('`verification`')
+    );
+  } catch (e) {
+    console.log(chalk.red('✗ Error while inserting verification:'), chalk.yellow(e));
+  }
+
   // inserting customers
   try {
-    await db.insert(customer).values(data.customers);
+    await db.insert(customer).values(data.customer);
     console.log(chalk.green('✓ Successfully added values into table'), chalk.blue('`customers`'));
   } catch (e) {
     console.log(chalk.red('✗ Error while inserting customers:'), chalk.yellow(e));
@@ -83,7 +110,7 @@ const main = async () => {
 
   // inserting jotAI_records
   try {
-    await db.insert(jotAI_record).values(data.jotAI_records);
+    await db.insert(jotAI_record).values(data.jotAI_record);
     console.log(
       chalk.green('✓ Successfully added values into table'),
       chalk.blue('`jotAI_records`')
@@ -94,7 +121,7 @@ const main = async () => {
 
   // inserting kaTAI_records
   try {
-    await db.insert(kaTAI_record).values(data.kaTAI_records);
+    await db.insert(kaTAI_record).values(data.kaTAI_record);
     console.log(
       chalk.green('✓ Successfully added values into table'),
       chalk.blue('`kaTAI_records`')
@@ -105,7 +132,7 @@ const main = async () => {
 
   // inserting trolley_records
   try {
-    await db.insert(trolley_record).values(data.trolley_records);
+    await db.insert(trolley_record).values(data.trolley_record);
     console.log(
       chalk.green('✓ Successfully added values into table'),
       chalk.blue('`trolley_records`')
@@ -116,7 +143,7 @@ const main = async () => {
 
   // inserting bills
   try {
-    await db.insert(bill).values(data.bills);
+    await db.insert(bill).values(data.bill);
     console.log(chalk.green('✓ Successfully added values into table'), chalk.blue('`bills`'));
   } catch (e) {
     console.log(chalk.red('✗ Error while inserting bills:'), chalk.yellow(e));
@@ -124,7 +151,7 @@ const main = async () => {
 
   // inserting payments
   try {
-    await db.insert(payment).values(data.payments);
+    await db.insert(payment).values(data.payment);
     console.log(chalk.green('✓ Successfully added values into table'), chalk.blue('`payments`'));
   } catch (e) {
     console.log(chalk.red('✗ Error while inserting payments:'), chalk.yellow(e));
@@ -132,7 +159,6 @@ const main = async () => {
 
   // resetting SERIAL
   try {
-    await db.execute(sql`SELECT setval('"users_id_seq"', (select MAX(id) from "users"))`);
     await db.execute(sql`SELECT setval('"customers_id_seq"', (select MAX(id) from "customers"))`);
     await db.execute(sql`SELECT setval('"bills_id_seq"', (select MAX(id) from "bills"))`);
     await db.execute(

@@ -13,6 +13,7 @@
   import { onMount, type Snippet } from 'svelte';
   import { pwa_state } from '~/state/main.svelte';
   import PostHogInit from '~/components/tags/PostHogInit.svelte';
+  import CookieCacheRefresh from '~/lib/CookieCacheRefresh.svelte';
 
   let { data, children }: { data: LayoutData; children: Snippet } = $props();
 
@@ -43,5 +44,6 @@
     {/if}
   </div>
   <SvelteQueryDevtools initialIsOpen={false} />
+  <CookieCacheRefresh />
 </QueryClientProvider>
 <PostHogInit />

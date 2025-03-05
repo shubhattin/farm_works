@@ -7,10 +7,13 @@ import {
   integer,
   timestamp,
   index,
-  boolean
+  boolean,
+  text
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { user, account } from './auth-schema';
+
+export * from './auth-schema';
 
 export const customer = pgTable(
   'customer',
@@ -31,7 +34,7 @@ export const bill = pgTable(
     customer_id: integer()
       .notNull()
       .references(() => customer.id, { onDelete: 'cascade' }),
-    added_by_user_id: integer()
+    added_by_user_id: text()
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),
     payment_complete: boolean().notNull().default(false),
@@ -61,7 +64,7 @@ export const payment = pgTable(
       .notNull()
       .references(() => bill.id, { onDelete: 'cascade' }),
     amount: integer().notNull(),
-    added_by_user_id: integer()
+    added_by_user_id: text()
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),
     date: timestamp({ withTimezone: true }).notNull(),

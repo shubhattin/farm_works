@@ -13,7 +13,7 @@ export const load: PageServerLoad = async ({ params }) => {
     });
   try {
     const [id, uuid] = z.tuple([z.coerce.number(), z.string().uuid()]).parse(id_uuid);
-    const info = await db.query.customers.findFirst({
+    const info = await db.query.customer.findFirst({
       where: (tbl, { eq, and }) => and(eq(tbl.id, id), eq(tbl.uuid, uuid)),
       columns: {
         id: true

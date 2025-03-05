@@ -4,7 +4,7 @@ CREATE TYPE "public"."kaTAI" AS ENUM('dhAn', 'gehUM');--> statement-breakpoint
 CREATE TABLE "bill" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"customer_id" integer NOT NULL,
-	"added_by_user_id" integer NOT NULL,
+	"added_by_user_id" text NOT NULL,
 	"payment_complete" boolean DEFAULT false NOT NULL,
 	"rate" integer NOT NULL,
 	"total" integer NOT NULL,
@@ -42,7 +42,7 @@ CREATE TABLE "payment" (
 	"id" serial PRIMARY KEY NOT NULL,
 	"bill_id" integer NOT NULL,
 	"amount" integer NOT NULL,
-	"added_by_user_id" integer NOT NULL,
+	"added_by_user_id" text NOT NULL,
 	"date" timestamp with time zone NOT NULL,
 	"timestamp" timestamp with time zone DEFAULT now() NOT NULL
 );
@@ -52,6 +52,48 @@ CREATE TABLE "trolley_record" (
 	"number" integer NOT NULL
 );
 --> statement-breakpoint
+CREATE TABLE "account" (
+	"id" text PRIMARY KEY NOT NULL,
+	"account_id" text NOT NULL,
+	"provider_id" text NOT NULL,
+	"user_id" text NOT NULL,
+	"access_token" text,
+	"refresh_token" text,
+	"id_token" text,
+	"access_token_expires_at" timestamp,
+	"refresh_token_expires_at" timestamp,
+	"scope" text,
+	"password" text,
+	"created_at" timestamp NOT NULL,
+	"updated_at" timestamp NOT NULL
+);
+--> statement-breakpoint
+CREATE TABLE "user" (
+	"id" text PRIMARY KEY NOT NULL,
+	"name" text NOT NULL,
+	"email" text NOT NULL,
+	"email_verified" boolean NOT NULL,
+	"image" text,
+	"created_at" timestamp NOT NULL,
+	"updated_at" timestamp NOT NULL,
+	"role" text,
+	"banned" boolean,
+	"ban_reason" text,
+	"ban_expires" timestamp,
+	"is_approved" boolean,
+	"super_admin" boolean,
+	CONSTRAINT "user_email_unique" UNIQUE("email")
+);
+--> statement-breakpoint
+CREATE TABLE "verification" (
+	"id" text PRIMARY KEY NOT NULL,
+	"identifier" text NOT NULL,
+	"value" text NOT NULL,
+	"expires_at" timestamp NOT NULL,
+	"created_at" timestamp,
+	"updated_at" timestamp
+);
+--> statement-breakpoint
 ALTER TABLE "bill" ADD CONSTRAINT "bill_customer_id_customer_id_fk" FOREIGN KEY ("customer_id") REFERENCES "public"."customer"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "bill" ADD CONSTRAINT "bill_added_by_user_id_user_id_fk" FOREIGN KEY ("added_by_user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "bill" ADD CONSTRAINT "bill_kaTAI_record_kaTAI_record_id_fk" FOREIGN KEY ("kaTAI_record") REFERENCES "public"."kaTAI_record"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
@@ -59,6 +101,7 @@ ALTER TABLE "bill" ADD CONSTRAINT "bill_jotAI_record_jotAI_record_id_fk" FOREIGN
 ALTER TABLE "bill" ADD CONSTRAINT "bill_trolley_record_trolley_record_id_fk" FOREIGN KEY ("trolley_record") REFERENCES "public"."trolley_record"("id") ON DELETE no action ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "payment" ADD CONSTRAINT "payment_bill_id_bill_id_fk" FOREIGN KEY ("bill_id") REFERENCES "public"."bill"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 ALTER TABLE "payment" ADD CONSTRAINT "payment_added_by_user_id_user_id_fk" FOREIGN KEY ("added_by_user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
+ALTER TABLE "account" ADD CONSTRAINT "account_user_id_user_id_fk" FOREIGN KEY ("user_id") REFERENCES "public"."user"("id") ON DELETE cascade ON UPDATE no action;--> statement-breakpoint
 CREATE INDEX "bill_customerIdx" ON "bill" USING btree ("customer_id");--> statement-breakpoint
 CREATE INDEX "bill_timestampIdx" ON "bill" USING btree ("timestamp");--> statement-breakpoint
 CREATE INDEX "bill_dateIdx" ON "bill" USING btree ("date");--> statement-breakpoint
