@@ -3,7 +3,7 @@
   import { user_info } from '~/state/user.svelte';
   import type { Snippet } from 'svelte';
   import { useSession } from '~/lib/auth-client';
-  import type { LayoutData } from '../$types';
+  import type { LayoutData } from './$types';
   import { browser } from '$app/environment';
 
   let { children, data }: { children: Snippet; data: LayoutData } = $props();
@@ -11,6 +11,7 @@
   const session = useSession();
   let user_info_fetched = $state(false);
 
+  $user_info = data.user_info;
   $effect(() => {
     $user_info = user_info_fetched ? $session.data?.user : data.user_info;
   });
