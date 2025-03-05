@@ -11,7 +11,8 @@
   const session = useSession();
   let user_info_fetched = $state(false);
 
-  $user_info = data.user_info;
+  $user_info = null;
+  if (data.user_info) $user_info = data.user_info;
   $effect(() => {
     $user_info = user_info_fetched ? $session.data?.user : data.user_info;
   });
