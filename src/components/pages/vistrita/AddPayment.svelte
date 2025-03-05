@@ -78,7 +78,7 @@
 
 <div class="mb-2 flex space-x-4">
   <button
-    class="btn rounded-lg bg-error-500 px-1.5 py-1 outline-none"
+    class="btn rounded-lg bg-error-500 px-1.5 py-1 outline-hidden"
     onclick={() => (current_page_opened = false)}
   >
     <Icon src={AiOutlineClose} class="text-2xl text-white" />

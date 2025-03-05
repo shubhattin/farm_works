@@ -45,7 +45,7 @@
 <div class="mb-3 space-x-2 sm:space-x-4">
   <button
     onclick={() => (bill_id = null)}
-    class=" btn select-none rounded-lg bg-rose-600 p-1 text-white outline-none dark:bg-rose-500"
+    class=" btn select-none rounded-lg bg-rose-600 p-1 text-white outline-hidden dark:bg-rose-500"
   >
     <Icon src={BiCollapseAlt} class="text-2xl" />
   </button>
@@ -62,7 +62,7 @@
     {#if $user_info && $user_info.user_type === 'admin' && !bill_info.payment_complete && bill_info.remaining_amount > 0}
       <Modal
         contentBase="card z-40 space-y-2 rounded-lg px-3 py-2 shadow-xl bg-surface-100-900"
-        triggerBase="btn p-0 m-0 outline-none select-none"
+        triggerBase="btn p-0 m-0 outline-hidden select-none"
         backdropBackground="backdrop-blur-md"
         bind:open={edit_modal_opened}
       >
@@ -83,7 +83,7 @@
       disabled={$bill_payments_q.isFetched && $bill_payments_q.isFetching}
       onclick={() => $bill_payments_q.refetch()}
       class={cl_join(
-        'btn select-none p-0 outline-none',
+        'btn select-none p-0 outline-hidden',
         $bill_payments_q.isFetched && $bill_payments_q.isFetching && 'animate-spin'
       )}
     >
@@ -125,7 +125,7 @@
               <th class="font-bold">राशि (₹)</th>
             </tr>
           </thead>
-          <tbody class="hover:[&>tr]:preset-tonal-tertiary">
+          <tbody class="[&>tr]:hover:preset-tonal-tertiary">
             {#each payments as payment, payment_i (payment.id)}
               <tr>
                 <td style="padding: 0; margin:0;padding-left: 0.35rem;" class=""
@@ -197,7 +197,7 @@
 {#if $user_info && $user_info.user_type === 'admin' && selected_payment_id !== null && payment_edit_modal_opened}
   <Modal
     contentBase="card z-40 space-y-2 rounded-lg px-3 py-2 shadow-xl bg-surface-100-900"
-    triggerBase="btn p-0 m-0 outline-none select-none"
+    triggerBase="btn p-0 m-0 outline-hidden select-none"
     backdropBackground="backdrop-blur-md"
     bind:open={payment_edit_modal_opened}
   >

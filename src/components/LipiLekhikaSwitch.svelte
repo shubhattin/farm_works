@@ -21,7 +21,7 @@
   {#if !hide_until_mounted || mounted}
     <Switch
       name="hindi_typing_tool"
-      stateFocused="outline-none select-none"
+      stateFocused="outline-hidden select-none"
       bind:checked={status_on}
     >
       <span class="text-sm">हिन्दी लेखन</span>

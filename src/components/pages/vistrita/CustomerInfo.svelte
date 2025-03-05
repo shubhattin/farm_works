@@ -65,7 +65,7 @@
   {#if $user_info}
     <!-- Non Admin Users also allowed to view but not to edit -->
     <a
-      class="btn gap-1 rounded-lg bg-surface-500 p-1 pr-1.5 font-bold text-white outline-none"
+      class="btn gap-1 rounded-lg bg-surface-500 p-1 pr-1.5 font-bold text-white outline-hidden"
       href="/"
     >
       <Icon src={TiArrowBackOutline} class="text-2xl" /> मुख्य पृष्ठ
@@ -87,7 +87,7 @@
         $customer_info_q.refetch();
       }}
       class={cl_join(
-        'btn select-none p-0 outline-none',
+        'btn select-none p-0 outline-hidden',
         $customer_info_q.isFetching && 'animate-spin'
       )}
     >
@@ -117,7 +117,7 @@
           <!-- This option available to all registered users -->
           <span class="space-x-3">
             <button
-              class="btn m-0 ml-2 select-none gap-1 p-0 outline-none hover:text-gray-500 sm:ml-3 md:ml-4 dark:hover:text-gray-400"
+              class="btn m-0 ml-2 select-none gap-1 p-0 outline-hidden hover:text-gray-500 sm:ml-3 md:ml-4 dark:hover:text-gray-400"
               onclick={share_info_func}
             >
               <Icon src={LuShare2} class="text-xl" />
@@ -125,7 +125,7 @@
             {#if $user_info.user_type === 'admin'}
               <Modal
                 contentBase="card z-40 space-y-2 rounded-lg px-3 py-2 shadow-xl bg-surface-100-900"
-                triggerBase="btn p-0 m-0 outline-none select-none"
+                triggerBase="btn p-0 m-0 outline-hidden select-none"
                 backdropBackground="backdrop-blur-md"
                 bind:open={edit_modal_opened}
               >
@@ -252,7 +252,7 @@
                 </tr>
               </thead>
               <tbody
-                class="[&>tr>td]:text-sm sm:[&>tr>td]:text-base hover:[&>tr]:preset-tonal-primary"
+                class="[&>tr>td]:text-sm sm:[&>tr>td]:text-base [&>tr]:hover:preset-tonal-primary"
               >
                 {#each bills_filtered as bill, bill_i (bill.id)}
                   {#if !selected_bill_id || selected_bill_id === bill.id}

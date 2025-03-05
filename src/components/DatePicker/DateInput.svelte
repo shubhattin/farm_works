@@ -175,7 +175,7 @@
     bind:this={InputElement}
     class="input m-0 box-border w-[150px] min-w-0 rounded-xl
            border border-gray-300/30
-           px-2 py-1 outline-none
+           px-2 py-1 outline-hidden
            transition-all duration-75 ease-in-out
            focus:border-blue-500 focus:ring-2 focus:ring-blue-500/40
            disabled:opacity-50
@@ -212,7 +212,7 @@
     <div
       class="absolute z-10 hidden p-px
              {showAbove ? 'bottom-full' : ''}
-             {visible ? '!block' : ''}"
+             {visible ? 'block!' : ''}"
       bind:this={pickerElement}
       transition:flyAutoPosition
       style="left: {pickerLeftPosition}px"

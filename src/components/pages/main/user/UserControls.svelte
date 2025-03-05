@@ -21,7 +21,7 @@
 
 <Popover
   bind:open={user_info_popover_status}
-  triggerBase="btn m-2 p-0 select-none outline-none"
+  triggerBase="btn m-2 p-0 select-none outline-hidden"
   contentBase="card z-40 pt-1 px-1 shadow-2xl bg-surface-100-900 rounded-lg"
   positioning={{ placement: 'left-start' }}
 >
@@ -39,7 +39,7 @@
         <Modal
           bind:open={logout_modal_status}
           contentBase="card z-50 space-y-2 rounded-lg px-3 py-2 shadow-xl bg-surface-100-900"
-          backdropBackground="backdrop-blur-sm"
+          backdropBackground="backdrop-blur-xs"
         >
           {#snippet trigger()}
             <span
@@ -71,7 +71,7 @@
       <Modal
         bind:open={update_password_modal_status}
         contentBase="card z-50 space-y-2 rounded-lg px-3 py-2 shadow-xl bg-surface-100-900"
-        backdropBackground="backdrop-blur-sm"
+        backdropBackground="backdrop-blur-xs"
       >
         {#snippet trigger()}
           <span

@@ -62,13 +62,13 @@
 
 <Modal
   bind:open={modal_opened}
-  contentBase="card p-2 dark:bg-slate-900 bg-slate-200  space-y-4 shadow-xl max-w-screen-sm mx-3 mt-0 max-h-[97%] max-w-[97%] overflow-scroll"
-  backdropClasses="backdrop-blur-sm"
-  triggerBase="outline-none select-none"
+  contentBase="card p-2 dark:bg-slate-900 bg-slate-200  space-y-4 shadow-xl max-w-(--breakpoint-sm) mx-3 mt-0 max-h-[97%] max-w-[97%] overflow-scroll"
+  backdropClasses="backdrop-blur-xs"
+  triggerBase="outline-hidden select-none"
 >
   {#snippet trigger()}
     <span
-      class="btn select-none rounded-md p-0 text-sm outline-none"
+      class="btn select-none rounded-md p-0 text-sm outline-hidden"
       title={'Language Typing Assistance'}
     >
       <Icon src={BiHelpCircle} class="-mt-1 text-3xl text-sky-500 dark:text-sky-400" />
@@ -79,7 +79,7 @@
       <div class="flex w-[97%] justify-end">
         <button
           aria-label="Close"
-          class="absolute cursor-pointer text-gray-500 outline-none hover:text-gray-700"
+          class="absolute cursor-pointer text-gray-500 outline-hidden hover:text-gray-700"
           onclick={() => (modal_opened = false)}><Icon src={AiOutlineClose} /></button
         >
       </div>

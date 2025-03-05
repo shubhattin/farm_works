@@ -411,9 +411,9 @@
 			pointer-events: none
 			box-sizing: content-box
 	.month
-		flex-grow: 1
+		grow: 1
 	.year
-		flex-grow: 1
+		grow: 1
 	svg
 		display: block
 		fill: var(--date-picker-foreground, #000000)
@@ -423,7 +423,7 @@
 		background-color: transparent
 		width: 1.5rem
 		height: 1.5rem
-		flex-shrink: 0
+		shrink: 0
 		border-radius: 5px
 		box-sizing: border-box
 		border: 1px solid transparent
@@ -455,7 +455,7 @@
 		-webkit-appearance: none
 		-moz-appearance: none
 		appearance: none
-		flex-grow: 1
+		grow: 1
 		padding: 0rem 0.35rem
 		height: 1.5rem
 		padding-right: 1.3rem
@@ -472,7 +472,7 @@
 	.header-cell
 		width: 1.875rem
 		text-align: center
-		flex-grow: 1
+		grow: 1
 
 	.week
 		display: flex
@@ -482,7 +482,7 @@
 		justify-content: center
 		width: 2rem
 		height: 1.94rem
-		flex-grow: 1
+		grow: 1
 		border-radius: 5px
 		box-sizing: border-box
 		border: 2px solid transparent

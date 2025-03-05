@@ -119,7 +119,7 @@
 {#if !$add_bill_mut.isSuccess}
   <div class="mb-2 flex space-x-4">
     <button
-      class="btn rounded-lg bg-error-500 px-1.5 py-1 outline-none"
+      class="btn rounded-lg bg-error-500 px-1.5 py-1 outline-hidden"
       onclick={() => (current_page_open = false)}
     >
       <Icon src={AiOutlineClose} class="text-2xl text-white" />
@@ -215,7 +215,7 @@
     onclick={() => {
       current_page_open = false;
     }}
-    class="btn -ml-1 select-none gap-1 rounded-md bg-surface-500 px-2 py-1 pb-0 font-bold text-white outline-none"
+    class="btn -ml-1 select-none gap-1 rounded-md bg-surface-500 px-2 py-1 pb-0 font-bold text-white outline-hidden"
   >
     <Icon src={TrOutlineArrowBackUp} class="-mt-1 text-xl " />
     मुख्य पृष्ठ
