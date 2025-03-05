@@ -6,7 +6,7 @@ import {
   JotAIRecordsSchemaZod,
   TrolleyRecordsSchemaZod
 } from '~/db/schema_zod';
-import { jotAI_records, kaTAI_records, bills, trolley_records, payments } from '~/db/schema';
+import { jotAI_record, kaTAI_record, bill, trolley_record, payment } from '~/db/schema';
 import { delay } from '~/tools/delay';
 import { and, desc, eq, sql } from 'drizzle-orm';
 
@@ -61,7 +61,7 @@ const add_bill_route = protectedAdminProcedure.input(add_record_input_schema).mu
       const { dhAna_type, kheta, type: kaTAI_type } = DATA.data;
       const { id } = (
         await db
-          .insert(kaTAI_records)
+          .insert(kaTAI_record)
           .values({
             kheta,
             dhAna_type,
@@ -74,7 +74,7 @@ const add_bill_route = protectedAdminProcedure.input(add_record_input_schema).mu
       const { chAsa, kheta, type: jotAI_type } = DATA.data;
       const { id } = (
         await db
-          .insert(jotAI_records)
+          .insert(jotAI_record)
           .values({
             kheta,
             chAsa,
@@ -87,7 +87,7 @@ const add_bill_route = protectedAdminProcedure.input(add_record_input_schema).mu
       const { number } = DATA.data;
       const { id } = (
         await db
-          .insert(trolley_records)
+          .insert(trolley_record)
           .values({
             number
           })
@@ -97,7 +97,7 @@ const add_bill_route = protectedAdminProcedure.input(add_record_input_schema).mu
     }
     const { id: bill_id } = (
       await db
-        .insert(bills)
+        .insert(bill)
         .values({
           added_by_user_id: user_id,
           customer_id,
@@ -222,12 +222,12 @@ const submit_bill_payment_route = protectedAdminProcedure
         }),
         db
           .select({
-            remaining_amount: sql<number>`CAST(${bills.total} - COALESCE(SUM(${payments.amount}), 0) AS INTEGER)`
+            remaining_amount: sql<number>`CAST(${bill.total} - COALESCE(SUM(${payment.amount}), 0) AS INTEGER)`
           })
-          .from(bills)
-          .leftJoin(payments, eq(payments.bill_id, bills.id))
-          .where(eq(bills.id, bill_id))
-          .groupBy(bills.id, bills.total)
+          .from(bill)
+          .leftJoin(payment, eq(payment.bill_id, bill.id))
+          .where(eq(bill.id, bill_id))
+          .groupBy(bill.id, bill.total)
           .limit(1)
       ]);
       if (!bill_info) throw new Error('Invalid Bill ID');
@@ -244,14 +244,14 @@ const submit_bill_payment_route = protectedAdminProcedure
           message: 'invalid_amount'
         };
       await Promise.all([
-        db.insert(payments).values({
+        db.insert(payment).values({
           bill_id,
           amount,
           added_by_user_id: user.id,
           date
         }),
         amount === remaining_amount &&
-          db.update(bills).set({ payment_complete: true }).where(eq(bills.id, bill_id))
+          db.update(bill).set({ payment_complete: true }).where(eq(bill.id, bill_id))
       ]);
       return {
         success: true,
@@ -292,43 +292,43 @@ const edit_bill_route = protectedAdminProcedure
       const bill_info = (
         await db
           .select({
-            bill_id: bills.id,
+            bill_id: bill.id,
             remaining_amount: sql<number>`CAST(
-            ${bills.total} - COALESCE(SUM(${payments.amount}), 0)
+            ${bill.total} - COALESCE(SUM(${payment.amount}), 0)
           AS INTEGER)`,
-            jotAI_record_id: bills.jotAI_record,
-            kaTAI_record_id: bills.kaTAI_record,
-            trolley_record_id: bills.trolley_record,
-            total: bills.total
+            jotAI_record_id: bill.jotAI_record,
+            kaTAI_record_id: bill.kaTAI_record,
+            trolley_record_id: bill.trolley_record,
+            total: bill.total
           })
-          .from(bills)
-          .leftJoin(payments, eq(payments.bill_id, bills.id))
-          .where(and(eq(bills.id, bill_id), eq(bills.customer_id, customer_id)))
-          .groupBy(bills.id, bills.total) // Added bills.total to groupBy
-          .orderBy(desc(bills.date), desc(bills.id))
+          .from(bill)
+          .leftJoin(payment, eq(payment.bill_id, bill.id))
+          .where(and(eq(bill.id, bill_id), eq(bill.customer_id, customer_id)))
+          .groupBy(bill.id, bill.total) // Added bills.total to groupBy
+          .orderBy(desc(bill.date), desc(bill.id))
           .limit(1)
       )[0];
       const PAID_AMOUNT = bill_info.total - bill_info.remaining_amount;
 
       await Promise.all([
-        db.update(bills).set({ rate, total, date }).where(eq(bills.id, bill_id)),
+        db.update(bill).set({ rate, total, date }).where(eq(bill.id, bill_id)),
         type === 'kaTAI' &&
           db
-            .update(kaTAI_records)
+            .update(kaTAI_record)
             .set({ kheta: kaTAI_jotAI_kheta! })
-            .where(eq(kaTAI_records.id, bill_info.kaTAI_record_id!)),
+            .where(eq(kaTAI_record.id, bill_info.kaTAI_record_id!)),
         type === 'jotAI' &&
           db
-            .update(jotAI_records)
+            .update(jotAI_record)
             .set({ kheta: kaTAI_jotAI_kheta!, ...(jotAI_chAsa ? { chAsa: jotAI_chAsa! } : {}) })
-            .where(eq(jotAI_records.id, bill_info.jotAI_record_id!)),
+            .where(eq(jotAI_record.id, bill_info.jotAI_record_id!)),
         type === 'trolley' &&
           db
-            .update(trolley_records)
+            .update(trolley_record)
             .set({ number: trolley_number! })
-            .where(eq(trolley_records.id, bill_info.trolley_record_id!)),
+            .where(eq(trolley_record.id, bill_info.trolley_record_id!)),
         total <= PAID_AMOUNT &&
-          db.update(bills).set({ payment_complete: true }).where(eq(bills.id, bill_id))
+          db.update(bill).set({ payment_complete: true }).where(eq(bill.id, bill_id))
       ]);
     }
   );
@@ -367,7 +367,7 @@ const edit_payment_route = protectedAdminProcedure
     if (!info) throw new Error('Invalid Payment ID');
     if (info.bill.customer.id !== customer_id || info.bill.customer.uuid !== customer_uuid)
       throw new Error('Invalid Customer ID or UUID');
-    await db.update(payments).set({ date }).where(eq(payments.id, payment_id));
+    await db.update(payment).set({ date }).where(eq(payment.id, payment_id));
   });
 
 export const records_router = t.router({

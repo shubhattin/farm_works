@@ -1,6 +1,6 @@
 import { t, protectedAdminProcedure, protectedProcedure, publicProcedure } from '~/api/trpc_init';
 import { z } from 'zod';
-import { bills, customers, payments } from '~/db/schema';
+import { bill, customer, payment } from '~/db/schema';
 import { db } from '~/db/db';
 import { and, desc, eq, like, sql } from 'drizzle-orm';
 import { delay } from '~/tools/delay';
@@ -15,7 +15,7 @@ const register_customer_route = protectedAdminProcedure
   )
   .mutation(async ({ input: { name, address, phone_number } }) => {
     const inserted = (
-      await db.insert(customers).values({ name: name.trim(), phone_number, address }).returning()
+      await db.insert(customer).values({ name: name.trim(), phone_number, address }).returning()
     )[0];
     return {
       id: inserted.id
@@ -29,37 +29,37 @@ const get_customers_list_route = protectedProcedure
 
     const baseQuery = db
       .select({
-        customer_id: customers.id,
-        customer_name: customers.name,
-        customer_uuid: customers.uuid,
+        customer_id: customer.id,
+        customer_name: customer.name,
+        customer_uuid: customer.uuid,
         total_amount: sql<number>`CAST(
       COALESCE(
-        SUM(CASE WHEN ${bills.payment_complete} = false THEN ${bills.total} ELSE 0 END)
+        SUM(CASE WHEN ${bill.payment_complete} = false THEN ${bill.total} ELSE 0 END)
       , 0) 
     AS INTEGER)`,
         remaining_amount: sql<number>`CAST(
       COALESCE(
-        SUM(CASE WHEN ${bills.payment_complete} = false THEN ${bills.total} ELSE 0 END) -
+        SUM(CASE WHEN ${bill.payment_complete} = false THEN ${bill.total} ELSE 0 END) -
         (
           SELECT COALESCE(SUM(p.amount), 0)
-          FROM ${payments} p
-          INNER JOIN ${bills} b ON b.id = p.bill_id
-          WHERE b.customer_id = ${customers.id}
+          FROM ${payment} p
+          INNER JOIN ${bill} b ON b.id = p.bill_id
+          WHERE b.customer_id = ${customer.id}
           AND b.payment_complete = false
         )
       , 0) 
     AS INTEGER)`
       })
-      .from(customers)
-      .leftJoin(bills, eq(bills.customer_id, customers.id))
-      .groupBy(customers.id, customers.name, customers.uuid)
-      .orderBy(desc(sql`COALESCE(MAX(${bills.timestamp}), '1970-01-01'::timestamp)`))
+      .from(customer)
+      .leftJoin(bill, eq(bill.customer_id, customer.id))
+      .groupBy(customer.id, customer.name, customer.uuid)
+      .orderBy(desc(sql`COALESCE(MAX(${bill.timestamp}), '1970-01-01'::timestamp)`))
       .limit(30);
     // only doing aggregation on uncompleted bill paymenents
 
     const customers_list = await (search_term.match(/^\d+$/)
-      ? baseQuery.where(eq(customers.id, parseInt(search_term)))
-      : baseQuery.where(like(customers.name, `%${search_term}%`)));
+      ? baseQuery.where(eq(customer.id, parseInt(search_term)))
+      : baseQuery.where(like(customer.name, `%${search_term}%`)));
 
     return customers_list;
   });
@@ -98,20 +98,20 @@ export const get_customers_data_func = async (customer_id: number, customer_uuid
   });
   const customer_info_prom = db
     .select({
-      customer_id: customers.id,
-      customer_name: customers.name,
+      customer_id: customer.id,
+      customer_name: customer.name,
       total_amount: sql<number>`CAST(
         COALESCE(
-          SUM(CASE WHEN ${bills.payment_complete} = false THEN ${bills.total} ELSE 0 END)
+          SUM(CASE WHEN ${bill.payment_complete} = false THEN ${bill.total} ELSE 0 END)
         , 0) AS INTEGER
       )`,
       total_paid: sql<number>`CAST(
         COALESCE(
           (
             SELECT COALESCE(SUM(p.amount), 0)
-            FROM ${payments} AS p
-            INNER JOIN ${bills} AS b ON b.id = p.bill_id
-            WHERE b.customer_id = ${customers.id}
+            FROM ${payment} AS p
+            INNER JOIN ${bill} AS b ON b.id = p.bill_id
+            WHERE b.customer_id = ${customer.id}
             AND b.payment_complete = false
           )
         , 0) AS INTEGER
@@ -119,40 +119,40 @@ export const get_customers_data_func = async (customer_id: number, customer_uuid
       remaining_amount: sql<number>`(
         CAST(
           COALESCE(
-            SUM(CASE WHEN ${bills.payment_complete} = false THEN ${bills.total} ELSE 0 END)
+            SUM(CASE WHEN ${bill.payment_complete} = false THEN ${bill.total} ELSE 0 END)
           , 0) AS INTEGER
         ) - 
         CAST(
           COALESCE(
             (
               SELECT COALESCE(SUM(p.amount), 0)
-              FROM ${payments} AS p
-              INNER JOIN ${bills} AS b ON b.id = p.bill_id
-              WHERE b.customer_id = ${customers.id}
+              FROM ${payment} AS p
+              INNER JOIN ${bill} AS b ON b.id = p.bill_id
+              WHERE b.customer_id = ${customer.id}
               AND b.payment_complete = false
             )
           , 0) AS INTEGER
         )
       )`
     })
-    .from(customers)
-    .leftJoin(bills, eq(bills.customer_id, customers.id))
-    .where(eq(customers.id, customer_id))
-    .groupBy(customers.id, customers.name)
+    .from(customer)
+    .leftJoin(bill, eq(bill.customer_id, customer.id))
+    .where(eq(customer.id, customer_id))
+    .groupBy(customer.id, customer.name)
     .limit(1);
 
   const bills_remaning_amounts_prom = db
     .select({
-      bill_id: bills.id,
+      bill_id: bill.id,
       remaining_amount: sql<number>`CAST(
-      ${bills.total} - COALESCE(SUM(${payments.amount}), 0)
+      ${bill.total} - COALESCE(SUM(${payment.amount}), 0)
     AS INTEGER)`
     })
-    .from(bills)
-    .leftJoin(payments, eq(payments.bill_id, bills.id))
-    .where(eq(bills.customer_id, customer_id))
-    .groupBy(bills.id, bills.total) // Added bills.total to groupBy
-    .orderBy(desc(bills.date), desc(bills.id));
+    .from(bill)
+    .leftJoin(payment, eq(payment.bill_id, bill.id))
+    .where(eq(bill.customer_id, customer_id))
+    .groupBy(bill.id, bill.total) // Added bills.total to groupBy
+    .orderBy(desc(bill.date), desc(bill.id));
   /*
   Sorting both the fields by timestamp and id in descending order
   This is to ensure that the entries(ids) in both of them are in same order
@@ -218,9 +218,9 @@ const edit_customer_info_route = protectedAdminProcedure
   .mutation(async ({ input: { customer_id, customer_uuid, name, phone_number, address } }) => {
     await delay(650);
     await db
-      .update(customers)
+      .update(customer)
       .set({ name, phone_number, address })
-      .where(and(eq(customers.id, customer_id), eq(customers.uuid, customer_uuid)));
+      .where(and(eq(customer.id, customer_id), eq(customer.uuid, customer_uuid)));
   });
 
 export const customer_router = t.router({

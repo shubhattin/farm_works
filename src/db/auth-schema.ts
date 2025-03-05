@@ -8,11 +8,12 @@ export const user = pgTable('user', {
   image: text('image'),
   createdAt: timestamp('created_at').notNull(),
   updatedAt: timestamp('updated_at').notNull(),
-  username: text('username').unique(),
   role: text('role'),
   banned: boolean('banned'),
   banReason: text('ban_reason'),
-  banExpires: timestamp('ban_expires')
+  banExpires: timestamp('ban_expires'),
+  is_approved: boolean('is_approved'),
+  super_admin: boolean('super_admin')
 });
 
 export const account = pgTable('account', {

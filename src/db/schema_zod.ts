@@ -1,25 +1,25 @@
 import { z } from 'zod';
 import {
   users,
-  customers,
-  jotAI_records,
-  kaTAI_records,
-  trolley_records,
-  bills,
-  payments
+  customer,
+  jotAI_record,
+  kaTAI_record,
+  trolley_record,
+  bill,
+  payment
 } from './schema';
 import { createSelectSchema } from 'drizzle-zod';
 
 export const UsersSchemaZod = createSelectSchema(users);
-export const CustomersSchemaZod = createSelectSchema(customers);
-export const BillsSchemaZod = createSelectSchema(bills, {
+export const CustomersSchemaZod = createSelectSchema(customer);
+export const BillsSchemaZod = createSelectSchema(bill, {
   timestamp: z.coerce.date(),
   date: z.coerce.date()
 });
-export const KaTAIRecordsSchemaZod = createSelectSchema(kaTAI_records);
-export const JotAIRecordsSchemaZod = createSelectSchema(jotAI_records);
-export const TrolleyRecordsSchemaZod = createSelectSchema(trolley_records);
-export const PaymentsSchemaZod = createSelectSchema(payments, {
+export const KaTAIRecordsSchemaZod = createSelectSchema(kaTAI_record);
+export const JotAIRecordsSchemaZod = createSelectSchema(jotAI_record);
+export const TrolleyRecordsSchemaZod = createSelectSchema(trolley_record);
+export const PaymentsSchemaZod = createSelectSchema(payment, {
   timestamp: z.coerce.date(),
   date: z.coerce.date()
 });

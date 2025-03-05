@@ -2,13 +2,13 @@ import { dbClient_ext as db, queryClient } from './client';
 import { readFile } from 'fs/promises';
 import { dbMode, take_input } from '~/tools/kry_server';
 import {
-  customers,
+  customer,
   users,
-  bills,
-  jotAI_records,
-  kaTAI_records,
-  trolley_records,
-  payments
+  bill,
+  jotAI_record,
+  kaTAI_record,
+  trolley_record,
+  payment
 } from '~/db/schema';
 import {
   UsersSchemaZod,
@@ -53,12 +53,12 @@ const main = async () => {
 
   // deleting all the tables initially
   try {
-    await db.delete(payments);
-    await db.delete(bills);
-    await db.delete(jotAI_records);
-    await db.delete(kaTAI_records);
-    await db.delete(trolley_records);
-    await db.delete(customers);
+    await db.delete(payment);
+    await db.delete(bill);
+    await db.delete(jotAI_record);
+    await db.delete(kaTAI_record);
+    await db.delete(trolley_record);
+    await db.delete(customer);
     await db.delete(users);
     console.log(chalk.green('✓ Deleted All Tables Successfully'));
   } catch (e) {
@@ -75,7 +75,7 @@ const main = async () => {
 
   // inserting customers
   try {
-    await db.insert(customers).values(data.customers);
+    await db.insert(customer).values(data.customers);
     console.log(chalk.green('✓ Successfully added values into table'), chalk.blue('`customers`'));
   } catch (e) {
     console.log(chalk.red('✗ Error while inserting customers:'), chalk.yellow(e));
@@ -83,7 +83,7 @@ const main = async () => {
 
   // inserting jotAI_records
   try {
-    await db.insert(jotAI_records).values(data.jotAI_records);
+    await db.insert(jotAI_record).values(data.jotAI_records);
     console.log(
       chalk.green('✓ Successfully added values into table'),
       chalk.blue('`jotAI_records`')
@@ -94,7 +94,7 @@ const main = async () => {
 
   // inserting kaTAI_records
   try {
-    await db.insert(kaTAI_records).values(data.kaTAI_records);
+    await db.insert(kaTAI_record).values(data.kaTAI_records);
     console.log(
       chalk.green('✓ Successfully added values into table'),
       chalk.blue('`kaTAI_records`')
@@ -105,7 +105,7 @@ const main = async () => {
 
   // inserting trolley_records
   try {
-    await db.insert(trolley_records).values(data.trolley_records);
+    await db.insert(trolley_record).values(data.trolley_records);
     console.log(
       chalk.green('✓ Successfully added values into table'),
       chalk.blue('`trolley_records`')
@@ -116,7 +116,7 @@ const main = async () => {
 
   // inserting bills
   try {
-    await db.insert(bills).values(data.bills);
+    await db.insert(bill).values(data.bills);
     console.log(chalk.green('✓ Successfully added values into table'), chalk.blue('`bills`'));
   } catch (e) {
     console.log(chalk.red('✗ Error while inserting bills:'), chalk.yellow(e));
@@ -124,7 +124,7 @@ const main = async () => {
 
   // inserting payments
   try {
-    await db.insert(payments).values(data.payments);
+    await db.insert(payment).values(data.payments);
     console.log(chalk.green('✓ Successfully added values into table'), chalk.blue('`payments`'));
   } catch (e) {
     console.log(chalk.red('✗ Error while inserting payments:'), chalk.yellow(e));

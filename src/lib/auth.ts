@@ -5,13 +5,14 @@ import * as schema from '../db/schema';
 import { env } from '$env/dynamic/private';
 import { admin } from 'better-auth/plugins';
 import { COOKIE_CACHE_TIME_MS } from './cache-time';
+import { userInfoPlugin } from './auth_plugins/user_info/server';
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
     provider: 'pg',
     schema: schema
   }),
-  plugins: [admin()],
+  plugins: [admin(), userInfoPlugin()],
   session: {
     cookieCache: {
       enabled: true,
