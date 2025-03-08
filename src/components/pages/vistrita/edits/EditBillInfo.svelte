@@ -138,7 +138,7 @@
       >
     </div>
     {#if remaining_amount! < 0}
-      <div class="text-wrap text-sm text-amber-800 dark:text-warning-400">
+      <div class="text-sm text-wrap text-amber-800 dark:text-warning-400">
         ⚠️ क्यों कि शेष राशि शॊन्य से कम नहीं हो सकती इसिलिए एस देयक को पूर्ण मान लिया जाएगा और बची
         हुई अधिक राशि का भविश्ष मे आपको स्वयं ध्यान रखना होगा ।
       </div>

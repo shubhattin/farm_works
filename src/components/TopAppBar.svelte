@@ -45,7 +45,7 @@
       {#snippet content()}
         {#if pwa_state.install_event_fired}
           <button
-            class="select-none gap-1 px-2 py-1 text-sm outline-hidden"
+            class="gap-1 px-2 py-1 text-sm outline-hidden select-none"
             onclick={async () => {
               app_bar_popover_status = false;
               if (pwa_state.install_event_fired && pwa_state.event_triggerer)

@@ -65,7 +65,7 @@
   {#if $user_info && $user_info.is_approved}
     <!-- Non Admin Users also allowed to view but not to edit -->
     <a
-      class="btn bg-surface-500 gap-1 rounded-lg p-1 pr-1.5 font-bold text-white outline-hidden"
+      class="btn gap-1 rounded-lg bg-surface-500 p-1 pr-1.5 font-bold text-white outline-hidden"
       href="/"
     >
       <Icon src={TiArrowBackOutline} class="text-2xl" /> मुख्य पृष्ठ
@@ -73,7 +73,7 @@
     {#if !add_record_opened && $user_info.role === 'admin'}
       <button
         onclick={() => (add_record_opened = true)}
-        class="btn bg-primary-600 dark:bg-primary-600 gap-1 rounded-md p-1 pr-1.5 font-bold text-white"
+        class="btn gap-1 rounded-md bg-primary-600 p-1 pr-1.5 font-bold text-white dark:bg-primary-600"
       >
         <Icon src={BsPlusLg} class="text-2xl" />
         नया बिल जोड़ें
@@ -99,14 +99,14 @@
 <div class="mt-3 space-y-2">
   {#if $customer_info_q.isFetching}
     <div class="space-y-1">
-      <div class="placeholder h-8 w-48 animate-pulse rounded-md"></div>
+      <div class="h-8 placeholder w-48 animate-pulse rounded-md"></div>
       {#if $user_info && $user_info.is_approved}
-        <div class="placeholder h-4 w-32 animate-pulse rounded-md"></div>
+        <div class="h-4 placeholder w-32 animate-pulse rounded-md"></div>
       {/if}
     </div>
-    <div class="placeholder h-6 w-32 animate-pulse rounded-md"></div>
-    <div class="placeholder h-6 w-36 animate-pulse rounded-md"></div>
-    <div class="placeholder h-96 w-full rounded-lg"></div>
+    <div class="h-6 placeholder w-32 animate-pulse rounded-md"></div>
+    <div class="h-6 placeholder w-36 animate-pulse rounded-md"></div>
+    <div class="h-96 placeholder w-full rounded-lg"></div>
   {:else if !$customer_info_q.isFetching && $customer_info_q.isSuccess}
     {@const customer_info = $customer_info_q.data!.customer_info}
     <div class="space-y-0">
@@ -117,7 +117,7 @@
           <!-- This option available to all registered users -->
           <span class="space-x-3">
             <button
-              class="btn m-0 ml-2 gap-1 p-0 outline-hidden select-none hover:text-gray-500 sm:ml-3 md:ml-4 dark:hover:text-gray-400"
+              class="m-0 ml-2 btn gap-1 p-0 outline-hidden select-none hover:text-gray-500 sm:ml-3 md:ml-4 dark:hover:text-gray-400"
               onclick={share_info_func}
             >
               <Icon src={LuShare2} class="text-xl" />
@@ -149,7 +149,7 @@
       </div>
       {#if $user_info && $user_info.is_approved}
         {#if $customer_additional_data_q.isFetching || !$customer_additional_data_q.isSuccess}
-          <div class="placeholder h-4 w-32 animate-pulse rounded-md"></div>
+          <div class="h-4 placeholder w-32 animate-pulse rounded-md"></div>
         {:else if !$customer_additional_data_q.isFetching && $customer_additional_data_q.isSuccess}
           {@const customer_additional_data = $customer_additional_data_q.data}
           <div class="space-x-2">
@@ -202,7 +202,7 @@
 {#snippet render_bills()}
   {@const bills = $customer_info_q.data!.bills}
   {#if bills.length === 0}
-    <div class="text-warning-700-300 mt-6 text-sm">वर्तमान मे उपभोक्ता का कोई बिल नही है ।</div>
+    <div class="mt-6 text-sm text-warning-700-300">वर्तमान मे उपभोक्ता का कोई बिल नही है ।</div>
   {:else}
     <Tabs bind:value={selected_category} fluid base="mt-6">
       {#snippet list()}
@@ -222,7 +222,7 @@
             ]
         )}
         {#if bills_filtered.length === 0}
-          <div class="text-warning-700 dark:text-warning-400 text-sm">
+          <div class="text-sm text-warning-700 dark:text-warning-400">
             {CATEOGORY_LIST[selected_category]} संबन्धी कोई बिल नही है ।
           </div>
         {:else}

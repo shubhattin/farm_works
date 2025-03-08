@@ -13,7 +13,7 @@
 {:else if $user_info.is_approved}
   <HomePage />
 {:else}
-  <div class="text-warning-500 dark:text-warning-400 mt-6 text-lg">
+  <div class="mt-6 text-lg text-warning-500 dark:text-warning-400">
     आपको अभी अनुमोदोत नहीं किया गया
   </div>
 {/if}

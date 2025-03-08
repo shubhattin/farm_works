@@ -45,7 +45,7 @@
           popup_state = false;
           cancel_func && cancel_func();
         }}
-        class="btn rounded-lg font-semibold preset-outlined-surface-800-200"
+        class="btn rounded-lg preset-outlined-surface-800-200 font-semibold"
       >
         रद्द करें
       </button>

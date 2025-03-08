@@ -173,7 +173,7 @@
 <div class="relative {classes}" on:focusout={onFocusOut} on:keydown={keydown}>
   <input
     bind:this={InputElement}
-    class="input m-0 box-border w-[150px] min-w-0 rounded-xl
+    class="m-0 input box-border w-[150px] min-w-0 rounded-xl
            border border-gray-300/30
            px-2 py-1 outline-hidden
            transition-all duration-75 ease-in-out

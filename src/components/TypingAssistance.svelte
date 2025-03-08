@@ -68,7 +68,7 @@
 >
   {#snippet trigger()}
     <span
-      class="btn select-none rounded-md p-0 text-sm outline-hidden"
+      class="btn rounded-md p-0 text-sm outline-hidden select-none"
       title={'Language Typing Assistance'}
     >
       <Icon src={BiHelpCircle} class="-mt-1 text-3xl text-sky-500 dark:text-sky-400" />
@@ -97,7 +97,7 @@
       >
         {#if $usage_table.isFetching}
           <div class="h-full w-full space-y-1">
-            <div class="placeholder h-full w-full animate-pulse rounded-lg"></div>
+            <div class="h-full placeholder w-full animate-pulse rounded-lg"></div>
             <div class="placeholder animate-pulse rounded-md"></div>
           </div>
         {:else if $usage_table.isSuccess}
@@ -112,7 +112,7 @@
           {#if !['Romanized'].includes(typing_assistance_lang)}
             {@render extra_info()}
           {/if}
-          <div class="text-wrap text-sm text-stone-500 dark:text-stone-400">
+          <div class="text-sm text-wrap text-stone-500 dark:text-stone-400">
             <a
               href="https://app-lipilekhika.pages.dev"
               target="_blank"

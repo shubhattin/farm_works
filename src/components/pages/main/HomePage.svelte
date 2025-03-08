@@ -29,7 +29,7 @@
 {:else}
   <div class="flex justify-between">
     {#if !mounted}
-      <span class="placeholder inline-block h-[2.25rem] w-32 animate-pulse rounded-md sm:w-40"
+      <span class="inline-block h-[2.25rem] placeholder w-32 animate-pulse rounded-md sm:w-40"
       ></span>
     {:else}
       <LipiLekhikaSwitch bind:status_on={$typing_tool_enabled} />
@@ -37,7 +37,7 @@
     {#if $user_info && $user_info.role === 'admin'}
       <button
         onclick={() => (add_new_customer_opened = true)}
-        class="bg-secondary-600 dark:bg-secondary-700 gap-1 rounded-lg px-1 py-0 pb-0 text-xs font-bold text-white sm:px-2 sm:py-1 sm:text-sm"
+        class="gap-1 rounded-lg bg-secondary-600 px-1 py-0 pb-0 text-xs font-bold text-white sm:px-2 sm:py-1 sm:text-sm dark:bg-secondary-700"
       >
         <Icon src={AiOutlineUserAdd} class="-mt-1 text-lg sm:text-xl" />
         नया ग्राहक जोड़ें

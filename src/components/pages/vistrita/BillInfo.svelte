@@ -53,7 +53,7 @@
     {#if $user_info && $user_info.role === 'admin' && !bill_info.payment_complete && bill_info.remaining_amount > 0}
       <button
         onclick={() => (add_payment_opened = true)}
-        class="btn bg-primary-600 dark:bg-primary-600 gap-1 rounded-md p-1 pr-1.5 font-bold text-white"
+        class="btn gap-1 rounded-md bg-primary-600 p-1 pr-1.5 font-bold text-white dark:bg-primary-600"
       >
         <Icon src={BsPlusLg} class="text-2xl" />
         नया वित्तदन जोड़ें
@@ -94,7 +94,7 @@
 
 {#if !add_payment_opened}
   {#if $bill_payments_q.isFetching || !$bill_payments_q.isSuccess}
-    <div class="placeholder h-72 w-full rounded-md"></div>
+    <div class="h-72 placeholder w-full rounded-md"></div>
   {:else if $bill_payments_q.isSuccess}
     {@const payments = $bill_payments_q.data.payments}
     {#if $user_info && $user_info.role === 'admin' && $user_info.super_admin}
@@ -109,7 +109,7 @@
       </div>
     {/if}
     {#if payments.length === 0}
-      <div class="text-warning-700-300 mt-2 text-sm">इस बिल का अब तक कोई भुगतान नही है।</div>
+      <div class="mt-2 text-sm text-warning-700-300">इस बिल का अब तक कोई भुगतान नही है।</div>
     {:else}
       {@const is_super_admin = $user_info && $user_info.role === 'admin' && $user_info.super_admin}
       <div class="table-wrap select-none">

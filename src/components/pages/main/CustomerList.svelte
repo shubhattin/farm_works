@@ -39,7 +39,7 @@
       disabled={$customers_list_q.isFetched && $customers_list_q.isFetching}
       onclick={() => $customers_list_q.refetch()}
       class={cl_join(
-        'btn select-none p-0 outline-hidden',
+        'btn p-0 outline-hidden select-none',
         $customers_list_q.isFetched && $customers_list_q.isFetching && 'animate-spin'
       )}
     >
@@ -61,16 +61,16 @@
           {#each Array(20) as _, i}
             <tr>
               <td style="padding: 0; margin:0;">
-                <span class="placeholder inline-block h-4 w-4 animate-pulse rounded-xs"></span>
+                <span class="inline-block h-4 placeholder w-4 animate-pulse rounded-xs"></span>
               </td>
               <td>
-                <span class="placeholder inline-block h-6 w-28 animate-pulse rounded-lg"></span>
+                <span class="inline-block h-6 placeholder w-28 animate-pulse rounded-lg"></span>
               </td>
               <td>
-                <span class="placeholder inline-block h-4 w-14 animate-pulse rounded-lg"></span>
+                <span class="inline-block h-4 placeholder w-14 animate-pulse rounded-lg"></span>
               </td>
               <td>
-                <span class="placeholder inline-block h-4 w-14 animate-pulse rounded-lg"></span>
+                <span class="inline-block h-4 placeholder w-14 animate-pulse rounded-lg"></span>
               </td>
             </tr>
           {/each}

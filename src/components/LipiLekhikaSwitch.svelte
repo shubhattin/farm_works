@@ -27,7 +27,7 @@
       <span class="text-sm">हिन्दी लेखन</span>
     </Switch>
   {:else}
-    <div class="placeholder h-8 w-28 animate-pulse rounded-lg"></div>
+    <div class="h-8 placeholder w-28 animate-pulse rounded-lg"></div>
   {/if}
   <TypingAssistance />
 </div>

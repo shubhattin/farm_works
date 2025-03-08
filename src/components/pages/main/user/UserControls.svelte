@@ -38,7 +38,7 @@
         >
           {#snippet trigger()}
             <span
-              class="btn bg-error-600 m-0 gap-1 rounded-md pt-0 pr-2 pb-0 pl-1 font-bold text-white"
+              class="m-0 btn gap-1 rounded-md bg-error-600 pt-0 pr-2 pb-0 pl-1 font-bold text-white"
             >
               <Icon class="text-2xl" src={BiLogOut} />
               <span>निर्प्रवेश</span>
@@ -48,14 +48,14 @@
             <div class="text-lg font-bold">निर्प्रवेश करना चाहते हैं ?</div>
             <div class="space-x-2">
               <button
-                class="btn bg-surface-600 dark:bg-surface-500 rounded-lg font-bold text-white"
+                class="btn rounded-lg bg-surface-600 font-bold text-white dark:bg-surface-500"
                 onclick={log_out}
               >
                 पुष्टि करें
               </button>
               <button
                 onclick={() => (logout_modal_status = false)}
-                class="btn preset-outlined-surface-800-200 rounded-lg"
+                class="btn rounded-lg preset-outlined-surface-800-200"
               >
                 निरस्त करें
               </button>

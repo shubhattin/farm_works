@@ -12,7 +12,7 @@
         callbackURL: '/'
       });
     }}
-    class="btn preset-outlined-primary-700-300 flex gap-2 rounded-lg font-semibold"
+    class="btn flex gap-2 rounded-lg preset-outlined-primary-700-300 font-semibold"
     ><Icon src={GoogleIcon} class="inline-block text-[1.25rem]" />गूगल से संप्रवेश करें</button
   >
 </div>
