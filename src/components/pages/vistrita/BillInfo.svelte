@@ -62,9 +62,10 @@
     {#if $user_info && $user_info.role === 'admin' && !bill_info.payment_complete && bill_info.remaining_amount > 0}
       <Modal
         contentBase="card z-40 space-y-2 rounded-lg px-3 py-2 shadow-xl bg-surface-100-900"
-        triggerBase="btn p-0 m-0 outline-hidden select-none"
+        triggerBase="btn p-0 outline-hidden select-none"
         backdropBackground="backdrop-blur-md"
-        bind:open={edit_modal_opened}
+        open={edit_modal_opened}
+        onOpenChange={(e) => (edit_modal_opened = e.open)}
       >
         {#snippet trigger()}
           <Icon src={FiEdit2} class="text-xl" />
@@ -196,9 +197,10 @@
 {#if $user_info && $user_info.role === 'admin' && selected_payment_id !== null && payment_edit_modal_opened}
   <Modal
     contentBase="card z-40 space-y-2 rounded-lg px-3 py-2 shadow-xl bg-surface-100-900"
-    triggerBase="btn p-0 m-0 outline-hidden select-none"
+    triggerBase="btn p-0 outline-hidden select-none"
     backdropBackground="backdrop-blur-md"
-    bind:open={payment_edit_modal_opened}
+    open={payment_edit_modal_opened}
+    onOpenChange={(e) => (payment_edit_modal_opened = e.open)}
   >
     {#snippet content()}
       <EditPaymentInfo

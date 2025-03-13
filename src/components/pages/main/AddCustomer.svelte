@@ -63,7 +63,7 @@
     }}
     class="mt-5 space-y-2"
   >
-    <label>
+    <label class="block">
       <span class="label-text">नाम <span class="text-error-400">*</span></span>
       <input
         required
@@ -86,7 +86,7 @@
         maxlength={50}
       />
     </label>
-    <label>
+    <label class="block">
       <span class="label-text">फ़ोन नंबर</span>
       <input
         type="number"
@@ -96,7 +96,7 @@
         placeholder="फ़ोन नंबर"
       />
     </label>
-    <label>
+    <label class="block">
       <span class="label-text">पता</span>
       <input
         autocapitalize="off"
@@ -121,7 +121,7 @@
     <button
       type="submit"
       disabled={$register_customer_mut.isPending}
-      class="btn gap-1 rounded-md bg-primary-500 px-2 py-1 font-bold text-white dark:bg-primary-600"
+      class="btn block gap-1 rounded-md bg-primary-500 px-2 py-1 font-bold text-white dark:bg-primary-600"
     >
       <Icon src={VscAdd} class="text-xl" />
       ग्राहक जोड़ें

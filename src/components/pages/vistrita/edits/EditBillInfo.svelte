@@ -92,7 +92,7 @@
         जोताई प्रकार : <span class="font-semibold">{jotAI_list[bill_info.jotAI_records.type]}</span>
       </div>
       {#if bill_info.jotAI_records.chAsa}
-        <label>
+        <label class="block">
           <span class="label-text font-semibold">चास</span>
           <input type="number" class="input rounded-lg" bind:value={jotAI_chasa} />
         </label>

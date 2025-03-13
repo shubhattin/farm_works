@@ -99,7 +99,7 @@
     </div>
   </label>
   <div>पेय राशि : <span class="font-bold">₹ {remaning_amount}</span></div>
-  <label>
+  <label class="block">
     <span class="label-text">राशि (₹)</span>
     <input
       type="number"

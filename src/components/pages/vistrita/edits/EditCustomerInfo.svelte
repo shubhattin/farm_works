@@ -89,7 +89,7 @@
 </div>
 <LipiLekhikaSwitch bind:status_on={$typing_tool_enabled} />
 <div class="space-y-3">
-  <label>
+  <label class="block">
     <span class="label-text font-semibold">नाम</span>
     <input
       type="text"
@@ -106,11 +106,11 @@
       required
     />
   </label>
-  <label>
+  <label class="block">
     <span class="label-text font-semibold">फ़ोन नंबर</span>
     <input type="number" class="input rounded-lg" bind:value={phone_number} />
   </label>
-  <label>
+  <label class="block">
     <span class="label-text font-semibold">पता</span>
     <input
       type="text"

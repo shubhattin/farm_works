@@ -16,7 +16,8 @@
 </script>
 
 <Popover
-  bind:open={user_info_popover_status}
+  open={user_info_popover_status}
+  onOpenChange={(e) => (user_info_popover_status = e.open)}
   triggerBase="btn m-2 p-0 select-none outline-hidden"
   contentBase="card z-40 pt-1 px-1 shadow-2xl bg-surface-100-900 rounded-lg"
   positioning={{ placement: 'left-start' }}
@@ -32,13 +33,14 @@
       </div>
       <div class="space-y-2 p-1 select-none">
         <Modal
-          bind:open={logout_modal_status}
+          open={logout_modal_status}
+          onOpenChange={(e) => (logout_modal_status = e.open)}
           contentBase="card z-50 space-y-2 rounded-lg px-3 py-2 shadow-xl bg-surface-100-900"
           backdropBackground="backdrop-blur-xs"
         >
           {#snippet trigger()}
             <span
-              class="m-0 btn gap-1 rounded-md bg-error-600 pt-0 pr-2 pb-0 pl-1 font-bold text-white"
+              class="btn gap-1 rounded-md bg-error-600 pt-1 pr-2 pb-0.5 pl-1 font-bold text-white"
             >
               <Icon class="text-2xl" src={BiLogOut} />
               <span>निर्प्रवेश</span>

@@ -117,7 +117,7 @@
           <!-- This option available to all registered users -->
           <span class="space-x-3">
             <button
-              class="m-0 ml-2 btn gap-1 p-0 outline-hidden select-none hover:text-gray-500 sm:ml-3 md:ml-4 dark:hover:text-gray-400"
+              class="ml-2 btn gap-1 p-0 outline-hidden select-none hover:text-gray-500 sm:ml-3 md:ml-4 dark:hover:text-gray-400"
               onclick={share_info_func}
             >
               <Icon src={LuShare2} class="text-xl" />
@@ -125,9 +125,10 @@
             {#if $user_info.role === 'admin'}
               <Modal
                 contentBase="card z-40 space-y-2 rounded-lg px-3 py-2 shadow-xl bg-surface-100-900"
-                triggerBase="btn p-0 m-0 outline-hidden select-none"
+                triggerBase="btn p-0 outline-hidden select-none"
                 backdropBackground="backdrop-blur-md"
-                bind:open={edit_modal_opened}
+                open={edit_modal_opened}
+                onOpenChange={(e) => (edit_modal_opened = e.open)}
               >
                 {#snippet trigger()}
                   <Icon src={FiEdit2} class="text-lg" />
@@ -204,7 +205,12 @@
   {#if bills.length === 0}
     <div class="mt-6 text-sm text-warning-700-300">वर्तमान मे उपभोक्ता का कोई बिल नही है ।</div>
   {:else}
-    <Tabs bind:value={selected_category} fluid base="mt-6">
+    <Tabs
+      value={selected_category}
+      fluid
+      base="mt-6"
+      onValueChange={(e) => (selected_category = e.value as typeof selected_category)}
+    >
       {#snippet list()}
         {#each Object.entries(CATEOGORY_LIST) as [key, val]}
           <Tabs.Control labelClasses="rounded-md font-semibold" value={key}>{val}</Tabs.Control>

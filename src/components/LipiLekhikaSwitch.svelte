@@ -22,7 +22,10 @@
     <Switch
       name="hindi_typing_tool"
       stateFocused="outline-hidden select-none"
-      bind:checked={status_on}
+      checked={status_on}
+      onCheckedChange={(e) => {
+        status_on = e.checked;
+      }}
     >
       <span class="text-sm">हिन्दी लेखन</span>
     </Switch>

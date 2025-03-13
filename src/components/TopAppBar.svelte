@@ -30,11 +30,14 @@
   {#snippet trail()}
     {@render end?.()}
     <Popover
-      bind:open={app_bar_popover_status}
+      open={app_bar_popover_status}
+      onOpenChange={(e) => {
+        app_bar_popover_status = e.open;
+      }}
       positioning={{ placement: 'left-start' }}
       arrow={false}
       contentBase="card z-50 space-y-2 rounded-lg p-2 shadow-xl bg-surface-100-900"
-      triggerBase="btn m-0 p-0 gap-0 outline-hidden select-none"
+      triggerBase="btn p-0 gap-0 outline-hidden select-none"
     >
       {#snippet trigger()}
         <Icon

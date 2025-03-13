@@ -21,7 +21,8 @@
 </script>
 
 <Modal
-  bind:open={popup_state}
+  open={popup_state}
+  onOpenChange={(e) => (popup_state = e.open)}
   contentBase={cl_join(
     'card z-50 space-y-2 p-2 rounded-lg shadow-xl bg-surface-100-900',
     contentBase

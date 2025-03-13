@@ -61,7 +61,10 @@
 </script>
 
 <Modal
-  bind:open={modal_opened}
+  open={modal_opened}
+  onOpenChange={(e) => {
+    modal_opened = e.open;
+  }}
   contentBase="card p-2 dark:bg-slate-900 bg-slate-200  space-y-4 shadow-xl max-w-(--breakpoint-sm) mx-3 mt-0 max-h-[97%] max-w-[97%] overflow-scroll"
   backdropClasses="backdrop-blur-xs"
   triggerBase="outline-hidden select-none"
