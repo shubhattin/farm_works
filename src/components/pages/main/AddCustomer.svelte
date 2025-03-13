@@ -147,6 +147,6 @@
 
 <ConfirmModal
   bind:popup_state={confirm_modal_opened}
-  description={`क्या आप निस्चित हैं कि आप ${name} नामक ग्राहक को जोड़ना चाहते हैं ?`}
+  title={`क्या आप निस्चित हैं कि आप ${name} नामक ग्राहक को जोड़ना चाहते हैं ?`}
   confirm_func={add_customer_func}
 ></ConfirmModal>

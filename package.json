@@ -18,6 +18,7 @@
     "format": "prettier --write ."
   },
   "devDependencies": {
+    "@floating-ui/dom": "^1.6.13",
     "@sveltejs/adapter-netlify": "^4.4.2",
     "@sveltejs/kit": "^2.19.0",
     "@sveltejs/vite-plugin-svelte": "^5.0.3",

@@ -136,7 +136,7 @@
   </button>
 </div>
 <ConfirmModal
-  description={`क्या आप पुष्टि करते हैं कि उपयोक्ता संख्या ${customer_id} के विवरण को अद्यतनित करना चाहते हैं ?`}
+  title={`क्या आप पुष्टि करते हैं कि उपयोक्ता संख्या ${customer_id} के विवरण को अद्यतनित करना चाहते हैं ?`}
   bind:popup_state={confirm_modal_opened}
   confirm_func={() => {
     edit_info_func();

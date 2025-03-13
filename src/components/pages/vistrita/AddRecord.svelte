@@ -293,5 +293,5 @@
 <ConfirmModal
   bind:popup_state={confirm_modal_opened}
   confirm_func={submit_bill_func}
-  description="क्या आप निश्चि हैं कि इस देयक को जोड़ना चाहते हैं ?"
+  title="क्या आप निश्चि हैं कि इस देयक को जोड़ना चाहते हैं ?"
 />

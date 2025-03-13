@@ -81,7 +81,7 @@
 </div>
 
 <ConfirmModal
-  description={`क्या आप निश्चित हैं कि वित्तदन को संपादित करना चाहते हैं ?`}
+  title={`क्या आप निश्चित हैं कि वित्तदन को संपादित करना चाहते हैं ?`}
   bind:popup_state={confirm_modal_opened}
   confirm_func={() => {
     edit_bill_func();
