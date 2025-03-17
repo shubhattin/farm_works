@@ -16,12 +16,12 @@ import {
   UserSchemaZod,
   AccountSchemaZod,
   VerificationSchemaZod,
-  CustomersSchemaZod,
-  BillsSchemaZod,
-  JotAIRecordsSchemaZod,
-  KaTAIRecordsSchemaZod,
-  TrolleyRecordsSchemaZod,
-  PaymentsSchemaZod
+  CustomerSchemaZod,
+  BillSchemaZod,
+  JotAIRecordSchemaZod,
+  KaTAIRecordSchemaZod,
+  TrolleyRecordSchemaZod,
+  PaymentSchemaZod
 } from '~/db/schema_zod';
 import { z } from 'zod';
 import { sql } from 'drizzle-orm';
@@ -48,12 +48,12 @@ const main = async () => {
       user: z.array(UserSchemaZod),
       account: z.array(AccountSchemaZod),
       verification: z.array(VerificationSchemaZod),
-      customer: z.array(CustomersSchemaZod),
-      bill: z.array(BillsSchemaZod),
-      jotAI_record: z.array(JotAIRecordsSchemaZod),
-      kaTAI_record: z.array(KaTAIRecordsSchemaZod),
-      trolley_record: z.array(TrolleyRecordsSchemaZod),
-      payment: z.array(PaymentsSchemaZod)
+      customer: z.array(CustomerSchemaZod),
+      bill: z.array(BillSchemaZod),
+      jotAI_record: z.array(JotAIRecordSchemaZod),
+      kaTAI_record: z.array(KaTAIRecordSchemaZod),
+      trolley_record: z.array(TrolleyRecordSchemaZod),
+      payment: z.array(PaymentSchemaZod)
     })
     .parse(JSON.parse((await readFile(`./out/${in_file_name}`)).toString()));
 
@@ -159,16 +159,16 @@ const main = async () => {
 
   // resetting SERIAL
   try {
-    await db.execute(sql`SELECT setval('"customers_id_seq"', (select MAX(id) from "customers"))`);
-    await db.execute(sql`SELECT setval('"bills_id_seq"', (select MAX(id) from "bills"))`);
+    await db.execute(sql`SELECT setval('"customer_id_seq"', (select MAX(id) from "customer"))`);
+    await db.execute(sql`SELECT setval('"bill_id_seq"', (select MAX(id) from "bill"))`);
     await db.execute(
-      sql`SELECT setval('"jotAI_records_id_seq"', (select MAX(id) from "jotAI_records"))`
+      sql`SELECT setval('"jotAI_record_id_seq"', (select MAX(id) from "jotAI_record"))`
     );
     await db.execute(
-      sql`SELECT setval('"kaTAI_records_id_seq"', (select MAX(id) from "kaTAI_records"))`
+      sql`SELECT setval('"kaTAI_record_id_seq"', (select MAX(id) from "kaTAI_record"))`
     );
     await db.execute(
-      sql`SELECT setval('"trolley_records_id_seq"', (select MAX(id) from "trolley_records"))`
+      sql`SELECT setval('"trolley_record_id_seq"', (select MAX(id) from "trolley_record"))`
     );
     console.log(chalk.green('✓ Successfully resetted ALL SERIAL'));
   } catch (e) {

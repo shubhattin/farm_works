@@ -39,15 +39,21 @@
 
   let total: number | null = $derived.by(() => {
     if (!rate) return null;
+    const _rate = parseFloat(rate);
+    let value: number | null = null;
     if (bill_info.kaTAI_records && kaTAI_jotAI_kheta) {
-      return rate * kaTAI_jotAI_kheta;
+      const _kaTAI_jotAI_kheta = parseFloat(kaTAI_jotAI_kheta);
+      value = _rate * _kaTAI_jotAI_kheta;
     } else if (bill_info.jotAI_records && kaTAI_jotAI_kheta) {
-      if (jotAI_chasa) return rate * jotAI_chasa * kaTAI_jotAI_kheta;
-      else return rate * kaTAI_jotAI_kheta;
+      const _kaTAI_jotAI_kheta = parseFloat(kaTAI_jotAI_kheta);
+      if (jotAI_chasa) {
+        const _jotAI_chasa = parseFloat(jotAI_chasa);
+        value = _rate * _jotAI_chasa * _kaTAI_jotAI_kheta;
+      } else value = _rate * _kaTAI_jotAI_kheta;
     } else if (bill_info.trolley_records && trolley_number) {
-      return rate * trolley_number;
+      value = _rate * trolley_number;
     }
-    return null;
+    return value ? parseInt(value.toFixed()) : value;
   });
   const PAID_AMOUNT = bill_info.total - bill_info.remaining_amount;
   let remaining_amount = $derived(total ? total - PAID_AMOUNT : null);
@@ -60,10 +66,10 @@
       customer_id,
       bill_id: bill_info.id,
       total: total!,
-      rate,
+      rate: rate.toString(),
       date,
-      kaTAI_jotAI_kheta: kaTAI_jotAI_kheta!,
-      jotAI_chAsa: jotAI_chasa!,
+      kaTAI_jotAI_kheta: kaTAI_jotAI_kheta?.toString(),
+      jotAI_chAsa: jotAI_chasa?.toString(),
       trolley_number: trolley_number!,
       type: bill_info.kaTAI_records ? 'kaTAI' : bill_info.jotAI_records ? 'jotAI' : 'trolley'
     });
@@ -73,7 +79,13 @@
 <div class="text-center text-lg font-bold text-amber-700 dark:text-warning-500">
   देयक अद्यतित करें
 </div>
-<div class="space-y-3">
+<form
+  class="space-y-3"
+  onsubmit={(e) => {
+    e.preventDefault();
+    confirm_modal_opened = true;
+  }}
+>
   <div class="text-sm">देयक ID : <span class="font-bold">{bill_info.id}</span></div>
   {#if bill_info.kaTAI_records || bill_info.jotAI_records}
     {#if bill_info.kaTAI_records}
@@ -94,13 +106,13 @@
       {#if bill_info.jotAI_records.chAsa}
         <label class="block">
           <span class="label-text font-semibold">चास</span>
-          <input type="number" class="input rounded-lg" bind:value={jotAI_chasa} />
+          <input type="number" step="0.01" class="input rounded-lg" bind:value={jotAI_chasa} />
         </label>
       {/if}
     {/if}
     <label class="block">
       <span class="label-text font-semibold">खेत (बिस्सा)</span>
-      <input type="number" class="input rounded-lg" bind:value={kaTAI_jotAI_kheta} />
+      <input type="number" step="0.01" class="input rounded-lg" bind:value={kaTAI_jotAI_kheta} />
     </label>
   {:else if bill_info.trolley_records}
     <label class="block">
@@ -110,7 +122,7 @@
   {/if}
   <label class="block">
     <span class="label-text font-semibold">दर (₹)</span>
-    <input type="number" class="input rounded-lg" bind:value={rate} />
+    <input type="number" step="0.01" class="input rounded-lg" bind:value={rate} />
   </label>
   <label class="block">
     <span class="label-text font-semibold">दिनांक</span>
@@ -147,12 +159,12 @@
   <button
     disabled={$edit_bill_mut.isPending || !total}
     class="btn gap-2 rounded-lg bg-secondary-700 px-2 py-1 font-bold text-white dark:bg-secondary-700"
-    onclick={() => (confirm_modal_opened = true)}
+    type="submit"
   >
     <Icon src={VscSave} class="text-xl" />
     संपादित करें
   </button>
-</div>
+</form>
 
 <ConfirmModal
   title={`क्या आप निश्चित हैं कि देयक को संपादित करना चाहते हैं ?`}

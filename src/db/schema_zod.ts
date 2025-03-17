@@ -29,15 +29,15 @@ export const VerificationSchemaZod = createSelectSchema(verification, {
   expiresAt: z.coerce.date()
 });
 
-export const CustomersSchemaZod = createSelectSchema(customer);
-export const BillsSchemaZod = createSelectSchema(bill, {
+export const CustomerSchemaZod = createSelectSchema(customer);
+export const BillSchemaZod = createSelectSchema(bill, {
   timestamp: z.coerce.date(),
   date: z.coerce.date()
 });
-export const KaTAIRecordsSchemaZod = createSelectSchema(kaTAI_record);
-export const JotAIRecordsSchemaZod = createSelectSchema(jotAI_record);
-export const TrolleyRecordsSchemaZod = createSelectSchema(trolley_record);
-export const PaymentsSchemaZod = createSelectSchema(payment, {
+export const KaTAIRecordSchemaZod = createSelectSchema(kaTAI_record);
+export const JotAIRecordSchemaZod = createSelectSchema(jotAI_record);
+export const TrolleyRecordSchemaZod = createSelectSchema(trolley_record);
+export const PaymentSchemaZod = createSelectSchema(payment, {
   timestamp: z.coerce.date(),
   date: z.coerce.date()
 });

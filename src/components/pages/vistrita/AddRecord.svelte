@@ -26,11 +26,11 @@
         customer_id,
         type: 'kaTAI',
         total: total,
-        rate: rate,
+        rate: rate.toString(),
         date,
         data: {
           type: kaTAi,
-          kheta,
+          kheta: kheta.toString(),
           dhAna_type: kaTAI_dhAn
         }
       });
@@ -39,14 +39,14 @@
         customer_id,
         type: 'jotAI',
         total: total,
-        rate: rate,
+        rate: rate.toString(),
         date,
         data: {
           type: jotAI,
-          kheta,
+          kheta: kheta.toString(),
           chAsa:
             jotAI === 'cultivator' || jotAI === 'tAva' || jotAI === 'rota_meter'
-              ? jotAI_chAsa
+              ? jotAI_chAsa!.toString()
               : null
         }
       });
@@ -55,7 +55,7 @@
         customer_id,
         type: 'trolley',
         total: total,
-        rate: rate,
+        rate: rate.toString(),
         date,
         data: {
           number: trolley_number
@@ -91,26 +91,31 @@
   let kaTAI_dhAn: keyof typeof kaTAI_dhAn_list | null = $state(null);
 
   let jotAI: keyof typeof jotAI_list | null = $state(null);
-  let jotAI_chAsa: number | null = $state(null);
+  let jotAI_chAsa: string | null = $state(null);
   // ^ chAsa only for 1 ,2  and 3
 
   let trolley_number: number | null = $state(null);
 
-  let rate: number | null = $state(null);
-  let kheta: number | null = $state(null);
+  let rate: string | null = $state(null);
+  let kheta: string | null = $state(null);
 
   let total: number | null = $derived.by(() => {
     if (!rate) return null;
+    const _rate = parseFloat(rate);
+    let value: number | null = null;
     if (category === 'kaTAi' && kheta) {
-      return rate * kheta;
+      const _kheta = parseFloat(kheta);
+      value = _rate * _kheta;
     } else if (category === 'jotAI' && kheta) {
-      if (jotAI_chAsa && (jotAI === 'rota_meter' || jotAI === 'cultivator' || jotAI === 'tAva'))
-        return rate * jotAI_chAsa * kheta;
-      else return rate * kheta;
+      const _kheta = parseFloat(kheta);
+      if (jotAI_chAsa && (jotAI === 'rota_meter' || jotAI === 'cultivator' || jotAI === 'tAva')) {
+        const _jotAI_chAsa = parseFloat(jotAI_chAsa);
+        value = _rate * _jotAI_chAsa * _kheta;
+      } else value = _rate * _kheta;
     } else if (category === 'trolley' && trolley_number) {
-      return rate * trolley_number;
+      value = _rate * trolley_number;
     }
-    return null;
+    return value ? parseInt(value.toFixed()) : value;
   });
 
   let confirm_modal_opened = $state(false);
@@ -164,13 +169,13 @@
       {#if category === 'jotAI' || category === 'kaTAi'}
         <label class="block">
           <span class="label-text font-semibold">खेत (बिस्सा में)</span>
-          <input type="number" class="input rounded-lg" bind:value={kheta} required />
+          <input type="number" step="0.01" class="input rounded-lg" bind:value={kheta} required />
         </label>
       {/if}
       {#if category}
         <label class="block">
           <span class="label-text font-semibold">दर (₹)</span>
-          <input type="number" class="input rounded-lg" bind:value={rate} required />
+          <input type="number" step="0.01" class="input rounded-lg" bind:value={rate} required />
         </label>
         {#if total}
           <div class="text-bold space-x-2">
@@ -279,7 +284,7 @@
   {#if jotAI === 'rota_meter' || jotAI === 'cultivator' || jotAI === 'tAva'}
     <label class="block">
       <span class="label-text font-semibold">चास की संख्या</span>
-      <input type="number" class="input rounded-lg" bind:value={jotAI_chAsa} required />
+      <input type="number" step="0.01" class="input rounded-lg" bind:value={jotAI_chAsa} required />
     </label>
   {/if}
 {/snippet}

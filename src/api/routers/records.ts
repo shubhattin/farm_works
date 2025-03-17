@@ -2,43 +2,32 @@ import { t, protectedAdminProcedure, publicProcedure } from '~/api/trpc_init';
 import { z } from 'zod';
 import { db } from '~/db/db';
 import {
-  KaTAIRecordsSchemaZod,
-  JotAIRecordsSchemaZod,
-  TrolleyRecordsSchemaZod
+  KaTAIRecordSchemaZod,
+  JotAIRecordSchemaZod,
+  TrolleyRecordSchemaZod,
+  BillSchemaZod
 } from '~/db/schema_zod';
 import { jotAI_record, kaTAI_record, bill, trolley_record, payment } from '~/db/schema';
 import { delay } from '~/tools/delay';
 import { and, desc, eq, sql } from 'drizzle-orm';
 
-const kaTAI_add_record_input_schema = z.object({
-  customer_id: z.number().int(),
-  total: z.number().int(),
-  rate: z.number().int(),
+const base_bill_record_input_schema = BillSchemaZod.pick({
+  customer_id: true,
+  total: true,
+  rate: true,
+  date: true
+});
+const kaTAI_add_record_input_schema = base_bill_record_input_schema.extend({
   type: z.literal('kaTAI'),
-  date: z.coerce.date(),
-  data: KaTAIRecordsSchemaZod.omit({
-    id: true
-  })
+  data: KaTAIRecordSchemaZod.omit({ id: true })
 });
-const jotAI_add_record_input_schema = z.object({
-  customer_id: z.number().int(),
-  total: z.number().int(),
-  rate: z.number().int(),
+const jotAI_add_record_input_schema = base_bill_record_input_schema.extend({
   type: z.literal('jotAI'),
-  date: z.coerce.date(),
-  data: JotAIRecordsSchemaZod.omit({
-    id: true
-  })
+  data: JotAIRecordSchemaZod.omit({ id: true })
 });
-const trolley_add_record_input_schema = z.object({
-  customer_id: z.number().int(),
-  total: z.number().int(),
-  rate: z.number().int(),
+const trolley_add_record_input_schema = base_bill_record_input_schema.extend({
   type: z.literal('trolley'),
-  date: z.coerce.date(),
-  data: TrolleyRecordsSchemaZod.omit({
-    id: true
-  })
+  data: TrolleyRecordSchemaZod.omit({ id: true })
 });
 const add_record_input_schema = z.discriminatedUnion('type', [
   kaTAI_add_record_input_schema,
@@ -265,12 +254,12 @@ const edit_bill_route = protectedAdminProcedure
     z.object({
       customer_id: z.number().int(),
       bill_id: z.number().int(),
-      rate: z.number().int(),
+      rate: z.string(),
       total: z.number().int(),
       date: z.coerce.date(),
       type: z.enum(['kaTAI', 'jotAI', 'trolley']),
-      jotAI_chAsa: z.number().int().nullable().optional(),
-      kaTAI_jotAI_kheta: z.number().int().nullable().optional(),
+      jotAI_chAsa: z.string().nullable().optional(),
+      kaTAI_jotAI_kheta: z.string().nullable().optional(),
       trolley_number: z.number().int().nullable().optional()
     })
   )

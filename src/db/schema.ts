@@ -8,7 +8,8 @@ import {
   timestamp,
   index,
   boolean,
-  text
+  text,
+  numeric
 } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 import { user, account } from './auth-schema';
@@ -38,7 +39,7 @@ export const bill = pgTable(
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),
     payment_complete: boolean().notNull().default(false),
-    rate: integer().notNull(),
+    rate: numeric({ precision: 5, scale: 2 }).notNull(),
     total: integer().notNull(),
     date: timestamp({ withTimezone: true }).notNull(),
     // ^ date is the date indended to be recored
@@ -83,7 +84,7 @@ export const kaTAI_dhAn_enum = pgEnum('kaTAI_dhAn', ['sAdA', '4x4', 'girA']);
 export const kaTAI_record = pgTable('kaTAI_record', {
   id: serial().primaryKey(),
   type: kaTAI_enum().notNull(),
-  kheta: integer().notNull(),
+  kheta: numeric({ precision: 5, scale: 2 }).notNull(),
   dhAna_type: kaTAI_dhAn_enum() // only if type is dhAn
 });
 
@@ -99,8 +100,8 @@ export const jotAI_enum = pgEnum('jotAI', [
 export const jotAI_record = pgTable('jotAI_record', {
   id: serial().primaryKey(),
   type: jotAI_enum().notNull(),
-  kheta: integer().notNull(),
-  chAsa: integer() // only when 1, 2 and 3
+  kheta: numeric({ precision: 5, scale: 2 }).notNull(),
+  chAsa: numeric({ precision: 5, scale: 2 }) // only when 1, 2 and 3
 });
 
 // trolley records
