@@ -1,6 +1,7 @@
 import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
-import { db, redis } from '../db/db';
+import { db } from '../db/db';
+import { redis } from '../db/redis';
 import * as schema from '../db/schema';
 import { env } from '$env/dynamic/private';
 import { admin } from 'better-auth/plugins';
