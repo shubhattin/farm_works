@@ -28,3 +28,14 @@ export const protectedAdminProcedure = protectedProcedure.use(async function isA
     ctx: { user }
   });
 });
+
+export const protectedMaintainerProcedure = protectedProcedure.use(async function isAuthed({
+  next,
+  ctx: { user }
+}) {
+  if (!user.is_maintainer)
+    throw new TRPCError({ code: 'UNAUTHORIZED', message: 'Not a Maintainer User' });
+  return next({
+    ctx: { user }
+  });
+});

@@ -30,6 +30,7 @@ export const userInfoPlugin = () => {
         '/user_info/update_user_info',
         {
           method: 'POST',
+          requireHeaders: true,
           body: z.object({
             userId: z.string(),
             is_approved: z.boolean(),
@@ -38,6 +39,13 @@ export const userInfoPlugin = () => {
           })
         },
         async (ctx) => {
+          const session = await auth.api.getSession({
+            headers: ctx.headers
+          });
+          if (!session) return ctx.error('UNAUTHORIZED');
+          const { user } = session;
+          if (!user.is_approved || !user.is_maintainer) return ctx.error('FORBIDDEN');
+
           const { role, super_admin, is_approved } = ctx.body;
           const updatedUser = await ctx.context.internalAdapter.updateUser(
             ctx.body.userId,
@@ -54,9 +62,7 @@ export const userInfoPlugin = () => {
             body: {
               userId: ctx.body.userId
             },
-            headers: {
-              Cookie: ctx.request?.headers.get('Cookie') || ''
-            }
+            headers: ctx.headers
           });
           await Promise.allSettled(
             sessions.map(async (session, i) => {

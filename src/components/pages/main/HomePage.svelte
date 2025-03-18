@@ -35,13 +35,15 @@
       <LipiLekhikaSwitch bind:status_on={$typing_tool_enabled} />
     {/if}
     {#if $user_info && $user_info.role === 'admin'}
-      <button
-        onclick={() => (add_new_customer_opened = true)}
-        class="btn gap-1 rounded-lg bg-secondary-600 px-1 py-0 pb-0 text-xs font-bold text-white sm:px-2 sm:py-1 sm:text-sm dark:bg-secondary-700"
-      >
-        <Icon src={AiOutlineUserAdd} class="-mt-1 text-lg sm:text-xl" />
-        नया ग्राहक जोड़ें
-      </button>
+      <span>
+        <button
+          onclick={() => (add_new_customer_opened = true)}
+          class="btn gap-1 rounded-lg bg-secondary-600 px-1 py-0 pb-0 text-xs font-bold text-white sm:px-2 sm:py-1 sm:text-sm dark:bg-secondary-700"
+        >
+          <Icon src={AiOutlineUserAdd} class="-mt-1 text-lg sm:text-xl" />
+          नया ग्राहक जोड़ें
+        </button>
+      </span>
     {/if}
   </div>
   <CustomerList lipi_lekhika_enabled={$typing_tool_enabled} />

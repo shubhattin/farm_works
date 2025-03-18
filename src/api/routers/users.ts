@@ -1,8 +1,8 @@
-import { t, protectedAdminProcedure, publicProcedure } from '~/api/trpc_init';
+import { t, protectedMaintainerProcedure } from '~/api/trpc_init';
 import { db } from '~/db/db';
 import { delay } from '~/tools/delay';
 
-const get_users_list_route = protectedAdminProcedure.query(async ({ ctx: { user } }) => {
+const get_users_list_route = protectedMaintainerProcedure.query(async ({ ctx: { user } }) => {
   await delay(600);
   const data = await db.query.user.findMany({
     columns: {

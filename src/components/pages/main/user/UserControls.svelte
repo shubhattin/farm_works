@@ -50,7 +50,7 @@
             <span>निर्प्रवेश</span>
           </span>
         </ConfirmModal>
-        {#if $user_info?.is_approved && $user_info?.role === 'admin' && $user_info?.is_maintainer}
+        {#if $user_info && $user_info.is_approved && $user_info.is_maintainer}
           <div class="mt-4">
             <button
               ondblclick={() => {
