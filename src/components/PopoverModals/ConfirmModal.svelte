@@ -87,7 +87,7 @@
           className
         )}
       >
-        रद्द करें
+        निरस्त करें
       </button>
     </div>
   {/snippet}

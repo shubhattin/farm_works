@@ -5,14 +5,31 @@
   import { user_info } from '~/state/user.svelte';
   import { VscAccount } from 'svelte-icons-pack/vsc';
   import { AiOutlineUser } from 'svelte-icons-pack/ai';
-  import { signOut } from '~/lib/auth-client';
+  import { signOut, authClient } from '~/lib/auth-client';
+  import { LuRefreshCw } from 'svelte-icons-pack/lu';
+  import { createMutation } from '@tanstack/svelte-query';
+  import { cl_join } from '~/tools/cl_join';
+  import ConfirmModal from '~/components/PopoverModals/ConfirmModal.svelte';
 
   let user_info_popover_status = $state(false);
   let logout_modal_status = $state(false);
+
   const log_out = () => {
     signOut();
     logout_modal_status = false;
   };
+
+  const refresh_session_mut = createMutation({
+    mutationFn: async () => {
+      const session = await authClient.getSession({
+        query: {
+          disableCookieCache: true,
+          disableRefresh: false
+        }
+      });
+      console.log(session.data?.session);
+    }
+  });
 </script>
 
 <Popover
@@ -32,38 +49,32 @@
         {$user_info!.name}
       </div>
       <div class="space-y-2 p-1 select-none">
-        <Modal
-          open={logout_modal_status}
-          onOpenChange={(e) => (logout_modal_status = e.open)}
-          contentBase="card z-50 space-y-2 rounded-lg px-3 py-2 shadow-xl bg-surface-100-900"
-          backdropBackground="backdrop-blur-xs"
+        <ConfirmModal
+          title="निर्प्रवेश करना चाहते हैं ?"
+          bind:popup_state={logout_modal_status}
+          close_on_confirm={true}
+          confirm_func={log_out}
         >
-          {#snippet trigger()}
-            <span
-              class="btn gap-1 rounded-md bg-error-600 pt-1 pr-2 pb-0.5 pl-1 font-bold text-white"
-            >
-              <Icon class="text-2xl" src={BiLogOut} />
-              <span>निर्प्रवेश</span>
-            </span>
-          {/snippet}
-          {#snippet content()}
-            <div class="text-lg font-bold">निर्प्रवेश करना चाहते हैं ?</div>
-            <div class="space-x-2">
-              <button
-                class="btn rounded-lg bg-surface-600 font-bold text-white dark:bg-surface-500"
-                onclick={log_out}
-              >
-                पुष्टि करें
-              </button>
-              <button
-                onclick={() => (logout_modal_status = false)}
-                class="btn rounded-lg preset-outlined-surface-800-200"
-              >
-                निरस्त करें
-              </button>
-            </div>
-          {/snippet}
-        </Modal>
+          <span
+            class="btn gap-1 rounded-md bg-error-600 pt-1 pr-2 pb-0.5 pl-1 font-bold text-white"
+          >
+            <Icon class="text-2xl" src={BiLogOut} />
+            <span>निर्प्रवेश</span>
+          </span>
+        </ConfirmModal>
+      </div>
+      <div>
+        <button
+          onclick={() => $refresh_session_mut.mutate()}
+          disabled={$refresh_session_mut.isPending}
+          class="btn gap-1 rounded-md bg-surface-600 px-1 pb-0 text-xs font-semibold"
+        >
+          <Icon
+            src={LuRefreshCw}
+            class={cl_join('text-sm', $refresh_session_mut.isPending && 'animate-spin')}
+          />
+          संप्रवेश सत्र नवीकरण
+        </button>
       </div>
     </div>
   {/snippet}
