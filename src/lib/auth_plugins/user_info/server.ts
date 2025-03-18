@@ -26,19 +26,25 @@ export const userInfoPlugin = () => {
       }
     },
     endpoints: {
-      approve_user: createAuthEndpoint(
-        '/user_info/approve_user',
+      update_user_info: createAuthEndpoint(
+        '/user_info/update_user_info',
         {
           method: 'POST',
           body: z.object({
-            userId: z.string()
+            userId: z.string(),
+            is_approved: z.boolean(),
+            role: z.enum(['user', 'admin', 'super_admin']),
+            super_admin: z.boolean()
           })
         },
         async (ctx) => {
+          const { role, super_admin, is_approved } = ctx.body;
           const updatedUser = await ctx.context.internalAdapter.updateUser(
             ctx.body.userId,
             {
-              is_approved: true
+              is_approved,
+              role,
+              super_admin
             },
             ctx
           );

@@ -5,11 +5,9 @@
   import { user_info } from '~/state/user.svelte';
   import { VscAccount } from 'svelte-icons-pack/vsc';
   import { AiOutlineUser } from 'svelte-icons-pack/ai';
-  import { signOut, authClient } from '~/lib/auth-client';
-  import { LuRefreshCw } from 'svelte-icons-pack/lu';
-  import { createMutation } from '@tanstack/svelte-query';
-  import { cl_join } from '~/tools/cl_join';
+  import { signOut } from '~/lib/auth-client';
   import ConfirmModal from '~/components/PopoverModals/ConfirmModal.svelte';
+  import UserManage from './UserManage.svelte';
 
   let user_info_popover_status = $state(false);
   let logout_modal_status = $state(false);
@@ -19,17 +17,7 @@
     logout_modal_status = false;
   };
 
-  const refresh_session_mut = createMutation({
-    mutationFn: async () => {
-      const session = await authClient.getSession({
-        query: {
-          disableCookieCache: true,
-          disableRefresh: false
-        }
-      });
-      console.log(session.data?.session);
-    }
-  });
+  let user_manage_modal_status = $state(false);
 </script>
 
 <Popover
@@ -62,20 +50,31 @@
             <span>निर्प्रवेश</span>
           </span>
         </ConfirmModal>
-      </div>
-      <div>
-        <button
-          onclick={() => $refresh_session_mut.mutate()}
-          disabled={$refresh_session_mut.isPending}
-          class="btn gap-1 rounded-md bg-surface-600 px-1 pb-0 text-xs font-semibold"
-        >
-          <Icon
-            src={LuRefreshCw}
-            class={cl_join('text-sm', $refresh_session_mut.isPending && 'animate-spin')}
-          />
-          संप्रवेश सत्र नवीकरण
-        </button>
+        {#if $user_info?.is_approved && $user_info?.role === 'admin' && $user_info?.is_maintainer}
+          <div class="mt-4">
+            <button
+              ondblclick={() => {
+                user_info_popover_status = false;
+                user_manage_modal_status = true;
+              }}
+              class="btn gap-1 rounded-md bg-surface-600 px-1.5 pb-0 text-sm font-semibold"
+            >
+              उपयोक्ता प्रबंधन
+            </button>
+          </div>
+        {/if}
       </div>
     </div>
   {/snippet}
 </Popover>
+
+<Modal
+  open={user_manage_modal_status}
+  onOpenChange={(e) => (user_manage_modal_status = e.open)}
+  contentBase="card z-50 space-y-2 rounded-lg px-3 py-2 shadow-xl dark:bg-surface-900 bg-zinc-100"
+  backdropBackground="backdrop-blur-sm"
+>
+  {#snippet content()}
+    <UserManage bind:modal_open={user_manage_modal_status} />
+  {/snippet}
+</Modal>
