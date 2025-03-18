@@ -65,7 +65,7 @@
   let update_modal_status = $state(false);
 </script>
 
-<div class="text-center text-lg font-bold">उपयोक्ताप्रबंधकम्</div>
+<div class="text-center text-lg font-bold">उपयोक्ता प्रबंधक</div>
 {#if $users_list.isFetching}
   <div class="h-8 placeholder w-64 animate-pulse"></div>
 {:else if $users_list.isSuccess}
@@ -111,7 +111,7 @@
       </label>
       <ConfirmModal
         bind:popup_state={update_modal_status}
-        title="अद्यतितुं निश्चितो भवान् ?"
+        title="क्या आप अद्यतन करने के लिए निश्चित हैं ?"
         close_on_confirm={true}
         confirm_func={() => {
           $update_user_info_mut.mutate();
@@ -120,7 +120,7 @@
       <button
         ondblclick={() => (update_modal_status = true)}
         disabled={$update_user_info_mut.isPending}
-        class="btn bg-primary-700 px-1.5 py-0 pt-1 font-bold text-white">अद्यतनङ्कुरु</button
+        class="btn bg-primary-700 px-1.5 py-0 pt-1 font-bold text-white">अद्यतन करें</button
       >
     </div>
   {/if}
