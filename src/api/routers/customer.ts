@@ -206,6 +206,11 @@ const get_customer_bills = async (customer_id: number) => {
     ...bill,
     remaining_amount: remaining_amounts[i].remaining_amount
   }));
+
+  setTimeout(async () => {
+    await redis.set(CACHE_KEYS.customer_bills(customer_id), bills);
+  }, CACHE_WRITE_DELAY);
+
   return bills satisfies return_type;
 };
 
