@@ -124,6 +124,7 @@ const get_bill_payments_route = publicProcedure
   )
   .query(async ({ ctx: { user }, input: { customer_id, customer_uuid, bill_id } }) => {
     await delay(250);
+    const is_super_admin = !!(user && user.super_admin);
     type return_type = {
       payments: {
         id: number;
@@ -143,10 +144,17 @@ const get_bill_payments_route = publicProcedure
           }
         | undefined;
     };
-
-    const cache = await redis.get<return_type>(CACHE_KEYS.bill_payments(bill_id));
-    if (cache) return cache;
-
+    if (!is_super_admin) {
+      const cache = await redis.get<return_type>(CACHE_KEYS.bill_payments(bill_id));
+      if (cache)
+        return {
+          ...cache,
+          payments: cache.payments.map((v) => ({
+            ...v,
+            date: new Date(v.date)
+          }))
+        } satisfies return_type;
+    }
     const bill_payments_pr = db.query.payment.findMany({
       where: (tbl, { eq, and }) => and(eq(tbl.bill_id, bill_id)),
       columns: {
@@ -209,11 +217,12 @@ const get_bill_payments_route = publicProcedure
       added_by_user: added_by_user?.added_by_user
     };
 
-    setTimeout(async () => {
+    // setTimeout(async () => {
+    if (!is_super_admin)
       await redis.set(CACHE_KEYS.bill_payments(bill_id), bills, { ex: ms('15days') / 1000 });
-    });
+    // }, CACHE_WRITE_DELAY);
 
-    return bills;
+    return bills satisfies return_type;
   });
 
 const submit_bill_payment_route = protectedAdminProcedure
@@ -281,7 +290,8 @@ const submit_bill_payment_route = protectedAdminProcedure
         }),
         amount === remaining_amount &&
           db.update(bill).set({ payment_complete: true }).where(eq(bill.id, bill_id)),
-        invalidate_customer_info(customer_id)
+        invalidate_customer_info(customer_id),
+        redis.del(CACHE_KEYS.bill_payments(bill_id))
       ]);
       return {
         success: true,

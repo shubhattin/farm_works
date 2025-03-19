@@ -4,7 +4,7 @@ import { bill, customer, payment } from '~/db/schema';
 import { db } from '~/db/db';
 import { and, desc, eq, like, sql } from 'drizzle-orm';
 import { delay } from '~/tools/delay';
-import { CACHE_KEYS, CACHE_WRITE_DELAY, redis } from '~/db/redis';
+import { CACHE_KEYS, redis } from '~/db/redis';
 import ms from 'ms';
 
 const register_customer_route = protectedAdminProcedure
@@ -123,14 +123,15 @@ const get_customer_info = async (customer_id: number) => {
       .groupBy(customer.id, customer.name)
       .limit(1)
   )[0];
-  setTimeout(async () => {
-    await redis.set(CACHE_KEYS.customer_info(customer_id), customer_info, {
-      ex: ms('15days') / 1000
-    });
-  }, CACHE_WRITE_DELAY);
+  // setTimeout(async () => {
+  await redis.set(CACHE_KEYS.customer_info(customer_id), customer_info, {
+    ex: ms('15days') / 1000
+  });
+  // }, CACHE_WRITE_DELAY);
 
   return customer_info satisfies return_type;
 };
+
 const get_customer_bills = async (customer_id: number) => {
   type return_type = {
     remaining_amount: number;
@@ -158,7 +159,7 @@ const get_customer_bills = async (customer_id: number) => {
   }[];
 
   const cache = await redis.get<return_type>(CACHE_KEYS.customer_bills(customer_id));
-  if (cache) return cache;
+  if (cache) return cache.map((bill) => ({ ...bill, date: new Date(bill.date) })) as return_type;
 
   const data_pr = db.query.customer.findFirst({
     where: ({ id }, { eq }) => eq(id, customer_id),
@@ -207,11 +208,11 @@ const get_customer_bills = async (customer_id: number) => {
     remaining_amount: remaining_amounts[i].remaining_amount
   }));
 
-  setTimeout(async () => {
-    await redis.set(CACHE_KEYS.customer_bills(customer_id), bills, {
-      ex: ms('15days') / 1000
-    });
-  }, CACHE_WRITE_DELAY);
+  // setTimeout(async () => {
+  await redis.set(CACHE_KEYS.customer_bills(customer_id), bills, {
+    ex: ms('15days') / 1000
+  });
+  // }, CACHE_WRITE_DELAY);
 
   return bills satisfies return_type;
 };
@@ -271,11 +272,11 @@ export const get_customer_additional_data_route = protectedProcedure
         address: true
       }
     });
-    setTimeout(async () => {
-      await redis.set(CACHE_KEYS.additional_customer_info(customer_id), data!, {
-        ex: ms('15days') / 1000
-      });
-    }, CACHE_WRITE_DELAY);
+    // setTimeout(async () => {
+    await redis.set(CACHE_KEYS.additional_customer_info(customer_id), data!, {
+      ex: ms('15days') / 1000
+    });
+    // }, CACHE_WRITE_DELAY);
     return data! satisfies return_type;
   });
 
