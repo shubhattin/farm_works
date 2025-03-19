@@ -7,7 +7,9 @@ export const redis = new Redis({
 });
 
 export const CACHE_KEYS = {
-  additional_customer_info: (customer_id: number) => `customer:${customer_id}:additional_info`
+  additional_customer_info: (customer_id: number) => `customer:${customer_id}:additional_info`,
+  customer_info: (customer_id: number) => `customer:${customer_id}:info`,
+  customer_bills: (customer_id: number) => `customer:${customer_id}:bills`
 };
 
 export const CACHE_WRITE_DELAY = 30;

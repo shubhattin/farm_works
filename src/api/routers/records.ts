@@ -10,6 +10,14 @@ import {
 import { jotAI_record, kaTAI_record, bill, trolley_record, payment } from '~/db/schema';
 import { delay } from '~/tools/delay';
 import { and, desc, eq, sql } from 'drizzle-orm';
+import { CACHE_KEYS, redis } from '~/db/redis';
+
+const invalidate_customer_info = async (customer_id: number) => {
+  await Promise.allSettled([
+    redis.del(CACHE_KEYS.customer_info(customer_id)),
+    redis.del(CACHE_KEYS.customer_bills(customer_id))
+  ]);
+};
 
 const base_bill_record_input_schema = BillSchemaZod.pick({
   customer_id: true,
@@ -84,8 +92,8 @@ const add_bill_route = protectedAdminProcedure.input(add_record_input_schema).mu
       )[0];
       trolley_record_id = id;
     }
-    const { id: bill_id } = (
-      await db
+    const [bill_r] = await Promise.all([
+      db
         .insert(bill)
         .values({
           added_by_user_id: user_id,
@@ -97,8 +105,10 @@ const add_bill_route = protectedAdminProcedure.input(add_record_input_schema).mu
           jotAI_record: jotAI_record_id,
           trolley_record: trolley_record_id
         })
-        .returning()
-    )[0];
+        .returning(),
+      invalidate_customer_info(DATA.customer_id)
+    ]);
+    const { id: bill_id } = bill_r[0];
     return { bill_id, kaTAI_record_id, jotAI_record_id, trolley_record_id };
   }
 );
@@ -232,7 +242,7 @@ const submit_bill_payment_route = protectedAdminProcedure
           success: false,
           message: 'invalid_amount'
         };
-      await Promise.all([
+      await Promise.allSettled([
         db.insert(payment).values({
           bill_id,
           amount,
@@ -240,7 +250,8 @@ const submit_bill_payment_route = protectedAdminProcedure
           date
         }),
         amount === remaining_amount &&
-          db.update(bill).set({ payment_complete: true }).where(eq(bill.id, bill_id))
+          db.update(bill).set({ payment_complete: true }).where(eq(bill.id, bill_id)),
+        invalidate_customer_info(customer_id)
       ]);
       return {
         success: true,
@@ -299,7 +310,7 @@ const edit_bill_route = protectedAdminProcedure
       )[0];
       const PAID_AMOUNT = bill_info.total - bill_info.remaining_amount;
 
-      await Promise.all([
+      await Promise.allSettled([
         db.update(bill).set({ rate, total, date }).where(eq(bill.id, bill_id)),
         type === 'kaTAI' &&
           db
@@ -317,7 +328,8 @@ const edit_bill_route = protectedAdminProcedure
             .set({ number: trolley_number! })
             .where(eq(trolley_record.id, bill_info.trolley_record_id!)),
         total <= PAID_AMOUNT &&
-          db.update(bill).set({ payment_complete: true }).where(eq(bill.id, bill_id))
+          db.update(bill).set({ payment_complete: true }).where(eq(bill.id, bill_id)),
+        invalidate_customer_info(customer_id)
       ]);
     }
   );
@@ -356,7 +368,10 @@ const edit_payment_route = protectedAdminProcedure
     if (!info) throw new Error('Invalid Payment ID');
     if (info.bill.customer.id !== customer_id || info.bill.customer.uuid !== customer_uuid)
       throw new Error('Invalid Customer ID or UUID');
-    await db.update(payment).set({ date }).where(eq(payment.id, payment_id));
+    await Promise.allSettled([
+      db.update(payment).set({ date }).where(eq(payment.id, payment_id)),
+      invalidate_customer_info(customer_id)
+    ]);
   });
 
 export const records_router = t.router({
