@@ -4,6 +4,8 @@ import { bill, customer, payment } from '~/db/schema';
 import { db } from '~/db/db';
 import { and, desc, eq, like, sql } from 'drizzle-orm';
 import { delay } from '~/tools/delay';
+import { CACHE_KEYS, CACHE_WRITE_DELAY, redis } from '~/db/redis';
+import ms from 'ms';
 
 const register_customer_route = protectedAdminProcedure
   .input(
@@ -193,7 +195,14 @@ export const get_customer_additional_data_route = protectedProcedure
     })
   )
   .query(async ({ input: { customer_id, customer_uuid } }) => {
-    await delay(550);
+    await delay(100);
+    type return_type = {
+      id: number;
+      phone_number: string | null;
+      address: string | null;
+    };
+    const cache = await redis.get<return_type>(CACHE_KEYS.additional_customer_info(customer_id));
+    if (cache) return cache;
     const data = await db.query.customer.findFirst({
       where: ({ id, uuid }, { eq, and }) => and(eq(id, customer_id), eq(uuid, customer_uuid)),
       columns: {
@@ -202,7 +211,12 @@ export const get_customer_additional_data_route = protectedProcedure
         address: true
       }
     });
-    return data!;
+    setTimeout(async () => {
+      await redis.set(CACHE_KEYS.additional_customer_info(customer_id), data!, {
+        ex: ms('15days') / 1000
+      });
+    }, CACHE_WRITE_DELAY);
+    return data! satisfies return_type;
   });
 
 const edit_customer_info_route = protectedAdminProcedure
@@ -217,10 +231,13 @@ const edit_customer_info_route = protectedAdminProcedure
   )
   .mutation(async ({ input: { customer_id, customer_uuid, name, phone_number, address } }) => {
     await delay(650);
-    await db
-      .update(customer)
-      .set({ name, phone_number, address })
-      .where(and(eq(customer.id, customer_id), eq(customer.uuid, customer_uuid)));
+    await Promise.allSettled([
+      db
+        .update(customer)
+        .set({ name, phone_number, address })
+        .where(and(eq(customer.id, customer_id), eq(customer.uuid, customer_uuid))),
+      redis.del(CACHE_KEYS.additional_customer_info(customer_id))
+    ]);
   });
 
 export const customer_router = t.router({
