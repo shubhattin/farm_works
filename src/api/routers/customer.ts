@@ -208,7 +208,9 @@ const get_customer_bills = async (customer_id: number) => {
   }));
 
   setTimeout(async () => {
-    await redis.set(CACHE_KEYS.customer_bills(customer_id), bills);
+    await redis.set(CACHE_KEYS.customer_bills(customer_id), bills, {
+      ex: ms('15days') / 1000
+    });
   }, CACHE_WRITE_DELAY);
 
   return bills satisfies return_type;

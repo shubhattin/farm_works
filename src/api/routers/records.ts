@@ -1,5 +1,5 @@
 import { t, protectedAdminProcedure, publicProcedure } from '~/api/trpc_init';
-import { z } from 'zod';
+import { set, z } from 'zod';
 import { db } from '~/db/db';
 import {
   KaTAIRecordSchemaZod,
@@ -11,6 +11,7 @@ import { jotAI_record, kaTAI_record, bill, trolley_record, payment } from '~/db/
 import { delay } from '~/tools/delay';
 import { and, desc, eq, sql } from 'drizzle-orm';
 import { CACHE_KEYS, redis } from '~/db/redis';
+import ms from 'ms';
 
 const invalidate_customer_info = async (customer_id: number) => {
   await Promise.allSettled([
@@ -122,7 +123,30 @@ const get_bill_payments_route = publicProcedure
     })
   )
   .query(async ({ ctx: { user }, input: { customer_id, customer_uuid, bill_id } }) => {
-    await delay(800);
+    await delay(250);
+    type return_type = {
+      payments: {
+        id: number;
+        amount: number;
+        date: Date;
+        added_by_user:
+          | {
+              id: string;
+              name: string;
+            }
+          | undefined;
+      }[];
+      added_by_user:
+        | {
+            id: string;
+            name: string;
+          }
+        | undefined;
+    };
+
+    const cache = await redis.get<return_type>(CACHE_KEYS.bill_payments(bill_id));
+    if (cache) return cache;
+
     const bill_payments_pr = db.query.payment.findMany({
       where: (tbl, { eq, and }) => and(eq(tbl.bill_id, bill_id)),
       columns: {
@@ -175,7 +199,7 @@ const get_bill_payments_route = publicProcedure
       if (customer.id !== customer_id || customer.uuid !== customer_uuid)
         throw new Error('Invalid Id or UUID');
     });
-    return {
+    const bills = {
       payments: bill_payments.map((v) => ({
         id: v.id,
         amount: v.amount,
@@ -184,6 +208,12 @@ const get_bill_payments_route = publicProcedure
       })),
       added_by_user: added_by_user?.added_by_user
     };
+
+    setTimeout(async () => {
+      await redis.set(CACHE_KEYS.bill_payments(bill_id), bills, { ex: ms('15days') / 1000 });
+    });
+
+    return bills;
   });
 
 const submit_bill_payment_route = protectedAdminProcedure
@@ -370,7 +400,8 @@ const edit_payment_route = protectedAdminProcedure
       throw new Error('Invalid Customer ID or UUID');
     await Promise.allSettled([
       db.update(payment).set({ date }).where(eq(payment.id, payment_id)),
-      invalidate_customer_info(customer_id)
+      invalidate_customer_info(customer_id),
+      redis.del(CACHE_KEYS.bill_payments(bill_id))
     ]);
   });
 
