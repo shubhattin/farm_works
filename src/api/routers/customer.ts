@@ -33,40 +33,59 @@ const get_customers_list_route = protectedProcedure
       .select({
         customer_id: customer.id,
         customer_name: customer.name,
-        customer_uuid: customer.uuid,
-        total_amount: sql<number>`CAST(
-      COALESCE(
-        SUM(CASE WHEN ${bill.payment_complete} = false THEN ${bill.total} ELSE 0 END)
-      , 0) 
-    AS INTEGER)`,
-        remaining_amount: sql<number>`CAST(
-      COALESCE(
-        SUM(CASE WHEN ${bill.payment_complete} = false THEN ${bill.total} ELSE 0 END) -
-        (
-          SELECT COALESCE(SUM(p.amount), 0)
-          FROM ${payment} p
-          INNER JOIN ${bill} b ON b.id = p.bill_id
-          WHERE b.customer_id = ${customer.id}
-          AND b.payment_complete = false
-        )
-      , 0) 
-    AS INTEGER)`
+        customer_uuid: customer.uuid
+        //     total_amount: sql<number>`CAST(
+        //   COALESCE(
+        //     SUM(CASE WHEN ${bill.payment_complete} = false THEN ${bill.total} ELSE 0 END)
+        //   , 0)
+        // AS INTEGER)`,
+        //     remaining_amount: sql<number>`CAST(
+        //   COALESCE(
+        //     SUM(CASE WHEN ${bill.payment_complete} = false THEN ${bill.total} ELSE 0 END) -
+        //     (
+        //       SELECT COALESCE(SUM(p.amount), 0)
+        //       FROM ${payment} p
+        //       INNER JOIN ${bill} b ON b.id = p.bill_id
+        //       WHERE b.customer_id = ${customer.id}
+        //       AND b.payment_complete = false
+        //     )
+        //   , 0)
+        // AS INTEGER)`
       })
       .from(customer)
       .leftJoin(bill, eq(bill.customer_id, customer.id))
       .groupBy(customer.id, customer.name, customer.uuid)
       .orderBy(desc(sql`COALESCE(MAX(${bill.timestamp}), '1970-01-01'::timestamp)`))
-      .limit(30);
+      .limit(20);
     // only doing aggregation on uncompleted bill paymenents
 
-    const customers_list = await (search_term.match(/^\d+$/)
+    const customers_list_ids = await (search_term.match(/^\d+$/)
       ? baseQuery.where(eq(customer.id, parseInt(search_term)))
       : baseQuery.where(like(customer.name, `%${search_term}%`)));
+
+    const customers_list = await Promise.all(
+      customers_list_ids.map(async (customer) => {
+        type return_type = Awaited<ReturnType<typeof get_customer_info>>;
+        const cache = await redis.get<return_type>(CACHE_KEYS.customer_info(customer.customer_id));
+        if (cache)
+          return {
+            ...customer,
+            total_amount: cache.total_amount,
+            remaining_amount: cache.remaining_amount
+          };
+        const data = await get_customer_info(customer.customer_id, false);
+        return {
+          ...customer,
+          total_amount: data.total_amount,
+          remaining_amount: data.remaining_amount
+        };
+      })
+    );
 
     return customers_list;
   });
 
-const get_customer_info = async (customer_id: number) => {
+const get_customer_info = async (customer_id: number, check_cache = true) => {
   type return_type = {
     customer_id: number;
     customer_name: string;
@@ -74,9 +93,10 @@ const get_customer_info = async (customer_id: number) => {
     total_paid: number;
     remaining_amount: number;
   };
-
-  const cache = await redis.get<return_type>(CACHE_KEYS.customer_info(customer_id));
-  if (cache) return cache;
+  if (check_cache) {
+    const cache = await redis.get<return_type>(CACHE_KEYS.customer_info(customer_id));
+    if (cache) return cache;
+  }
   const customer_info = (
     await db
       .select({
