@@ -144,11 +144,11 @@ const get_bill_payments_route = publicProcedure
       const cache = await redis.get<return_type['payments']>(CACHE_KEYS.bill_payments(bill_id));
       if (cache)
         return {
-          ...cache,
           payments: cache.map((v) => ({
             ...v,
             date: new Date(v.date)
-          }))
+          })),
+          added_by_user: undefined
         } satisfies return_type;
     }
     const bill_payments_pr = db.query.payment.findMany({
