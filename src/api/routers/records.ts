@@ -130,26 +130,22 @@ const get_bill_payments_route = publicProcedure
         id: number;
         amount: number;
         date: Date;
-        added_by_user:
-          | {
-              id: string;
-              name: string;
-            }
-          | undefined;
+        added_by_user?: {
+          id: string;
+          name: string;
+        };
       }[];
-      added_by_user:
-        | {
-            id: string;
-            name: string;
-          }
-        | undefined;
+      added_by_user?: {
+        id: string;
+        name: string;
+      };
     };
     if (!is_super_admin) {
-      const cache = await redis.get<return_type>(CACHE_KEYS.bill_payments(bill_id));
+      const cache = await redis.get<return_type['payments']>(CACHE_KEYS.bill_payments(bill_id));
       if (cache)
         return {
           ...cache,
-          payments: cache.payments.map((v) => ({
+          payments: cache.map((v) => ({
             ...v,
             date: new Date(v.date)
           }))
@@ -219,7 +215,9 @@ const get_bill_payments_route = publicProcedure
 
     // setTimeout(async () => {
     if (!is_super_admin)
-      await redis.set(CACHE_KEYS.bill_payments(bill_id), bills, { ex: ms('15days') / 1000 });
+      await redis.set(CACHE_KEYS.bill_payments(bill_id), bills.payments, {
+        ex: ms('15days') / 1000
+      });
     // }, CACHE_WRITE_DELAY);
 
     return bills satisfies return_type;
