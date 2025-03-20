@@ -105,7 +105,6 @@
           <span class="font-semibold">स्वयं</span>
         {:else}
           {$bill_payments_q.data.added_by_user!.name}
-          <span class="text-xs">(#{$bill_payments_q.data.added_by_user!.id})</span>
         {/if}
       </div>
     {/if}
@@ -159,8 +158,7 @@
                     <td class="text-sm">स्वयं</td>
                   {:else}
                     <td class="text-sm text-slate-500 dark:text-zinc-400"
-                      >{added_by_user.name.split(' ')[0]}
-                      <span class="text-xs">(#{added_by_user.id})</span></td
+                      >{added_by_user.name.split(' ')[0]}</td
                     >
                   {/if}
                 {/if}
