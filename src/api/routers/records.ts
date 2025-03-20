@@ -133,12 +133,12 @@ const get_bill_payments_route = publicProcedure
         added_by_user?: {
           id: string;
           name: string;
-        };
+        } | null;
       }[];
       added_by_user?: {
         id: string;
         name: string;
-      };
+      } | null;
     };
     if (!is_super_admin) {
       const cache = await redis.get<return_type['payments']>(CACHE_KEYS.bill_payments(bill_id));
