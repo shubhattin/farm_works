@@ -1,5 +1,5 @@
 {
-  "id": "d2447bb9-1465-40ec-89a6-771487e652a6",
+  "id": "7b0ca71d-9457-4e66-b5a0-14b5ad2ccb32",
   "prevId": "92f03b2d-e978-4297-a3d9-01c3c08125d8",
   "version": "7",
   "dialect": "postgresql",
@@ -35,7 +35,7 @@
         },
         "rate": {
           "name": "rate",
-          "type": "numeric(5, 2)",
+          "type": "numeric(10, 2)",
           "primaryKey": false,
           "notNull": true
         },
@@ -299,13 +299,13 @@
         },
         "kheta": {
           "name": "kheta",
-          "type": "numeric(5, 2)",
+          "type": "numeric(10, 2)",
           "primaryKey": false,
           "notNull": true
         },
         "chAsa": {
           "name": "chAsa",
-          "type": "numeric(5, 2)",
+          "type": "numeric(10, 2)",
           "primaryKey": false,
           "notNull": false
         }
@@ -337,7 +337,7 @@
         },
         "kheta": {
           "name": "kheta",
-          "type": "numeric(5, 2)",
+          "type": "numeric(10, 2)",
           "primaryKey": false,
           "notNull": true
         },
@@ -688,6 +688,12 @@
         },
         "super_admin": {
           "name": "super_admin",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "is_maintainer": {
+          "name": "is_maintainer",
           "type": "boolean",
           "primaryKey": false,
           "notNull": false
